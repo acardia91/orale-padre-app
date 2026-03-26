@@ -2,7 +2,6 @@ export const metadata = {
   title: 'Orale Padre - Plataforma Interna',
   description: 'Gestion interna de restaurantes Orale Padre',
 };
-
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
