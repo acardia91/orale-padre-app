@@ -245,6 +245,19 @@ export default function App() {
   ]);
   var weekTasks = useState([]);
   var savedCombos = useState([]);
+  var promosData = useState([
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 10, products: "Combos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Glovo", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "NUEVOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo bacano y tacos pastor", usuarios: "NUEVOS", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo bacano y tacos pastor", usuarios: "UBER ONE", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo bacano y tacos pastor", usuarios: "INACTIVOS", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 10, products: "Combos", usuarios: "TODOS", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Glovo", estado: "activa" },
+    { id: uid(), promo: 10, products: "Combos", usuarios: "TODOS", local: "Sevilla Este", dias: ["jueves","viernes"], plataforma: "Glovo", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "INACTIVOS", local: "Sevilla Este", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "NUEVOS", local: "Sevilla Este", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+    { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "UBER ONE", local: "Sevilla Este", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
+  ]);
   var mktData = useState({
     tasks: [
       { id: uid(), title: "Sesion de fotos carta completa", assignedTo: "Maria", createdBy: "Alejandro", priority: "alta", status: "pendiente", due: "2026-04-01", category: "contenido", notes: "Fotos de todos los burritos cortados mostrando relleno. Fondo oscuro, luz natural lateral." },
@@ -408,6 +421,7 @@ export default function App() {
     { k: "combos", l: "Combos", roles: ["socio"], group: "comercial" },
     { k: "carta-del", l: "Carta Delivery", roles: ["socio"], group: "comercial" },
     { k: "turnos", l: "Turnos", roles: ["encargado"], group: "ops" },
+    { k: "promos-hoy", l: "Promos", roles: ["encargado","empleado"], group: "ops" },
     { k: "stock", l: "Stock", roles: ["empleado","encargado"], group: "ops" },
     { k: "operaciones", l: "Operaciones", roles: ["socio","encargado","empleado"], group: "ops" },
     { k: "incidencias", l: "Incidencias", roles: ["empleado","encargado","socio"], group: "ops" },
@@ -439,13 +453,18 @@ export default function App() {
   if (role === "encargado" && pg[0] === "dashboard") pg[1]("panel");
   if (role === "community" && pg[0] === "dashboard") pg[1]("mkt-panel");
 
+  // Auto-select area based on current page
+  var currentArea = null;
+  for (var ni = 0; ni < allNav.length; ni++) { if (allNav[ni].k === pg[0]) { currentArea = allNav[ni].group; break; } }
+  if (currentArea && openArea[0] !== currentArea && !openArea[0]) openArea[1](currentArea);
+
   function resetAll() {
     var fresh = makeSeed();
     sup[1](fresh.suppliers); ing[1](fresh.ingredients); rec[1](fresh.recipes); prod[1](fresh.products);
     stockAlerts[1]([]); incidents[1]([]); team[1]([]);
   }
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", resetAll: resetAll };
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", resetAll: resetAll };
 
   return (
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh" }}>
@@ -469,11 +488,10 @@ export default function App() {
         </div>
         <button onClick={function() { usr[1](null); pg[1]("dashboard"); }} style={{ background: "#333", color: "#aaa", border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, flexShrink: 0 }}>Salir</button>
       </div>
-      {/* Nav */}
-      <style dangerouslySetInnerHTML={{ __html: ".op-nav-bar{display:flex;gap:0;align-items:stretch;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none} .op-nav-bar::-webkit-scrollbar{display:none} .op-area-btn{display:flex;align-items:center;gap:6px;padding:12px 16px;border:none;cursor:pointer;font-family:inherit;background:transparent;font-size:13px;white-space:nowrap;transition:all 0.2s;flex-shrink:0} .op-area-label{} .op-dropdown{position:absolute;top:100%;left:0;z-index:100;min-width:200px;background:#1a1a1a;border:1px solid #333;border-radius:0 0 12px 12px;box-shadow:0 12px 40px rgba(0,0,0,0.5);padding:6px 0;overflow:hidden} @media(max-width:640px){.op-area-btn{padding:10px 12px;font-size:12px;gap:4px} .op-area-label{display:none} .op-area-arrow{display:none} .op-dropdown{position:fixed;top:auto;bottom:0;left:0;right:0;border-radius:16px 16px 0 0;min-width:100%;max-height:60vh;overflow-y:auto;padding:12px 0;border:none;border-top:1px solid #333}} @media(min-width:641px) and (max-width:900px){.op-area-btn{padding:10px 12px;font-size:12px}} .op-header-info{display:flex;align-items:center;gap:10px} .op-header-text{} @media(max-width:500px){.op-header-text{display:none} .op-header-info{gap:6px}} .op-flat-nav{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 0} .op-flat-nav::-webkit-scrollbar{display:none}" }} />
-      <div className="op-nav" style={{ background: "#1a1a1a", padding: "0 12px", borderBottom: "1px solid " + (role === "community" ? "#E11D4830" : "#B4530930"), position: "relative", zIndex: 100 }}>
-        {/* Flat nav for community */}
-        {role === "community" && (
+      {/* Nav - Two row system for desktop, bottom sheet for mobile */}
+      <style dangerouslySetInnerHTML={{ __html: ".op-header-info{display:flex;align-items:center;gap:10px} .op-header-text{} @media(max-width:500px){.op-header-text{display:none} .op-header-info{gap:6px}} .op-flat-nav{display:flex;gap:2px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:6px 0} .op-flat-nav::-webkit-scrollbar{display:none} .op-sub-row{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;padding:4px 0} .op-sub-row::-webkit-scrollbar{display:none}" }} />
+      {role === "community" ? (
+        <div style={{ background: "#1a1a1a", padding: "0 12px", borderBottom: "1px solid #E11D4830" }}>
           <div className="op-flat-nav">
             {nav.map(function(n) {
               var active = pg[0] === n.k;
@@ -485,54 +503,51 @@ export default function App() {
               );
             })}
           </div>
-        )}
-        {/* Grouped nav for other roles */}
-        {role !== "community" && (
-          <div className="op-nav-bar">
+        </div>
+      ) : (
+        <div style={{ background: "#1a1a1a", borderBottom: "1px solid #B4530930" }}>
+          {/* Row 1: Areas */}
+          <div style={{ display: "flex", gap: 0, padding: "0 12px", borderBottom: "1px solid #222" }}>
             {areaConfig.map(function(area) {
               var areaItems = nav.filter(function(n) { return n.group === area.k; });
               if (areaItems.length === 0) return null;
               var areaKey = area.k;
-              var isOpen = openArea[0] === areaKey;
+              var isSelected = openArea[0] === areaKey;
               var hasActive = false;
               for (var ai = 0; ai < areaItems.length; ai++) { if (pg[0] === areaItems[ai].k) hasActive = true; }
-
               return (
-                <div key={areaKey} style={{ position: "relative" }}>
-                  <button className="op-area-btn" onClick={function() { openArea[1](isOpen ? null : areaKey); }} style={{ color: hasActive ? "#B45309" : isOpen ? "#ddd" : "#666", fontWeight: hasActive ? 700 : 600, borderBottom: hasActive ? "2px solid #B45309" : "2px solid transparent" }}>
-                    <span style={{ fontSize: 15 }}>{area.icon}</span>
-                    <span className="op-area-label">{area.l}</span>
-                    <span className="op-area-arrow" style={{ fontSize: 8, opacity: 0.4, transition: "transform 0.2s", transform: isOpen ? "rotate(180deg)" : "rotate(0deg)" }}>▼</span>
-                  </button>
-                  {isOpen && (
-                    <div className="op-dropdown">
-                      <div style={{ padding: "6px 18px 10px", fontSize: 10, fontWeight: 700, color: "#555", letterSpacing: 1, display: "none" }} className="op-dropdown-title">{area.icon} {area.l.toUpperCase()}</div>
-                      <style dangerouslySetInnerHTML={{ __html: "@media(max-width:640px){.op-dropdown-title{display:block !important}}" }} />
-                      {areaItems.map(function(n) {
-                        var active = pg[0] === n.k;
-                        var badge = 0;
-                        if (n.k === "stock") badge = stockAlerts[0].length;
-                        if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
-                        if (n.k === "operaciones" && usr[0]) badge = opsData[0].comunicados.filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
-                        var nk = n.k;
-                        return (
-                          <button key={nk} onClick={function() { pg[1](nk); openArea[1](null); }} style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", padding: "12px 20px", border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#B4530920" : "transparent", color: active ? "#B45309" : "#aaa", fontWeight: active ? 700 : 500, fontSize: 14, textAlign: "left", transition: "background 0.15s" }}>
-                            <span style={{ flex: 1 }}>{n.l}</span>
-                            {badge > 0 && <span style={{ background: "#EF4444", color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "2px 7px" }}>{badge}</span>}
-                            {active && <div style={{ width: 5, height: 5, borderRadius: 3, background: "#B45309" }} />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <button key={areaKey} onClick={function() { openArea[1](areaKey); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 14px", border: "none", cursor: "pointer", fontFamily: "inherit", background: isSelected ? "#B4530915" : "transparent", color: hasActive ? "#B45309" : isSelected ? "#eee" : "#666", fontWeight: hasActive || isSelected ? 700 : 600, fontSize: 13, whiteSpace: "nowrap", flexShrink: 0, borderBottom: hasActive ? "2px solid #B45309" : isSelected ? "2px solid #555" : "2px solid transparent", transition: "all 0.15s" }}>
+                  <span style={{ fontSize: 14 }}>{area.icon}</span>
+                  <span>{area.l}</span>
+                </button>
               );
             })}
           </div>
-        )}
-      </div>
-      {/* Overlay to close menu */}
-      {openArea[0] && role !== "community" && <div onClick={function() { openArea[1](null); }} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, zIndex: 50, background: "rgba(0,0,0,0.3)" }} />}
+          {/* Row 2: Sub-items of selected area */}
+          {openArea[0] && (function() {
+            var areaItems = nav.filter(function(n) { return n.group === openArea[0]; });
+            if (areaItems.length === 0) return null;
+            return (
+              <div className="op-sub-row" style={{ padding: "6px 12px" }}>
+                {areaItems.map(function(n) {
+                  var active = pg[0] === n.k;
+                  var badge = 0;
+                  if (n.k === "stock") badge = stockAlerts[0].length;
+                  if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
+                  if (n.k === "operaciones" && usr[0]) badge = opsData[0].comunicados.filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
+                  var nk = n.k;
+                  return (
+                    <button key={nk} onClick={function() { pg[1](nk); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#B45309" : "#ffffff08", color: active ? "#fff" : "#999", fontWeight: active ? 700 : 500, fontSize: 12, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
+                      {n.l}
+                      {badge > 0 && <span style={{ background: active ? "#fff" : "#EF4444", color: active ? "#B45309" : "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px", marginLeft: 2 }}>{badge}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+      )}
       {/* Content */}
       <div style={{ padding: "24px 20px", maxWidth: 1400, margin: "0 auto" }}>
         <style dangerouslySetInnerHTML={{ __html: "@media(min-width:1200px){.op-content{padding:28px 40px !important}}" }} />
@@ -545,6 +560,7 @@ export default function App() {
         {pg[0] === "simulator" && <SimView {...PP} />}
         {pg[0] === "promos" && <PromoView {...PP} />}
         {pg[0] === "combos" && <ComboView {...PP} />}
+        {pg[0] === "promos-hoy" && <PromosHoyView {...PP} />}
         {pg[0] === "carta-del" && <CartaDeliveryView {...PP} />}
         {pg[0] === "pricing" && <PricingView {...PP} />}
         {pg[0] === "matrix" && <MatrixView {...PP} />}
@@ -882,6 +898,42 @@ function EncargadoPanel(props) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 16 }}>
+        {/* Promos de HOY */}
+        {(function() {
+          var DIAS_SEMANA = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+          var hoyDia = DIAS_SEMANA[new Date().getDay()];
+          var miLocal = props.user ? props.user.local : null;
+          var promosHoy = props.promosData[0].filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoyDia) >= 0 && (!miLocal || p.local === miLocal); });
+          var usrCol = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
+          var platCol = { Uber: "#1E40AF", Glovo: "#D97706" };
+          if (promosHoy.length === 0) return null;
+          return (
+            <div style={{ ...crd, borderLeft: "4px solid #7C3AED", gridColumn: "1 / -1" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <span style={{ fontSize: 18 }}>🏷️</span>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>Promos activas HOY</div>
+                <Pill t={promosHoy.length + " promos"} c="#7C3AED" />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 8 }}>
+                {promosHoy.map(function(p, idx) {
+                  return (
+                    <div key={p.id + "_" + idx} style={{ padding: "12px 14px", borderRadius: 10, background: "#fafaf8", border: "1px solid #eee", display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: platCol[p.plataforma] || "#888", minWidth: 50, textAlign: "center" }}>{p.promo}%</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 3 }}>{p.products}</div>
+                        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (platCol[p.plataforma] || "#888") + "15", color: platCol[p.plataforma] }}>{p.plataforma}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (usrCol[p.usuarios] || "#888") + "15", color: usrCol[p.usuarios] }}>{p.usuarios}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Stock Alerts */}
         <div style={{ ...crd, borderLeft: "4px solid " + (alerts.length > 0 ? "#DC2626" : "#eee") }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
@@ -997,6 +1049,37 @@ function EncargadoPanel(props) {
           </div>
         </div>
       </div>
+
+      {/* Promos activas hoy */}
+      {(function() {
+        var allPromos = props.promosData ? props.promosData[0] : [];
+        var DIAS = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+        var hoy = DIAS[new Date().getDay()];
+        var userLocal = props.user ? props.user.local : null;
+        var promosHoy = allPromos.filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoy) >= 0 && (!userLocal || p.local === userLocal); });
+        var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
+        var usrColors = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
+        if (promosHoy.length === 0) return null;
+        return (
+          <div style={{ ...crd, marginTop: 16, borderLeft: "4px solid #047857" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+              <span style={{ fontSize: 18 }}>🏷️</span>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Promos activas hoy</div>
+              <Pill t={promosHoy.length + ""} c="#047857" />
+            </div>
+            {promosHoy.map(function(p) {
+              return (
+                <div key={p.id} style={{ padding: "10px 12px", marginBottom: 6, borderRadius: 10, background: "#f8fdf8", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: platColors[p.plataforma] || "#888" }}>{p.promo}%</span>
+                  <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 10, fontWeight: 700, background: (platColors[p.plataforma] || "#888") + "15", color: platColors[p.plataforma] }}>{p.plataforma}</span>
+                  <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
+                  <span style={{ flex: 1, fontSize: 12, fontWeight: 600 }}>{p.products}</span>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Alertas de producto + Comunicados from Operaciones */}
       {(function() {
@@ -1907,7 +1990,7 @@ function SimView(props) {
 
 /* ====== PROMOS ====== */
 function PromoView(props) {
-  var promoTab = useState("hoy");
+  var promoTab = useState("calendario");
   var promoType = useState("pct");
   var promoVal = useState(20);
   var chS = useState("sala");
@@ -1948,7 +2031,7 @@ function PromoView(props) {
 
   var results = analyzeProducts(type, val, platform);
   var viableCount = results.filter(function(r) { return r.viable; }).length;
-  var tabs = [{ k: "hoy", l: "Que lanzo hoy?", e: "🚀" }, { k: "simulador", l: "Simulador", e: "🧪" }, { k: "delivery", l: "Delivery & Marketing", e: "📱" }, { k: "campanas", l: "Campanas", e: "📊" }];
+  var tabs = [{ k: "calendario", l: "Calendario Promos", e: "📅" }, { k: "hoy", l: "Que lanzo hoy?", e: "🚀" }, { k: "simulador", l: "Simulador", e: "🧪" }, { k: "delivery", l: "Delivery & Marketing", e: "📱" }, { k: "campanas", l: "Campanas", e: "📊" }];
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
 
   return (
@@ -1960,6 +2043,155 @@ function PromoView(props) {
       <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
         {tabs.map(function(t) { var a = promoTab[0] === t.k; return <button key={t.k} onClick={function() { promoTab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #7C3AED" : "1px solid #e5e5e5", background: a ? "#7C3AED08" : "#fff", color: a ? "#7C3AED" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.e} {t.l}</button>; })}
       </div>
+
+      {/* CALENDARIO PROMOS */}
+      {promoTab[0] === "calendario" && (function() {
+        var allPromos = props.promosData[0];
+        var setAllPromos = props.promosData[1];
+        var DIAS = ["lunes","martes","miercoles","jueves","viernes","sabado","domingo"];
+        var DIA_SHORT = { lunes:"L", martes:"M", miercoles:"X", jueves:"J", viernes:"V", sabado:"S", domingo:"D" };
+        var LOCS = ["San Luis","Los Remedios","Sevilla Este"];
+        var usrColors = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
+        var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
+        var calLocal = useState("San Luis");
+        var showAddPromo = useState(false);
+        var promoForm = useState({ promo: 20, products: "", usuarios: "TODOS", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" });
+        var editId = useState(null);
+
+        function toggleDia(d) {
+          var f = promoForm[0]; var ds = f.dias.slice();
+          var idx = ds.indexOf(d);
+          if (idx >= 0) ds.splice(idx, 1); else ds.push(d);
+          promoForm[1](Object.assign({}, f, { dias: ds }));
+        }
+        function savePromo() {
+          var f = promoForm[0];
+          if (!f.products || f.dias.length === 0) return;
+          if (editId[0]) {
+            setAllPromos(allPromos.map(function(p) { if (p.id !== editId[0]) return p; return Object.assign({}, p, f); }));
+            editId[1](null);
+          } else {
+            setAllPromos(allPromos.concat([Object.assign({ id: uid() }, f)]));
+          }
+          promoForm[1]({ promo: 20, products: "", usuarios: "TODOS", local: calLocal[0], dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" });
+          showAddPromo[1](false);
+        }
+        function deletePromo(id) { setAllPromos(allPromos.filter(function(p) { return p.id !== id; })); }
+        function editPromo(p) {
+          promoForm[1]({ promo: p.promo, products: p.products, usuarios: p.usuarios, local: p.local, dias: p.dias.slice(), plataforma: p.plataforma, estado: p.estado });
+          editId[1](p.id); showAddPromo[1](true);
+        }
+        function toggleEstado(id) {
+          setAllPromos(allPromos.map(function(p) { if (p.id !== id) return p; return Object.assign({}, p, { estado: p.estado === "activa" ? "pausada" : "activa" }); }));
+        }
+
+        var locPromos = allPromos.filter(function(p) { return p.local === calLocal[0]; });
+        var inp = { width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" };
+
+        return (
+          <div>
+            {/* Local selector */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              {LOCS.map(function(loc) {
+                var a = calLocal[0] === loc;
+                var cnt = allPromos.filter(function(p) { return p.local === loc && p.estado === "activa"; }).length;
+                return <button key={loc} onClick={function() { calLocal[1](loc); promoForm[1](Object.assign({}, promoForm[0], { local: loc })); }} style={{ padding: "10px 20px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{loc} <span style={{ fontSize: 11, opacity: 0.7 }}>({cnt})</span></button>;
+              })}
+              <div style={{ flex: 1 }} />
+              <button onClick={function() { showAddPromo[1](!showAddPromo[0]); editId[1](null); promoForm[1]({ promo: 20, products: "", usuarios: "TODOS", local: calLocal[0], dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" }); }} style={{ padding: "10px 20px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{showAddPromo[0] ? "Cerrar" : "+ Nueva promo"}</button>
+            </div>
+
+            {/* Add/Edit form */}
+            {showAddPromo[0] && (
+              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #047857" }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{editId[0] ? "Editar promo" : "Nueva promocion"}</div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginBottom: 12 }}>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>% DESCUENTO</div><input type="number" value={promoForm[0].promo} onChange={function(e) { promoForm[1](Object.assign({}, promoForm[0], { promo: parseInt(e.target.value) || 0 })); }} style={inp} /></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PLATAFORMA</div><select value={promoForm[0].plataforma} onChange={function(e) { promoForm[1](Object.assign({}, promoForm[0], { plataforma: e.target.value })); }} style={Object.assign({}, inp, { background: "#fff" })}><option value="Uber">Uber</option><option value="Glovo">Glovo</option></select></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>USUARIOS</div><select value={promoForm[0].usuarios} onChange={function(e) { promoForm[1](Object.assign({}, promoForm[0], { usuarios: e.target.value })); }} style={Object.assign({}, inp, { background: "#fff" })}><option value="TODOS">Todos</option><option value="NUEVOS">Nuevos</option><option value="UBER ONE">Uber One</option><option value="INACTIVOS">Inactivos</option></select></div>
+                </div>
+                <div style={{ marginBottom: 12 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PRODUCTOS / CATEGORIA</div><input value={promoForm[0].products} onChange={function(e) { promoForm[1](Object.assign({}, promoForm[0], { products: e.target.value })); }} style={inp} placeholder="Ej: Quesadilla butter, combo guadalupe..." /></div>
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 6 }}>DIAS ACTIVOS</div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {DIAS.map(function(d) {
+                      var sel = promoForm[0].dias.indexOf(d) >= 0;
+                      return <button key={d} onClick={function() { toggleDia(d); }} style={{ width: 40, height: 40, borderRadius: 10, border: sel ? "2px solid #047857" : "1px solid #e5e5e5", background: sel ? "#04785712" : "#fff", color: sel ? "#047857" : "#aaa", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{DIA_SHORT[d]}</button>;
+                    })}
+                  </div>
+                </div>
+                <button onClick={savePromo} style={{ padding: "10px 24px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{editId[0] ? "Guardar cambios" : "Crear promo"}</button>
+              </div>
+            )}
+
+            {/* Calendar grid */}
+            <div style={{ ...crd, padding: 0, overflow: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                <thead>
+                  <tr style={{ background: "#1a1a1a" }}>
+                    <th style={{ padding: "12px 14px", textAlign: "left", color: "#888", fontWeight: 600, borderBottom: "1px solid #333", minWidth: 200 }}>PROMO</th>
+                    <th style={{ padding: "12px 8px", textAlign: "center", color: "#888", fontWeight: 600, borderBottom: "1px solid #333", minWidth: 80 }}>PLATAFORMA</th>
+                    <th style={{ padding: "12px 8px", textAlign: "center", color: "#888", fontWeight: 600, borderBottom: "1px solid #333" }}>USUARIOS</th>
+                    {DIAS.map(function(d) { return <th key={d} style={{ padding: "12px 6px", textAlign: "center", color: "#ccc", fontWeight: 700, borderBottom: "1px solid #333", minWidth: 36 }}>{DIA_SHORT[d]}</th>; })}
+                    <th style={{ padding: "12px 8px", textAlign: "center", color: "#888", fontWeight: 600, borderBottom: "1px solid #333" }}>ESTADO</th>
+                    <th style={{ padding: "12px 8px", borderBottom: "1px solid #333" }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {locPromos.length === 0 && <tr><td colSpan={11} style={{ padding: 30, textAlign: "center", color: "#ccc" }}>No hay promos en {calLocal[0]}</td></tr>}
+                  {locPromos.map(function(p) {
+                    return (
+                      <tr key={p.id} style={{ borderBottom: "1px solid #f0f0f0", opacity: p.estado === "pausada" ? 0.5 : 1 }}>
+                        <td style={{ padding: "10px 14px" }}>
+                          <div style={{ fontWeight: 700, fontSize: 13 }}>{p.promo}% — {p.products}</div>
+                        </td>
+                        <td style={{ padding: "10px 8px", textAlign: "center" }}>
+                          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (platColors[p.plataforma] || "#888") + "15", color: platColors[p.plataforma] }}>{p.plataforma}</span>
+                        </td>
+                        <td style={{ padding: "10px 8px", textAlign: "center" }}>
+                          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
+                        </td>
+                        {DIAS.map(function(d) {
+                          var active = p.dias.indexOf(d) >= 0;
+                          return <td key={d} style={{ textAlign: "center", padding: "10px 4px" }}>
+                            {active ? <div style={{ width: 24, height: 24, borderRadius: 6, background: "#04785715", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#047857", fontSize: 14, fontWeight: 700 }}>✓</div> : <div style={{ width: 24, height: 24, borderRadius: 6, background: "#f5f5f5", display: "inline-block" }} />}
+                          </td>;
+                        })}
+                        <td style={{ padding: "10px 8px", textAlign: "center" }}>
+                          <button onClick={function() { toggleEstado(p.id); }} style={{ padding: "4px 10px", borderRadius: 6, border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: 10, background: p.estado === "activa" ? "#04785715" : "#DC262615", color: p.estado === "activa" ? "#047857" : "#DC2626" }}>{p.estado === "activa" ? "ACTIVA" : "PAUSADA"}</button>
+                        </td>
+                        <td style={{ padding: "10px 8px", textAlign: "center" }}>
+                          <button onClick={function() { editPromo(p); }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "#888" }}>✏️</button>
+                          <button onClick={function() { deletePromo(p.id); }} style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "#ccc" }}>🗑</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Summary per local */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 12, marginTop: 16 }}>
+              {LOCS.map(function(loc) {
+                var lp = allPromos.filter(function(p) { return p.local === loc && p.estado === "activa"; });
+                var uberC = lp.filter(function(p) { return p.plataforma === "Uber"; }).length;
+                var glovoC = lp.filter(function(p) { return p.plataforma === "Glovo"; }).length;
+                return (
+                  <div key={loc} style={{ ...crd, padding: 16 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{loc}</div>
+                    <div style={{ display: "flex", gap: 12, fontSize: 12 }}>
+                      <div><span style={{ fontWeight: 700, color: "#1E40AF" }}>{uberC}</span> Uber</div>
+                      <div><span style={{ fontWeight: 700, color: "#D97706" }}>{glovoC}</span> Glovo</div>
+                      <div><span style={{ fontWeight: 700, color: "#047857" }}>{lp.length}</span> total</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* HOY */}
       {promoTab[0] === "hoy" && (function() {
@@ -3333,6 +3565,36 @@ function FichasEmpView(props) {
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600 }}>{t.task}</div>
                     <div style={{ fontSize: 11, color: "#888" }}>{t.day}{t.person ? " - Para: " + t.person : " - General"}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+
+      {/* Promos de HOY para empleado */}
+      {(function() {
+        var DIAS_SEMANA = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+        var hoyDia = DIAS_SEMANA[new Date().getDay()];
+        var miLocal = props.user ? props.user.local : null;
+        var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoyDia) >= 0 && (!miLocal || p.local === miLocal); }) : [];
+        if (promosHoy.length === 0) return null;
+        var platCol = { Uber: "#1E40AF", Glovo: "#D97706" };
+        var usrCol = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
+        return (
+          <div style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid #eee", borderLeft: "4px solid #7C3AED", marginBottom: 20 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#7C3AED", marginBottom: 10 }}>PROMOS ACTIVAS HOY ({promosHoy.length})</div>
+            {promosHoy.map(function(p, idx) {
+              return (
+                <div key={p.id + "_" + idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 4px", borderBottom: "1px solid #f5f5f5" }}>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: platCol[p.plataforma] || "#888", minWidth: 44, textAlign: "center" }}>{p.promo}%</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{p.products}</div>
+                    <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
+                      <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (platCol[p.plataforma] || "#888") + "15", color: platCol[p.plataforma] }}>{p.plataforma}</span>
+                      <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (usrCol[p.usuarios] || "#888") + "15", color: usrCol[p.usuarios] }}>{p.usuarios}</span>
+                    </div>
                   </div>
                 </div>
               );
@@ -6471,4 +6733,129 @@ function MarketingView(props) {
   }
 
   return <div style={{ padding: 40, textAlign: "center", color: "#aaa" }}>Seccion no encontrada</div>;
+}
+
+/* ====== PROMOS HOY - Encargado/Empleado ====== */
+function PromosHoyView(props) {
+  var promos = props.promosData[0];
+  var userLocal = props.user ? props.user.local : null;
+  var filterTab = useState("hoy");
+  var filterPlat = useState("todas");
+
+  var DIAS = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+  var DIA_LABELS = { domingo: "Dom", lunes: "Lun", martes: "Mar", miercoles: "Mie", jueves: "Jue", viernes: "Vie", sabado: "Sab" };
+  var hoy = DIAS[new Date().getDay()];
+  var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
+
+  var usrColors = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
+  var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
+
+  function getPromos(dia, plat) {
+    return promos.filter(function(p) {
+      if (p.estado !== "activa") return false;
+      if (userLocal && p.local !== userLocal) return false;
+      if (dia && p.dias.indexOf(dia) < 0) return false;
+      if (plat && plat !== "todas" && p.plataforma !== plat) return false;
+      return true;
+    });
+  }
+
+  var promosHoy = getPromos(hoy, filterPlat[0]);
+  var promosSemana = getPromos(null, filterPlat[0]);
+
+  var tabs = [
+    { k: "hoy", l: "Hoy", e: "🔥", count: promosHoy.length },
+    { k: "semana", l: "Esta semana", e: "📅", count: promosSemana.length },
+    { k: "local", l: "Por local", e: "📍", count: 0 },
+    { k: "plataforma", l: "Por plataforma", e: "📱", count: 0 },
+  ];
+
+  function PromoCard(p, idx) {
+    return (
+      <div key={p.id + "_" + idx} style={{ ...crd, padding: 14, marginBottom: 8, borderLeft: "4px solid " + (platColors[p.plataforma] || "#888") }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+          <span style={{ fontSize: 22, fontWeight: 800, color: platColors[p.plataforma] || "#888" }}>{p.promo}%</span>
+          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] || "#888" }}>{p.usuarios}</span>
+          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (platColors[p.plataforma] || "#888") + "15", color: platColors[p.plataforma] || "#888" }}>{p.plataforma}</span>
+          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 600, background: "#f5f5f5", color: "#666" }}>{p.local}</span>
+        </div>
+        <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{p.products}</div>
+        <div style={{ fontSize: 11, color: "#aaa" }}>Dias activos: {p.dias.map(function(d) { return DIA_LABELS[d] || d; }).join(", ")}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Promociones{userLocal ? " — " + userLocal : ""}</div>
+        <div style={{ fontSize: 13, color: "#888" }}>Promociones activas en plataformas de delivery</div>
+      </div>
+      {/* Hoy banner */}
+      <div style={{ ...crd, marginBottom: 16, background: promosHoy.length > 0 ? "linear-gradient(135deg, #047857, #059669)" : "#f5f5f5", color: promosHoy.length > 0 ? "#fff" : "#888", border: "none", padding: "20px 24px" }}>
+        <div style={{ fontSize: 12, fontWeight: 600, opacity: 0.8, marginBottom: 4 }}>HOY {hoy.toUpperCase()}</div>
+        <div style={{ fontSize: 28, fontWeight: 800 }}>{promosHoy.length} promo{promosHoy.length !== 1 ? "s" : ""} activa{promosHoy.length !== 1 ? "s" : ""}</div>
+      </div>
+      {/* Tabs */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
+        {tabs.map(function(t) { var a = filterTab[0] === t.k; return <button key={t.k} onClick={function() { filterTab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #047857" : "1px solid #e5e5e5", background: a ? "#04785708" : "#fff", color: a ? "#047857" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.e} {t.l}{t.count > 0 ? " (" + t.count + ")" : ""}</button>; })}
+      </div>
+      {/* Filter by platform */}
+      <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
+        {["todas","Uber","Glovo"].map(function(pl) { var a = filterPlat[0] === pl; return <button key={pl} onClick={function() { filterPlat[1](pl); }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: a ? (platColors[pl] || "#047857") + "15" : "#f5f5f5", color: a ? (platColors[pl] || "#047857") : "#aaa", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{pl === "todas" ? "Todas" : pl}</button>; })}
+      </div>
+
+      {filterTab[0] === "hoy" && (
+        <div>
+          {promosHoy.length === 0 && <div style={{ ...crd, textAlign: "center", color: "#aaa", padding: 40 }}>No hay promos activas hoy ({hoy}){userLocal ? " en " + userLocal : ""}</div>}
+          {promosHoy.map(function(p, i) { return PromoCard(p, i); })}
+        </div>
+      )}
+
+      {filterTab[0] === "semana" && (
+        <div>
+          {DIAS.map(function(dia) {
+            var dp = getPromos(dia, filterPlat[0]);
+            if (dp.length === 0) return null;
+            return (
+              <div key={dia} style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: dia === hoy ? "#047857" : "#888", marginBottom: 8, padding: "4px 0", borderBottom: dia === hoy ? "2px solid #047857" : "1px solid #eee" }}>{DIA_LABELS[dia] || dia}{dia === hoy ? " — HOY" : ""}</div>
+                {dp.map(function(p, i) { return PromoCard(p, i); })}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {filterTab[0] === "local" && (
+        <div>
+          {["San Luis","Los Remedios","Sevilla Este"].map(function(loc) {
+            var lp = promos.filter(function(p) { return p.estado === "activa" && p.local === loc && (filterPlat[0] === "todas" || p.plataforma === filterPlat[0]); });
+            return (
+              <div key={loc} style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8, padding: "6px 12px", borderRadius: 8, background: "#f5f5f5" }}>{loc} ({lp.length})</div>
+                {lp.length === 0 && <div style={{ padding: "12px 0", color: "#ccc", fontSize: 13 }}>Sin promos activas</div>}
+                {lp.map(function(p, i) { return PromoCard(p, i); })}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {filterTab[0] === "plataforma" && (
+        <div>
+          {["Uber","Glovo"].map(function(plat) {
+            var pp = promos.filter(function(p) { return p.estado === "activa" && p.plataforma === plat && (!userLocal || p.local === userLocal); });
+            return (
+              <div key={plat} style={{ marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8, padding: "6px 12px", borderRadius: 8, background: (platColors[plat] || "#888") + "10", color: platColors[plat] }}>{plat} ({pp.length})</div>
+                {pp.length === 0 && <div style={{ padding: "12px 0", color: "#ccc", fontSize: 13 }}>Sin promos en {plat}</div>}
+                {pp.map(function(p, i) { return PromoCard(p, i); })}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
