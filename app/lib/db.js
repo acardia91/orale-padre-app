@@ -49,6 +49,12 @@ export async function loadAllData() {
     if (stockAlerts) result.stockAlerts = stockAlerts;
     var { data: incidents } = await supabase.from('incidents').select('*');
     if (incidents) result.incidents = incidents;
+    var { data: combos } = await supabase.from('saved_combos').select('*');
+    if (combos && combos.length > 0) {
+      result.savedCombos = combos.map(function(c) {
+        return { id: c.id, name: c.name, channel: c.channel || "delivery", items: c.items || [], cost: parseFloat(c.cost) || 0, suggestedPrice: parseFloat(c.suggested_price) || 0, foodCostPct: parseFloat(c.food_cost_pct) || 0, status: c.status || "borrador" };
+      });
+    }
     var { data: mktTasks } = await supabase.from('mkt_tasks').select('*');
     var { data: mktCalendar } = await supabase.from('mkt_calendar').select('*');
     var { data: mktInfluencers } = await supabase.from('mkt_influencers').select('*');
@@ -121,4 +127,7 @@ export async function saveMktData(mkt) {
     await supabase.from('mkt_designs').delete().neq('id', '');
     if (mkt.designs && mkt.designs.length > 0) { await supabase.from('mkt_designs').insert(mkt.designs.map(function(d) { return { id: d.id, title: d.title, type: d.type, size: d.size, notes: d.notes, urgent: d.urgent, status: d.status }; })); }
   } catch (err) { console.error("Save mkt error:", err); }
+}
+export async function saveCombos(combos) {
+  try { await supabase.from('saved_combos').delete().neq('id', ''); if (combos && combos.length > 0) { await supabase.from('saved_combos').insert(combos.map(function(c) { return { id: c.id, name: c.name, channel: c.channel, items: c.items, cost: c.cost, suggested_price: c.suggestedPrice, food_cost_pct: c.foodCostPct, status: c.status }; })); } } catch (err) { console.error("Save combos error:", err); }
 }
