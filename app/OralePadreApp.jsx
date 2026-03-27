@@ -671,6 +671,116 @@ function LoginForm(props) {
   );
 }
 
+/* ====== NOVEDADES BLOCK (shared across dashboards) ====== */
+function NovedadesBlock(props) {
+  var role = props.role || "socio";
+  var items = [];
+  var DIAS_SEMANA = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+  var hoyDia = DIAS_SEMANA[new Date().getDay()];
+  var miLocal = props.user ? props.user.local : null;
+
+  // Comunicados sin leer
+  if (props.opsData) {
+    var coms = props.opsData[0].comunicados || [];
+    var userName = props.user ? props.user.name : "";
+    for (var ci = 0; ci < coms.length; ci++) {
+      if ((coms[ci].readBy || []).indexOf(userName) < 0) {
+        items.push({ icon: "📢", text: "Comunicado sin leer: " + coms[ci].title, color: "#7C3AED", page: "operaciones", priority: 1 });
+      }
+    }
+  }
+
+  // Incidencias urgentes (socio + encargado)
+  if (role !== "community") {
+    var openInc = props.incidents ? props.incidents[0].filter(function(x) { return x.status === "abierta"; }) : [];
+    var urgentInc = openInc.filter(function(x) { return x.urgent; });
+    if (urgentInc.length > 0) items.push({ icon: "🚨", text: urgentInc.length + " incidencia" + (urgentInc.length > 1 ? "s" : "") + " URGENTE" + (urgentInc.length > 1 ? "S" : ""), color: "#DC2626", page: "incidencias", priority: 0 });
+    else if (openInc.length > 0 && role !== "empleado") items.push({ icon: "⚠️", text: openInc.length + " incidencia" + (openInc.length > 1 ? "s" : "") + " abierta" + (openInc.length > 1 ? "s" : ""), color: "#D97706", page: "incidencias", priority: 2 });
+  }
+
+  // Stock alerts (socio + encargado + empleado)
+  if (role !== "community") {
+    var stockOut = props.stockAlerts ? props.stockAlerts[0].filter(function(a) { return a.level === "out"; }) : [];
+    var stockLow = props.stockAlerts ? props.stockAlerts[0].filter(function(a) { return a.level === "low"; }) : [];
+    if (stockOut.length > 0) items.push({ icon: "📦", text: stockOut.length + " producto" + (stockOut.length > 1 ? "s" : "") + " AGOTADO" + (stockOut.length > 1 ? "S" : ""), color: "#DC2626", page: "stock", priority: 0 });
+    if (stockLow.length > 0) items.push({ icon: "📉", text: stockLow.length + " producto" + (stockLow.length > 1 ? "s" : "") + " con stock bajo", color: "#D97706", page: "stock", priority: 3 });
+  }
+
+  // Alertas de producto (todos menos community)
+  if (role !== "community" && props.opsData) {
+    var alertProd = props.opsData[0].alertasProducto || [];
+    var sanitarias = alertProd.filter(function(a) { return a.level === "sanitaria"; });
+    var criticos = alertProd.filter(function(a) { return a.level === "critico"; });
+    if (sanitarias.length > 0) items.push({ icon: "🔴", text: sanitarias.length + " alerta SANITARIA — accion inmediata", color: "#DC2626", page: "operaciones", priority: 0 });
+    if (criticos.length > 0) items.push({ icon: "🟠", text: criticos.length + " alerta critica de producto", color: "#D97706", page: "operaciones", priority: 1 });
+  }
+
+  // Promos hoy (todos menos community)
+  if (role !== "community") {
+    var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoyDia) >= 0 && (!miLocal || !props.user.local || p.local === miLocal); }) : [];
+    if (promosHoy.length > 0) items.push({ icon: "🏷️", text: promosHoy.length + " promo" + (promosHoy.length > 1 ? "s" : "") + " activa" + (promosHoy.length > 1 ? "s" : "") + " hoy", color: "#7C3AED", page: role === "socio" ? "promos" : "promo-view", priority: 4 });
+  }
+
+  // MKT tasks (socio + community)
+  if (role === "socio" || role === "community") {
+    var mktPending = props.mktData ? (props.mktData[0].tasks || []).filter(function(t) { return t.status === "pendiente"; }) : [];
+    var mktUrgent = mktPending.filter(function(t) { return t.priority === "alta"; });
+    if (mktUrgent.length > 0) items.push({ icon: "📸", text: mktUrgent.length + " tarea MKT de prioridad ALTA", color: "#E11D48", page: "mkt-tasks", priority: 2 });
+    else if (mktPending.length > 0) items.push({ icon: "📸", text: mktPending.length + " tarea" + (mktPending.length > 1 ? "s" : "") + " MKT pendiente" + (mktPending.length > 1 ? "s" : ""), color: "#E11D48", page: "mkt-tasks", priority: 4 });
+  }
+
+  // Calendar content (community)
+  if (role === "community" || role === "socio") {
+    var hoyStr = new Date().toISOString().slice(0, 10);
+    var calHoy = props.mktData ? (props.mktData[0].calendar || []).filter(function(c) { return c.date === hoyStr && c.status !== "publicado"; }) : [];
+    if (calHoy.length > 0) items.push({ icon: "📅", text: calHoy.length + " contenido para publicar HOY", color: "#1E40AF", page: "mkt-calendar", priority: 1 });
+  }
+
+  // Ideas en prueba (socio)
+  if (role === "socio") {
+    var enPrueba = props.ideasState ? props.ideasState[0].filter(function(x) { return x.status === "en prueba"; }) : [];
+    if (enPrueba.length > 0) items.push({ icon: "🧪", text: enPrueba.length + " idea" + (enPrueba.length > 1 ? "s" : "") + " en prueba — pendiente de resultado", color: "#1E40AF", page: "ideas", priority: 5 });
+  }
+
+  // I+D tasks assigned (encargado)
+  if (role === "encargado") {
+    var myIdeas = props.ideasState ? props.ideasState[0].filter(function(x) { return x.assignedTo === (props.user ? props.user.name : "") && (x.status === "por probar" || x.status === "en prueba"); }) : [];
+    if (myIdeas.length > 0) items.push({ icon: "🧪", text: myIdeas.length + " tarea I+D asignada", color: "#1E40AF", page: "ideas", priority: 3 });
+  }
+
+  // Plan accion pendiente (socio + encargado)
+  if ((role === "socio" || role === "encargado") && props.opsData) {
+    var planPend = (props.opsData[0].planAccion || []).filter(function(p) { return p.status === "pendiente" && p.priority === "inmediata"; });
+    if (planPend.length > 0) items.push({ icon: "📋", text: planPend.length + " accion INMEDIATA pendiente", color: "#DC2626", page: "operaciones", priority: 1 });
+  }
+
+  // Sort by priority
+  items.sort(function(a, b) { return a.priority - b.priority; });
+
+  if (items.length === 0) return null;
+
+  return (
+    <div style={{ marginBottom: 24 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span style={{ fontSize: 18 }}>🔔</span>
+        <span style={{ fontSize: 15, fontWeight: 700 }}>Novedades</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: "#fff", background: items.length > 3 ? "#DC2626" : "#D97706", borderRadius: 10, padding: "2px 8px" }}>{items.length}</span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {items.map(function(item, idx) {
+          return (
+            <div key={idx} onClick={function() { if (props.setPage) props.setPage(item.page); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "#fff", borderRadius: 10, border: "1px solid #eee", borderLeft: "4px solid " + item.color, cursor: "pointer", transition: "transform 0.15s, box-shadow 0.15s" }} onMouseEnter={function(e){e.currentTarget.style.transform="translateX(4px)";e.currentTarget.style.boxShadow="0 2px 8px rgba(0,0,0,0.06)";}} onMouseLeave={function(e){e.currentTarget.style.transform="translateX(0)";e.currentTarget.style.boxShadow="none";}}>
+              <span style={{ fontSize: 16, flexShrink: 0 }}>{item.icon}</span>
+              <span style={{ fontSize: 13, fontWeight: 500, color: "#333", flex: 1 }}>{item.text}</span>
+              <span style={{ fontSize: 16, color: "#ccc", flexShrink: 0 }}>›</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 /* ====== DASHBOARD ====== */
 function DashView(props) {
   var chS = useState("sala");
@@ -727,6 +837,8 @@ function DashView(props) {
         </div>
         <ChannelToggle value={chS[0]} onChange={chS[1]} />
       </div>
+
+      <NovedadesBlock role="socio" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
       {/* TOP KPIs - Food Cost & Pricing Health */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 16 }}>
@@ -911,6 +1023,8 @@ function EncargadoPanel(props) {
         <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Panel de Control</div>
         <div style={{ fontSize: 13, color: "#888" }}>{props.user.local || "Todos los locales"} - Resumen operativo</div>
       </div>
+
+      <NovedadesBlock role="encargado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
       {/* Quick KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, marginBottom: 24 }}>
@@ -1787,40 +1901,59 @@ function ProdView(props) {
                   </div>
 
                   {/* Edit panel for socio */}
-                  {props.isSocio && (
+                  {props.isSocio && (function() {
+                    var pId = p.id;
+                    var editKey = "edit_" + pId;
+                    var curSala = p.prices ? (p.prices.Sala || 0) : 0;
+                    var curUber = p.prices ? (p.prices["Uber Eats"] || 0) : 0;
+                    var curGlovo = p.prices ? (p.prices.Glovo || 0) : 0;
+                    var curSales = p.weekSales || 0;
+                    return (
                     <div style={{ padding: "14px 16px", borderTop: "1px solid #f0f0f0", background: "#fff" }}>
                       <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 10 }}>EDITAR PRODUCTO</div>
                       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "end" }}>
-                        {["Sala", "Uber Eats", "Glovo"].map(function(ch) {
-                          var curPrice = p.prices ? (p.prices[ch] || 0) : 0;
-                          return (
-                            <div key={ch} style={{ minWidth: 90 }}>
-                              <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>{ch}</div>
-                              <input defaultValue={curPrice} onBlur={function(e) {
-                                var v = parseFloat(e.target.value) || 0;
-                                if (v === curPrice) return;
-                                var newPrices = Object.assign({}, p.prices);
-                                newPrices[ch] = v;
-                                props.setProd(props.products.map(function(x) { return x.id === p.id ? Object.assign({}, x, { prices: newPrices }) : x; }));
-                              }} style={{ width: "100%", padding: "6px 8px", border: "1.5px solid #e5e5e5", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 600 }} type="number" step="0.05" />
-                            </div>
-                          );
-                        })}
+                        <div style={{ minWidth: 90 }}>
+                          <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Sala</div>
+                          <input id={"sala_" + pId} defaultValue={curSala} style={{ width: "100%", padding: "6px 8px", border: "1.5px solid #e5e5e5", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 600 }} type="number" step="0.05" />
+                        </div>
+                        <div style={{ minWidth: 90 }}>
+                          <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Uber Eats</div>
+                          <input id={"uber_" + pId} defaultValue={curUber} style={{ width: "100%", padding: "6px 8px", border: "1.5px solid #e5e5e5", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 600 }} type="number" step="0.05" />
+                        </div>
+                        <div style={{ minWidth: 90 }}>
+                          <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Glovo</div>
+                          <input id={"glovo_" + pId} defaultValue={curGlovo} style={{ width: "100%", padding: "6px 8px", border: "1.5px solid #e5e5e5", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 600 }} type="number" step="0.05" />
+                        </div>
                         <div style={{ minWidth: 90 }}>
                           <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Ventas/sem</div>
-                          <input defaultValue={p.weekSales || 0} onBlur={function(e) {
-                            var v = parseInt(e.target.value) || 0;
-                            props.setProd(props.products.map(function(x) { return x.id === p.id ? Object.assign({}, x, { weekSales: v }) : x; }));
-                          }} style={{ width: "100%", padding: "6px 8px", border: "1.5px solid #e5e5e5", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 600 }} type="number" step="1" />
+                          <input id={"sales_" + pId} defaultValue={curSales} style={{ width: "100%", padding: "6px 8px", border: "1.5px solid #e5e5e5", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 600 }} type="number" step="1" />
                         </div>
                         <button onClick={function() {
-                          props.setProd(props.products.map(function(x) { return x.id === p.id ? Object.assign({}, x, { active: !x.active }) : x; }));
+                          var salaEl = document.getElementById("sala_" + pId);
+                          var uberEl = document.getElementById("uber_" + pId);
+                          var glovoEl = document.getElementById("glovo_" + pId);
+                          var salesEl = document.getElementById("sales_" + pId);
+                          var newPrices = Object.assign({}, p.prices, {
+                            Sala: parseFloat(salaEl ? salaEl.value : curSala) || 0,
+                            "Uber Eats": parseFloat(uberEl ? uberEl.value : curUber) || 0,
+                            Glovo: parseFloat(glovoEl ? glovoEl.value : curGlovo) || 0
+                          });
+                          var newSales = parseInt(salesEl ? salesEl.value : curSales) || 0;
+                          props.setProd(props.products.map(function(x) { return x.id === pId ? Object.assign({}, x, { prices: newPrices, weekSales: newSales }) : x; }));
+                          var btn = document.getElementById("savebtn_" + pId);
+                          if (btn) { btn.textContent = "Guardado!"; btn.style.background = "#047857"; setTimeout(function() { btn.textContent = "Guardar precios"; btn.style.background = "#B45309"; }, 2000); }
+                        }} id={"savebtn_" + pId} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "#B45309", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "background 0.2s" }}>
+                          Guardar precios
+                        </button>
+                        <button onClick={function() {
+                          props.setProd(props.products.map(function(x) { return x.id === pId ? Object.assign({}, x, { active: !x.active }) : x; }));
                         }} style={{ padding: "6px 14px", borderRadius: 6, border: "1px solid " + (p.active ? "#DC2626" : "#047857"), background: p.active ? "#FEF2F2" : "#F0FDF4", color: p.active ? "#DC2626" : "#047857", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                           {p.active ? "Desactivar" : "Activar"}
                         </button>
                       </div>
                     </div>
-                  )}
+                    );
+                  })()}
                 </div>
               )}
             </div>
@@ -3590,6 +3723,8 @@ function FichasEmpView(props) {
           </div>
         </div>
       </div>
+
+      <NovedadesBlock role="empleado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
       {/* Tasks from encargado */}
       {(function() {
@@ -6372,6 +6507,7 @@ function MarketingView(props) {
           <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Marketing & Community</div>
           <div style={{ fontSize: 13, color: "#888" }}>Panel de {isSocio ? "control" : "trabajo"} — Hola, {userName}</div>
         </div>
+        <NovedadesBlock role={isSocio ? "socio" : "community"} user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 20 }}>
           <div style={{ padding: 16, borderRadius: 12, background: pendTasks > 0 ? "#FEF2F2" : "#F0FDF4", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>TAREAS PENDIENTES</div><div style={{ fontSize: 28, fontWeight: 800, color: pendTasks > 0 ? "#DC2626" : "#047857" }}>{pendTasks}</div></div>
           <div style={{ padding: 16, borderRadius: 12, background: "#EFF6FF", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>EN CURSO</div><div style={{ fontSize: 28, fontWeight: 800, color: "#1E40AF" }}>{inProgTasks}</div></div>
