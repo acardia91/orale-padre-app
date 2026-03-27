@@ -1,1 +1,16 @@
-{"name":"orale-padre-app","version":"2.0.0","private":true,"scripts":{"dev":"next dev","build":"next build","start":"next start"},"dependencies":{"next":"14.2.18","react":"18.3.1","react-dom":"18.3.1"}}
+{
+  "name": "orale-padre-app",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.18",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@supabase/supabase-js": "2.49.1"
+  }
+}
