@@ -7177,6 +7177,9 @@ function RRHHView(props) {
   // Add points form
   var showAddPts = useState(false);
   var ptsForm = useState({ userId: "", amount: "", reason: "" });
+  // Fichajes admin filters
+  var fichajeFilterLocal = useState("Todos");
+  var fichajeFilterDate = useState(new Date().toISOString().slice(0, 10));
 
   return (
     <div>
@@ -7381,8 +7384,8 @@ function RRHHView(props) {
       {tab[0] === "fichajes" && (function() {
         var records = props.clockRecords[0];
         var checklists = props.checklistRecords[0];
-        var filterLocal = useState("Todos");
-        var filterDate = useState(new Date().toISOString().slice(0, 10));
+        var filterLocal = fichajeFilterLocal;
+        var filterDate = fichajeFilterDate;
 
         var filtered = records.filter(function(r) {
           var matchLocal = filterLocal[0] === "Todos" || r.local_name === filterLocal[0];
