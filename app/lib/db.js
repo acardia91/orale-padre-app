@@ -77,6 +77,10 @@ export async function loadAllData() {
     var { data: planAccion } = await supabase.from('plan_accion').select('*');
     var { data: comunicados } = await supabase.from('comunicados').select('*');
     var { data: comReads } = await supabase.from('comunicados_read').select('*');
+    var { data: clockRecs } = await supabase.from('clock_records').select('*').order('created_at', { ascending: false });
+    var { data: checkRecs } = await supabase.from('checklist_records').select('*').order('created_at', { ascending: false });
+    if (clockRecs && clockRecs.length > 0) result.clockRecords = clockRecs;
+    if (checkRecs && checkRecs.length > 0) result.checklistRecords = checkRecs;
     var hasOps = (protocolos && protocolos.length > 0) || (alertasProd && alertasProd.length > 0);
     if (hasOps) {
       var readMap = {};
@@ -130,4 +134,24 @@ export async function saveMktData(mkt) {
 }
 export async function saveCombos(combos) {
   try { await supabase.from('saved_combos').delete().neq('id', ''); if (combos && combos.length > 0) { await supabase.from('saved_combos').insert(combos.map(function(c) { return { id: c.id, name: c.name, channel: c.channel, items: c.items, cost: c.cost, suggested_price: c.suggestedPrice, food_cost_pct: c.foodCostPct, status: c.status }; })); } } catch (err) { console.error("Save combos error:", err); }
+}
+export async function saveClockRecords(records) {
+  try {
+    await supabase.from('clock_records').delete().neq('id', '');
+    if (records && records.length > 0) {
+      await supabase.from('clock_records').insert(records.map(function(r) {
+        return { id: r.id, user_name: r.user_name, user_role: r.user_role, type: r.type, local_name: r.local_name, latitude: r.latitude, longitude: r.longitude, distance_meters: r.distance_meters, is_valid: r.is_valid, notes: r.notes, created_at: r.created_at };
+      }));
+    }
+  } catch (err) { console.error("Save clock records error:", err); }
+}
+export async function saveChecklistRecords(checklists) {
+  try {
+    await supabase.from('checklist_records').delete().neq('id', '');
+    if (checklists && checklists.length > 0) {
+      await supabase.from('checklist_records').insert(checklists.map(function(c) {
+        return { id: c.id, type: c.type, local_name: c.local_name, completed_by: c.completed_by, items: c.items, all_completed: c.all_completed, notes: c.notes, created_at: c.created_at };
+      }));
+    }
+  } catch (err) { console.error("Save checklist records error:", err); }
 }
