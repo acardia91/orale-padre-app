@@ -2397,6 +2397,10 @@ function PromoView(props) {
   var promoType = useState("pct");
   var promoVal = useState(20);
   var chS = useState("sala");
+  var calLocal = useState("San Luis");
+  var showAddPromo = useState(false);
+  var promoForm = useState({ promo: 20, products: "", usuarios: "TODOS", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" });
+  var editId = useState(null);
   var campaigns = useState([
     { id: "c1", name: "Semana del Burrito", platform: "Uber Eats", type: "pct", value: 20, products: ["pb02","pb03","pb09"], startDate: "2026-03-24", endDate: "2026-03-30", status: "activa", adBudget: 8, notes: "Promo Dona Dolores, Don Juarez y Pollo Pastor" },
     { id: "c2", name: "Nachos en Glovo", platform: "Glovo", type: "pct", value: 15, products: ["pe01","pe02"], startDate: "2026-03-20", endDate: "2026-03-27", status: "activa", adBudget: 0, notes: "15% en nachos toda la semana" },
@@ -2456,10 +2460,6 @@ function PromoView(props) {
         var LOCS = ["San Luis","Los Remedios","Sevilla Este"];
         var usrColors = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
         var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
-        var calLocal = useState("San Luis");
-        var showAddPromo = useState(false);
-        var promoForm = useState({ promo: 20, products: "", usuarios: "TODOS", local: "San Luis", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" });
-        var editId = useState(null);
 
         function toggleDia(d) {
           var f = promoForm[0]; var ds = f.dias.slice();
@@ -3106,6 +3106,7 @@ function ComboView(props) {
 /* ====== PRICING ====== */
 function PricingView(props) {
   var chS = useState("sala");
+  var expSt = useState(null);
   var isDel = chS[0] === "delivery";
 
   // Round to nearest 0.05
@@ -3494,7 +3495,6 @@ function PricingView(props) {
           if(recs.length===0)recs.push({type:"ok",text:"Precio bien calibrado",reason:"FC "+fPct(d.fc)+", margen "+fmt(d.margin)+", precio psicologico, coherente con carta, buen posicionamiento",impact:"Mantener"});
           studies.push({id:d.id,name:d.name,category:d.category,cost:d.cost,sala:d.sala,del:d.del,fc:d.fc,margin:d.margin,vTier:vTier,vLabel:vLabel,mainProt:mainProt,premC:premC,ingNames:ingNames,idSala:idSala,idDel:idDel,ingUber:ingUber,mgUber:mgUber,fcUber:fcUber,mkup:mkup,recS:recS,recD:recD,recs:recs,ws:d.weekSales||0});
         }
-        var expSt=useState(null);
         var tC={premium:"#7C3AED",alto:"#1E40AF",standard:"#555"};
         var rC={subir:"#DC2626",delivery:"#7C3AED",premium:"#047857",psych:"#D97706",coherencia:"#1E40AF",mercado:"#B45309",ok:"#047857"};
         return (
@@ -6075,6 +6075,8 @@ function OpsView(props) {
   var comForm = useState({ title: "", content: "" });
   var showAddProto = useState(false);
   var protoForm = useState({ title: "", category: "delivery", priority: "alta", content: "" });
+  var showFormA = useState(false);
+  var alertForm = useState({ product: "", level: "vigilar", local: "Todos", notes: "", actions: "" });
 
   var tabs = [
     { k: "comunicados", l: "Comunicados", badge: d.comunicados.filter(function(c) { return (c.readBy || []).indexOf(userName) < 0; }).length },
@@ -6215,8 +6217,6 @@ function OpsView(props) {
           <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>Productos que necesitan atencion especial. Revisa antes de cada turno.</div>
           {/* Crear nueva alerta (solo socio) */}
           {isSocio && (function() {
-            var showFormA = useState(false);
-            var alertForm = useState({ product: "", level: "vigilar", local: "Todos", notes: "", actions: "" });
             if (!showFormA[0]) return (
               <button onClick={function() { showFormA[1](true); }} style={{ display: "flex", alignItems: "center", gap: 6, padding: "10px 18px", borderRadius: 10, border: "2px dashed #DC2626", background: "#FEF2F2", color: "#DC2626", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>+ Nueva alerta de producto</button>
             );
