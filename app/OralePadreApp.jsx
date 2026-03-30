@@ -457,14 +457,18 @@ export default function App() {
   }, [promosData[0], stockAlerts[0], incidents[0], ideasState[0], savedCombos[0], clockRecords[0], checklistRecords[0], albaranesData[0], stockData[0], gamification[0], weekTasks[0], stockMins[0]]);
 
   // Explicit save for ingredients & products (not auto-saved to avoid 409 conflicts)
+  var savingIngProdRef = useRef(false);
   function saveIngProd() {
-    if (!dbModule) return;
+    if (!dbModule || savingIngProdRef.current) return;
+    savingIngProdRef.current = true;
+    toast[1]("💾 Guardando...");
     dbModule.saveIngredients(ing[0]).then(function() {
       return dbModule.saveProducts(prod[0]);
     }).then(function() {
+      savingIngProdRef.current = false;
       toast[1]("✅ Ingredientes y precios guardados");
       setTimeout(function() { toast[1](null); }, 2000);
-    }).catch(function(e) { console.error("Save ing/prod error:", e); });
+    }).catch(function(e) { savingIngProdRef.current = false; console.error("Save ing/prod error:", e); toast[1](null); });
   }
 
   function getPC(p) {
