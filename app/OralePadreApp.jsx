@@ -458,12 +458,14 @@ export default function App() {
 
   // Explicit save for ingredients & products (not auto-saved to avoid 409 conflicts)
   var savingIngProdRef = useRef(false);
-  function saveIngProd() {
+  function saveIngProd(newIng, newProd) {
     if (!dbModule || savingIngProdRef.current) return;
+    var ingToSave = newIng || ing[0];
+    var prodToSave = newProd || prod[0];
     savingIngProdRef.current = true;
     toast[1]("💾 Guardando...");
-    dbModule.saveIngredients(ing[0]).then(function() {
-      return dbModule.saveProducts(prod[0]);
+    dbModule.saveIngredients(ingToSave).then(function() {
+      return dbModule.saveProducts(prodToSave);
     }).then(function() {
       savingIngProdRef.current = false;
       toast[1]("✅ Ingredientes y precios guardados");
@@ -1989,9 +1991,10 @@ function IngView(props) {
   function saveCost(ingId) {
     var v = parseFloat(editVal[0]);
     if (isNaN(v) || v <= 0) { editing[1](null); return; }
-    props.setIng(props.ingredients.map(function(i) { return i.id === ingId ? Object.assign({}, i, { costPerUnit: v }) : i; }));
+    var updatedIng = props.ingredients.map(function(i) { return i.id === ingId ? Object.assign({}, i, { costPerUnit: v }) : i; });
+    props.setIng(updatedIng);
     editing[1](null);
-    setTimeout(function() { if (props.saveIngProd) props.saveIngProd(); }, 500);
+    if (props.saveIngProd) props.saveIngProd(updatedIng, props.products);
   }
   return (
     <div>
@@ -2334,9 +2337,10 @@ function ProdView(props) {
                             Glovo: parseFloat(glovoEl ? glovoEl.value : curGlovo) || 0
                           });
                           var newSales = parseInt(salesEl ? salesEl.value : curSales) || 0;
-                          props.setProd(props.products.map(function(x) { return x.id === pId ? Object.assign({}, x, { prices: newPrices, weekSales: newSales }) : x; }));
-                          // Explicit save to Supabase
-                          setTimeout(function() { if (props.saveIngProd) props.saveIngProd(); }, 500);
+                          var updatedProducts = props.products.map(function(x) { return x.id === pId ? Object.assign({}, x, { prices: newPrices, weekSales: newSales }) : x; });
+                          props.setProd(updatedProducts);
+                          // Save immediately with the NEW data
+                          if (props.saveIngProd) props.saveIngProd(props.ingredients, updatedProducts);
                           var btn = document.getElementById("savebtn_" + pId);
                           if (btn) { btn.textContent = "Guardado!"; btn.style.background = "#047857"; setTimeout(function() { btn.textContent = "Guardar precios"; btn.style.background = "#B45309"; }, 2000); }
                         }} id={"savebtn_" + pId} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "#B45309", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "background 0.2s" }}>
@@ -8485,8 +8489,8 @@ function AlbaranesView(props) {
     fechaDetected[1]("");
     totalDetected[1](0);
     mainTab[1]("historial");
-    // Save ingredients with updated prices
-    setTimeout(function() { if (props.saveIngProd) props.saveIngProd(); }, 1000);
+    // Save ingredients with updated prices - pass new data directly
+    if (props.saveIngProd) props.saveIngProd(updatedIngs, props.products);
   }
 
   function cancelReview() {
