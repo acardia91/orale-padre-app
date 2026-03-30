@@ -341,7 +341,40 @@ export default function App() {
   var toast = useState(null);
   var searchOpen = useState(false);
   var searchQuery = useState("");
+  var opsData = useState({
+    protocolos: [
+      { id: "pr1", title: "Checklist cierre de bolsa", priority: "critica", category: "delivery", content: "1. Leer ticket COMPLETO (articulos + notas)\n2. Marcar ticket con rotulador (rojo=alergia, naranja=personalizacion)\n3. Preparar todos los articulos\n4. Agrupar en zona staging. CONTAR vs ticket\n5. Burritos: aluminio individual + contenedor cerrado\n6. Nachos: toppings en recipiente SEPARADO\n7. Bebida en bolsa separada\n8. Salsas/extras: recipientes cerrados\n9. Postre: verificar correcto (Kinder ≠ Lotus)\n10. Servilletas + cubiertos\n11. RECUENTO FINAL: articulos en bolsa = ticket\n12. Cerrar con precinto + ticket pegado fuera", active: true, date: "25/03/2026" },
+      { id: "pr2", title: "Protocolo alergias (3 niveles)", priority: "critica", category: "seguridad", content: "ROJO (Alergia): Ticket independiente. Utensilios limpios. Encargado VERIFICA y FIRMA antes de cerrar.\nNARANJA (Personalizacion): Nota destacada. Doble verificacion: preparador lee, empaquetador relee.\nVERDE (Estandar): Sin modificaciones. Checklist normal 12 pasos.\n\nREGLA: Si tienes CUALQUIER duda sobre alergia, pregunta al encargado. SIEMPRE.", active: true, date: "25/03/2026" },
+      { id: "pr3", title: "Temperatura de la comida", priority: "alta", category: "calidad", content: "- Planchas/hornos encendidos 30 min ANTES de aceptar pedidos\n- Nunca preparar burrito con mas de 5 min de antelacion al cierre de bolsa\n- Si rider no llega en 8 min: recalentar o rehacer\n- Burritos SIEMPRE en aluminio individual\n- Nachos: servir calientes, toppings aparte en delivery", active: true, date: "25/03/2026" },
+      { id: "pr4", title: "Horas valle productivas", priority: "media", category: "organizacion", content: "Tareas para horas valle (entre servicios):\n- Desmenuzar carnes (cochinita, pulled pork)\n- Prep de salsas del dia\n- Revisar caducidades de camaras\n- Limpieza profunda de zona de montaje\n- Reponer packaging (aluminio, recipientes, bolsas)", active: true, date: "25/03/2026" },
+    ],
+    alertasProducto: [
+      { id: "ap1", product: "Bacon Cheese Apachurradas", level: "sanitaria", local: "Sevilla Este", notes: "Clientes han enfermado. Revisar salsa ranchera, bacon y queso cada turno.", actions: "Auditar cadena frio. Si ingrediente raro: TIRAR y avisar.", date: "25/03/2026" },
+      { id: "ap2", product: "Burro Lady Cochinita", level: "critico", local: "Todos", notes: "25% valoracion. Cochinita sin desmenuzar, mal cocinada, fria.", actions: "Desmenuzar SIEMPRE. Verificar coccion y temperatura. Aluminio individual.", date: "25/03/2026" },
+      { id: "ap3", product: "Burro Don Juarez", level: "critico", local: "Todos", notes: "15+ incidencias. Sabor, temperatura, caso alergia cilantro.", actions: "Revisar receta. Aluminio obligatorio. Alergenos: rotulador rojo.", date: "25/03/2026" },
+      { id: "ap4", product: "Nachos Guadalupe", level: "vigilar", local: "Todos", notes: "13+ incidencias. Textura y temperatura perdida en delivery.", actions: "Toppings SIEMPRE separados en delivery.", date: "25/03/2026" },
+      { id: "ap5", product: "Burro Dona Dolores", level: "vigilar", local: "Todos", notes: "12+ incidencias. Excesivamente especiado.", actions: "Medida estandar de especiado. NUNCA a ojo.", date: "25/03/2026" },
+      { id: "ap6", product: "Coca-Cola Zero", level: "atencion", local: "Todos", notes: "Se olvida frecuentemente en pedidos.", actions: "Siempre lo ultimo en la bolsa. Comprobar antes de cerrar.", date: "25/03/2026" },
+    ],
+    planAccion: [
+      { id: "pa1", action: "Auditoria cadena de frio en los 3 locales", responsible: "Encargados + Ale", deadline: "Inmediato", status: "en curso", priority: "inmediata" },
+      { id: "pa2", action: "Implementar checklist cierre de bolsa para TODOS los pedidos delivery", responsible: "Encargados", deadline: "Esta semana", status: "pendiente", priority: "inmediata" },
+      { id: "pa3", action: "Sistema pegatina roja para pedidos con alergias/modificaciones", responsible: "Encargados", deadline: "Esta semana", status: "pendiente", priority: "inmediata" },
+      { id: "pa4", action: "Estandarizar recetas problematicas (Dolores, cochinita, patatas)", responsible: "Cocina + Ale", deadline: "2 semanas", status: "pendiente", priority: "corto" },
+      { id: "pa5", action: "Formacion equipo: alergias, notas, protocolo anti-errores", responsible: "Ale + encargados", deadline: "2 semanas", status: "pendiente", priority: "corto" },
+      { id: "pa6", action: "Crear zona de staging para pedidos delivery en cada local", responsible: "Cada local", deadline: "2 semanas", status: "pendiente", priority: "corto" },
+      { id: "pa7", action: "Evaluar packaging termico para burritos", responsible: "Ale", deadline: "3 semanas", status: "pendiente", priority: "corto" },
+      { id: "pa8", action: "Manual de operaciones completo", responsible: "Ale + equipo", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
+      { id: "pa9", action: "Sistema de control productividad: pedidos/hora por local", responsible: "Ale", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
+    ],
+    comunicados: [
+      { id: "com1", title: "Nuevos protocolos de delivery activos", content: "A partir de hoy son obligatorios el checklist de cierre de bolsa y el protocolo de alergias de 3 niveles. Ningun pedido sale sin completar los 12 pasos. Sin excepciones.", author: "Ale", date: "25/03/2026", readBy: [] },
+      { id: "com2", title: "Productos a vigilar esta semana", content: "Atencion especial a: Bacon Cheese (revisar ingredientes cada turno), Burro Lady Cochinita (desmenuzar siempre), Nachos delivery (toppings separados). Cualquier duda, preguntad al encargado.", author: "Ale", date: "25/03/2026", readBy: [] },
+    ],
+  });
+
   var saveTimerRef = useRef(null);
+  var saveCountRef = useRef(0);
 
   // Resize listener
   useEffect(function() {
@@ -379,7 +412,6 @@ export default function App() {
     }).catch(function() { dbLoaded[1](true); });
   }, []);
 
-  var saveCountRef = useRef(0);
   // Auto-save to Supabase when state changes (debounced 3s)
   useEffect(function() {
     if (!dbLoaded[0] || !dbModule) return;
@@ -410,37 +442,6 @@ export default function App() {
       }
     }, 3000);
     return function() { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  });
-  var opsData = useState({
-    protocolos: [
-      { id: "pr1", title: "Checklist cierre de bolsa", priority: "critica", category: "delivery", content: "1. Leer ticket COMPLETO (articulos + notas)\n2. Marcar ticket con rotulador (rojo=alergia, naranja=personalizacion)\n3. Preparar todos los articulos\n4. Agrupar en zona staging. CONTAR vs ticket\n5. Burritos: aluminio individual + contenedor cerrado\n6. Nachos: toppings en recipiente SEPARADO\n7. Bebida en bolsa separada\n8. Salsas/extras: recipientes cerrados\n9. Postre: verificar correcto (Kinder ≠ Lotus)\n10. Servilletas + cubiertos\n11. RECUENTO FINAL: articulos en bolsa = ticket\n12. Cerrar con precinto + ticket pegado fuera", active: true, date: "25/03/2026" },
-      { id: "pr2", title: "Protocolo alergias (3 niveles)", priority: "critica", category: "seguridad", content: "ROJO (Alergia): Ticket independiente. Utensilios limpios. Encargado VERIFICA y FIRMA antes de cerrar.\nNARANJA (Personalizacion): Nota destacada. Doble verificacion: preparador lee, empaquetador relee.\nVERDE (Estandar): Sin modificaciones. Checklist normal 12 pasos.\n\nREGLA: Si tienes CUALQUIER duda sobre alergia, pregunta al encargado. SIEMPRE.", active: true, date: "25/03/2026" },
-      { id: "pr3", title: "Temperatura de la comida", priority: "alta", category: "calidad", content: "- Planchas/hornos encendidos 30 min ANTES de aceptar pedidos\n- Nunca preparar burrito con mas de 5 min de antelacion al cierre de bolsa\n- Si rider no llega en 8 min: recalentar o rehacer\n- Burritos SIEMPRE en aluminio individual\n- Nachos: servir calientes, toppings aparte en delivery", active: true, date: "25/03/2026" },
-      { id: "pr4", title: "Horas valle productivas", priority: "media", category: "organizacion", content: "Tareas para horas valle (entre servicios):\n- Desmenuzar carnes (cochinita, pulled pork)\n- Prep de salsas del dia\n- Revisar caducidades de camaras\n- Limpieza profunda de zona de montaje\n- Reponer packaging (aluminio, recipientes, bolsas)", active: true, date: "25/03/2026" },
-    ],
-    alertasProducto: [
-      { id: "ap1", product: "Bacon Cheese Apachurradas", level: "sanitaria", local: "Sevilla Este", notes: "Clientes han enfermado. Revisar salsa ranchera, bacon y queso cada turno.", actions: "Auditar cadena frio. Si ingrediente raro: TIRAR y avisar.", date: "25/03/2026" },
-      { id: "ap2", product: "Burro Lady Cochinita", level: "critico", local: "Todos", notes: "25% valoracion. Cochinita sin desmenuzar, mal cocinada, fria.", actions: "Desmenuzar SIEMPRE. Verificar coccion y temperatura. Aluminio individual.", date: "25/03/2026" },
-      { id: "ap3", product: "Burro Don Juarez", level: "critico", local: "Todos", notes: "15+ incidencias. Sabor, temperatura, caso alergia cilantro.", actions: "Revisar receta. Aluminio obligatorio. Alergenos: rotulador rojo.", date: "25/03/2026" },
-      { id: "ap4", product: "Nachos Guadalupe", level: "vigilar", local: "Todos", notes: "13+ incidencias. Textura y temperatura perdida en delivery.", actions: "Toppings SIEMPRE separados en delivery.", date: "25/03/2026" },
-      { id: "ap5", product: "Burro Dona Dolores", level: "vigilar", local: "Todos", notes: "12+ incidencias. Excesivamente especiado.", actions: "Medida estandar de especiado. NUNCA a ojo.", date: "25/03/2026" },
-      { id: "ap6", product: "Coca-Cola Zero", level: "atencion", local: "Todos", notes: "Se olvida frecuentemente en pedidos.", actions: "Siempre lo ultimo en la bolsa. Comprobar antes de cerrar.", date: "25/03/2026" },
-    ],
-    planAccion: [
-      { id: "pa1", action: "Auditoria cadena de frio en los 3 locales", responsible: "Encargados + Ale", deadline: "Inmediato", status: "en curso", priority: "inmediata" },
-      { id: "pa2", action: "Implementar checklist cierre de bolsa para TODOS los pedidos delivery", responsible: "Encargados", deadline: "Esta semana", status: "pendiente", priority: "inmediata" },
-      { id: "pa3", action: "Sistema pegatina roja para pedidos con alergias/modificaciones", responsible: "Encargados", deadline: "Esta semana", status: "pendiente", priority: "inmediata" },
-      { id: "pa4", action: "Estandarizar recetas problematicas (Dolores, cochinita, patatas)", responsible: "Cocina + Ale", deadline: "2 semanas", status: "pendiente", priority: "corto" },
-      { id: "pa5", action: "Formacion equipo: alergias, notas, protocolo anti-errores", responsible: "Ale + encargados", deadline: "2 semanas", status: "pendiente", priority: "corto" },
-      { id: "pa6", action: "Crear zona de staging para pedidos delivery en cada local", responsible: "Cada local", deadline: "2 semanas", status: "pendiente", priority: "corto" },
-      { id: "pa7", action: "Evaluar packaging termico para burritos", responsible: "Ale", deadline: "3 semanas", status: "pendiente", priority: "corto" },
-      { id: "pa8", action: "Manual de operaciones completo", responsible: "Ale + equipo", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
-      { id: "pa9", action: "Sistema de control productividad: pedidos/hora por local", responsible: "Ale", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
-    ],
-    comunicados: [
-      { id: "com1", title: "Nuevos protocolos de delivery activos", content: "A partir de hoy son obligatorios el checklist de cierre de bolsa y el protocolo de alergias de 3 niveles. Ningun pedido sale sin completar los 12 pasos. Sin excepciones.", author: "Ale", date: "25/03/2026", readBy: [] },
-      { id: "com2", title: "Productos a vigilar esta semana", content: "Atencion especial a: Bacon Cheese (revisar ingredientes cada turno), Burro Lady Cochinita (desmenuzar siempre), Nachos delivery (toppings separados). Cualquier duda, preguntad al encargado.", author: "Ale", date: "25/03/2026", readBy: [] },
-    ],
   });
 
   function getPC(p) {
@@ -2172,7 +2173,7 @@ function ProdView(props) {
                     <div style={{ fontSize: 11, color: "#aaa" }}>{p.category}</div>
                   </div>
                   {!props.isMobile && (
-                    <>
+                    <div style={{ display: "contents" }}>
                       <div style={{ textAlign: "right", minWidth: 60 }}>
                         <div style={{ fontSize: 12, color: "#888" }}>Coste</div>
                         <div style={{ fontSize: 14, fontWeight: 700 }}>{fmt(cost)}</div>
@@ -2188,7 +2189,7 @@ function ProdView(props) {
                         <div style={{ fontSize: 12, color: "#888" }}>Margen</div>
                         <div style={{ fontSize: 14, fontWeight: 700, color: mg > 0 ? "#047857" : "#DC2626" }}>{pvp > 0 ? fmt(mg) : "-"}</div>
                       </div>
-                    </>
+                    </div>
                   )}
                   {props.isMobile && (
                     <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 700, background: fcC + "15", color: fcC }}>{pvp > 0 ? fPct(fc) : "-"}</span>
