@@ -388,22 +388,22 @@ export default function App() {
     if (!dbModule) { dbLoaded[1](true); return; }
     dbModule.loadAllData().then(function(data) {
       if (data) {
-        if (data.suppliers && data.suppliers.length > 0) sup[1](data.suppliers);
-        if (data.ingredients && data.ingredients.length > 0) ing[1](data.ingredients);
-        if (data.recipes && data.recipes.length > 0) rec[1](data.recipes);
-        if (data.products && data.products.length > 0) prod[1](data.products);
-        if (data.promotions && data.promotions.length > 0) promosData[1](data.promotions);
-        if (data.ideas && data.ideas.length > 0) ideasState[1](data.ideas);
-        if (data.stockAlerts && data.stockAlerts.length > 0) stockAlerts[1](data.stockAlerts);
-        if (data.incidents && data.incidents.length > 0) incidents[1](data.incidents);
-        if (data.savedCombos && data.savedCombos.length > 0) savedCombos[1](data.savedCombos);
-        if (data.clockRecords && data.clockRecords.length > 0) clockRecords[1](data.clockRecords);
-        if (data.checklistRecords && data.checklistRecords.length > 0) checklistRecords[1](data.checklistRecords);
-        if (data.albaranes && data.albaranes.length > 0) albaranesData[1](data.albaranes);
+        if (data.suppliers && (data.suppliers || []).length > 0) sup[1](data.suppliers);
+        if (data.ingredients && (data.ingredients || []).length > 0) ing[1](data.ingredients);
+        if (data.recipes && (data.recipes || []).length > 0) rec[1](data.recipes);
+        if (data.products && (data.products || []).length > 0) prod[1](data.products);
+        if (data.promotions && (data.promotions || []).length > 0) promosData[1](data.promotions);
+        if (data.ideas && (data.ideas || []).length > 0) ideasState[1](data.ideas);
+        if (data.stockAlerts && (data.stockAlerts || []).length > 0) stockAlerts[1](data.stockAlerts);
+        if (data.incidents && (data.incidents || []).length > 0) incidents[1](data.incidents);
+        if (data.savedCombos && (data.savedCombos || []).length > 0) savedCombos[1](data.savedCombos);
+        if (data.clockRecords && (data.clockRecords || []).length > 0) clockRecords[1](data.clockRecords);
+        if (data.checklistRecords && (data.checklistRecords || []).length > 0) checklistRecords[1](data.checklistRecords);
+        if (data.albaranes && (data.albaranes || []).length > 0) albaranesData[1](data.albaranes);
         if (data.stockData) stockData[1](data.stockData);
         if (data.gamification) gamification[1](data.gamification);
-        if (data.weekTasks && data.weekTasks.length > 0) weekTasks[1](data.weekTasks);
-        if (data.priceHistory && data.priceHistory.length > 0) priceHistory[1](data.priceHistory);
+        if (data.weekTasks && (data.weekTasks || []).length > 0) weekTasks[1](data.weekTasks);
+        if (data.priceHistory && (data.priceHistory || []).length > 0) priceHistory[1](data.priceHistory);
         if (data.prepSteps) prepStepsState[1](data.prepSteps);
         if (data.mktData) mktData[1](data.mktData);
         if (data.opsData) opsData[1](data.opsData);
@@ -418,28 +418,25 @@ export default function App() {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(function() {
       saveCountRef.current++;
-      dbModule.savePromotions(promosData[0]);
-      dbModule.saveStockAlerts(stockAlerts[0]);
-      dbModule.saveIncidents(incidents[0]);
-      dbModule.saveIdeas(ideasState[0]);
-      dbModule.saveIngredients(ing[0]);
-      dbModule.saveProducts(prod[0]);
-      dbModule.saveMktData(mktData[0]);
-      dbModule.saveCombos(savedCombos[0]);
-      if (dbModule.saveClockRecords) dbModule.saveClockRecords(clockRecords[0]);
-      if (dbModule.saveChecklistRecords) dbModule.saveChecklistRecords(checklistRecords[0]);
-      if (dbModule.saveAlbaranes) dbModule.saveAlbaranes(albaranesData[0]);
-      if (dbModule.saveStockData) dbModule.saveStockData(stockData[0]);
-      if (dbModule.saveGamification) dbModule.saveGamification(gamification[0]);
-      if (dbModule.saveWeekTasks) dbModule.saveWeekTasks(weekTasks[0]);
-      if (dbModule.savePriceHistory) dbModule.savePriceHistory(priceHistory[0]);
-      if (dbModule.savePrepSteps) dbModule.savePrepSteps(prepStepsState[0]);
-      if (dbModule.saveStockData) dbModule.saveStockData(stockData[0]);
-      // Show toast only after first load (skip initial save)
-      if (saveCountRef.current > 1) {
-        toast[1]("✅ Guardado");
-        setTimeout(function() { toast[1](null); }, 2000);
-      }
+      // Skip initial save on first load
+      if (saveCountRef.current <= 1) return;
+      try { dbModule.savePromotions(promosData[0]); } catch(e) {}
+      try { dbModule.saveStockAlerts(stockAlerts[0]); } catch(e) {}
+      try { dbModule.saveIncidents(incidents[0]); } catch(e) {}
+      try { dbModule.saveIdeas(ideasState[0]); } catch(e) {}
+      try { dbModule.saveIngredients(ing[0]); } catch(e) {}
+      try { dbModule.saveProducts(prod[0]); } catch(e) {}
+      try { dbModule.saveMktData(mktData[0]); } catch(e) {}
+      try { dbModule.saveCombos(savedCombos[0]); } catch(e) {}
+      try { if (dbModule.saveClockRecords) dbModule.saveClockRecords(clockRecords[0]); } catch(e) {}
+      try { if (dbModule.saveChecklistRecords) dbModule.saveChecklistRecords(checklistRecords[0]); } catch(e) {}
+      try { if (dbModule.saveAlbaranes) dbModule.saveAlbaranes(albaranesData[0]); } catch(e) {}
+      try { if (dbModule.saveStockData) dbModule.saveStockData(stockData[0]); } catch(e) {}
+      try { if (dbModule.saveGamification) dbModule.saveGamification(gamification[0]); } catch(e) {}
+      try { if (dbModule.saveWeekTasks) dbModule.saveWeekTasks(weekTasks[0]); } catch(e) {}
+      try { if (dbModule.savePrepSteps) dbModule.savePrepSteps(prepStepsState[0]); } catch(e) {}
+      toast[1]("✅ Guardado");
+      setTimeout(function() { toast[1](null); }, 2000);
     }, 3000);
     return function() { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   });
@@ -1017,7 +1014,7 @@ function NovedadesBlock(props) {
 
   // Comunicados sin leer
   if (props.opsData) {
-    var coms = props.opsData[0].comunicados || [];
+    var coms = (props.opsData ? props.opsData[0].comunicados || [] : []) || [];
     var userName = props.user ? props.user.name : "";
     for (var ci = 0; ci < coms.length; ci++) {
       if ((coms[ci].readBy || []).indexOf(userName) < 0) {
@@ -1044,7 +1041,7 @@ function NovedadesBlock(props) {
 
   // Alertas de producto (todos menos community)
   if (role !== "community" && props.opsData) {
-    var alertProd = props.opsData[0].alertasProducto || [];
+    var alertProd = (props.opsData ? props.opsData[0].alertasProducto || [] : []) || [];
     var sanitarias = alertProd.filter(function(a) { return a.level === "sanitaria"; });
     var criticos = alertProd.filter(function(a) { return a.level === "critico"; });
     if (sanitarias.length > 0) items.push({ icon: "🔴", text: sanitarias.length + " alerta SANITARIA — accion inmediata", color: "#DC2626", page: "operaciones", priority: 0 });
@@ -1086,7 +1083,7 @@ function NovedadesBlock(props) {
 
   // Plan accion pendiente (socio + encargado)
   if ((role === "socio" || role === "encargado") && props.opsData) {
-    var planPend = (props.opsData[0].planAccion || []).filter(function(p) { return p.status === "pendiente" && p.priority === "inmediata"; });
+    var planPend = ((props.opsData ? props.opsData[0].planAccion || [] : []) || []).filter(function(p) { return p.status === "pendiente" && p.priority === "inmediata"; });
     if (planPend.length > 0) items.push({ icon: "📋", text: planPend.length + " accion INMEDIATA pendiente", color: "#DC2626", page: "operaciones", priority: 1 });
   }
 
@@ -1236,9 +1233,9 @@ function DashView(props) {
           </div>
         </div>
         <div onClick={function(){props.setPage("operaciones");}} style={{ background: "#fff", borderRadius: 14, padding: "14px 16px", border: "1px solid #eee", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", transition: "transform 0.15s" }} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)";}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)";}}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: (props.opsData ? props.opsData[0].alertasProducto.length : 0) > 0 ? "#FEE2E2" : "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>⚠️</div>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: (props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0) > 0 ? "#FEE2E2" : "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>⚠️</div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: (props.opsData ? props.opsData[0].alertasProducto.length : 0) > 0 ? "#DC2626" : "#047857" }}>{props.opsData ? props.opsData[0].alertasProducto.length : 0}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: (props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0) > 0 ? "#DC2626" : "#047857" }}>{props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0}</div>
             <div style={{ fontSize: 11, color: "#888" }}>Alertas producto</div>
           </div>
         </div>
@@ -1384,9 +1381,9 @@ function EncargadoPanel(props) {
           <div style={{ fontSize: 11, fontWeight: 600, color: "#888" }}>TAREAS I+D</div>
           <div style={{ fontSize: 32, fontWeight: 800, color: "#1E40AF" }}>{pendingTasks.length}</div>
         </div>
-        <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: "4px solid " + ((props.opsData ? props.opsData[0].alertasProducto.length : 0) > 0 ? "#DC2626" : "#047857") }}>
+        <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: "4px solid " + ((props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0) > 0 ? "#DC2626" : "#047857") }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: "#888" }}>ALERTAS PROD.</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: (props.opsData ? props.opsData[0].alertasProducto.length : 0) > 0 ? "#DC2626" : "#047857" }}>{props.opsData ? props.opsData[0].alertasProducto.length : 0}</div>
+          <div style={{ fontSize: 32, fontWeight: 800, color: (props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0) > 0 ? "#DC2626" : "#047857" }}>{props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0}</div>
         </div>
       </div>
 
@@ -2587,7 +2584,7 @@ function PromoView(props) {
         var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
 
         function toggleDia(d) {
-          var f = promoForm[0]; var ds = f.dias.slice();
+          var f = promoForm[0]; var ds = (f.dias || []).slice();
           var idx = ds.indexOf(d);
           if (idx >= 0) ds.splice(idx, 1); else ds.push(d);
           promoForm[1](Object.assign({}, f, { dias: ds }));
@@ -4070,7 +4067,7 @@ function FichasEmpView(props) {
             <div style={{ fontSize: 10, opacity: 0.7 }}>Incidencias</div>
           </div>
           <div style={{ padding: "8px 14px", borderRadius: 8, background: "rgba(255,255,255,0.15)", textAlign: "center" }}>
-            <div style={{ fontSize: 18, fontWeight: 800 }}>{props.opsData ? props.opsData[0].alertasProducto.length : 0}</div>
+            <div style={{ fontSize: 18, fontWeight: 800 }}>{props.opsData ? (props.opsData ? props.opsData[0].alertasProducto || [] : []).length : 0}</div>
             <div style={{ fontSize: 10, opacity: 0.7 }}>Alertas prod.</div>
           </div>
         </div>
@@ -6802,7 +6799,7 @@ function MarketingView(props) {
   function addTask() {
     var f = taskForm[0];
     if (!f.title) return;
-    var next = data.tasks.concat([{ id: uid(), title: f.title, assignedTo: f.assignedTo, createdBy: userName, priority: f.priority, status: "pendiente", due: f.due, category: f.category, notes: f.notes }]);
+    var next = (data.tasks || []).concat([{ id: uid(), title: f.title, assignedTo: f.assignedTo, createdBy: userName, priority: f.priority, status: "pendiente", due: f.due, category: f.category, notes: f.notes }]);
     updateData("tasks", next);
     taskForm[1]({ title: "", priority: "media", category: "contenido", due: "", notes: "", assignedTo: "Maria" });
     showForm[1](false);
@@ -6816,7 +6813,7 @@ function MarketingView(props) {
   function addCalItem() {
     var f = calForm[0];
     if (!f.title || !f.date) return;
-    updateData("calendar", data.calendar.concat([{ id: uid(), date: f.date, platform: f.platform, type: f.type, title: f.title, status: "idea", caption: f.caption }]));
+    updateData("calendar", (data.calendar || []).concat([{ id: uid(), date: f.date, platform: f.platform, type: f.type, title: f.title, status: "idea", caption: f.caption }]));
     calForm[1]({ date: "", platform: "instagram", type: "post", title: "", caption: "" });
     showForm[1](false);
   }
@@ -6829,7 +6826,7 @@ function MarketingView(props) {
   function addInfluencer() {
     var f = infForm[0];
     if (!f.name) return;
-    updateData("influencers", data.influencers.concat([{ id: uid(), name: f.name, handle: f.handle, followers: f.followers, platform: f.platform, status: "identificado", notes: f.notes, lastContact: "" }]));
+    updateData("influencers", (data.influencers || []).concat([{ id: uid(), name: f.name, handle: f.handle, followers: f.followers, platform: f.platform, status: "identificado", notes: f.notes, lastContact: "" }]));
     infForm[1]({ name: "", handle: "", followers: "", platform: "instagram", notes: "" });
     showForm[1](false);
   }
@@ -6841,7 +6838,7 @@ function MarketingView(props) {
   function addCateringLead() {
     var f = catForm[0];
     if (!f.name) return;
-    updateData("catering", data.catering.concat([{ id: uid(), name: f.name, type: f.type, contact: f.contact, platform: f.platform, status: "por contactar", notes: f.notes, lastContact: "" }]));
+    updateData("catering", (data.catering || []).concat([{ id: uid(), name: f.name, type: f.type, contact: f.contact, platform: f.platform, status: "por contactar", notes: f.notes, lastContact: "" }]));
     catForm[1]({ name: "", type: "wedding_planner", contact: "", platform: "instagram", notes: "" });
     showForm[1](false);
   }
@@ -6920,7 +6917,7 @@ function MarketingView(props) {
         {/* Upcoming content */}
         <div style={{ ...crd, marginBottom: 16 }}>
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>PROXIMO CONTENIDO</div>
-          {data.calendar.sort(function(a, b) { return a.date > b.date ? 1 : -1; }).slice(0, 5).map(function(c) {
+          {(data.calendar || []).sort(function(a, b) { return a.date > b.date ? 1 : -1; }).slice(0, 5).map(function(c) {
             return <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
               <span style={{ fontSize: 16 }}>{platformEmojis[c.platform] || "📸"}</span>
               <span style={{ fontSize: 14 }}>{typeEmojis[c.type] || "🖼️"}</span>
@@ -7618,7 +7615,7 @@ function RRHHView(props) {
                 <div><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Coste 🌟</div><input type="number" value={rwForm[0].cost} onChange={function(e) { rwForm[1](Object.assign({}, rwForm[0], { cost: e.target.value })); }} style={{ width: 70, padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit", textAlign: "right" }} /></div>
                 <button onClick={function() {
                   if (!rwForm[0].name || !rwForm[0].cost) return;
-                  updateGam(Object.assign({}, data, { rewards: data.rewards.concat([{ id: "rw" + Date.now(), name: rwForm[0].name, cost: parseInt(rwForm[0].cost) || 0, icon: rwForm[0].icon || "🎁", claimed: [] }]) }));
+                  updateGam(Object.assign({}, data, { rewards: (data.rewards || []).concat([{ id: "rw" + Date.now(), name: rwForm[0].name, cost: parseInt(rwForm[0].cost) || 0, icon: rwForm[0].icon || "🎁", claimed: [] }]) }));
                   rwForm[1]({ name: "", cost: "", icon: "🎁" });
                   showAddReward[1](false);
                 }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#B45309", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Crear</button>
