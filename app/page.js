@@ -1,2 +1,5 @@
 import App from './OralePadreApp';
-export default function Page() { return <App />; }
+
+export default function Page() {
+  return <App />;
+}
