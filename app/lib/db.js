@@ -178,7 +178,7 @@ export async function saveIngredients(ingredients) {
     if (!ingredients || ingredients.length === 0) return;
     for (var i = 0; i < ingredients.length; i++) {
       var ing = ingredients[i];
-      await supabase.from('ingredients').update({ cost_per_unit: ing.costPerUnit }).eq('id', ing.id);
+      await supabase.rpc('update_ingredient_cost', { p_id: ing.id, p_cost: ing.costPerUnit || 0 });
     }
   } catch (err) { console.error("Save ingredients error:", err); }
 }
@@ -187,17 +187,10 @@ export async function saveProducts(products) {
     if (!products || products.length === 0) return;
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
-      await supabase.from('products').update({ week_sales: p.weekSales, active: p.active }).eq('id', p.id);
-      // Delete this product's prices then insert new ones
-      await supabase.from('product_prices').delete().eq('product_id', p.id);
-      if (p.prices) {
-        var channels = Object.keys(p.prices);
-        var rows = [];
-        for (var j = 0; j < channels.length; j++) {
-          rows.push({ product_id: p.id, channel: channels[j], price: p.prices[channels[j]] || 0 });
-        }
-        if (rows.length > 0) await supabase.from('product_prices').insert(rows);
-      }
+      var sala = p.prices ? (p.prices.Sala || 0) : 0;
+      var uber = p.prices ? (p.prices["Uber Eats"] || 0) : 0;
+      var glovo = p.prices ? (p.prices.Glovo || 0) : 0;
+      await supabase.rpc('update_product_price', { p_product_id: p.id, p_sala: sala, p_uber: uber, p_glovo: glovo, p_sales: p.weekSales || 0 });
     }
   } catch (err) { console.error("Save products error:", err); }
 }
