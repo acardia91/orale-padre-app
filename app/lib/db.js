@@ -12,7 +12,7 @@ export async function loadAllData() {
     var { data: ingredients } = await supabase.from('ingredients').select('*');
     if (ingredients && ingredients.length > 0) {
       result.ingredients = ingredients.map(function(i) {
-        return { id: i.id, name: i.name, supplierId: i.supplier_id, unit: i.unit, costPerUnit: parseFloat(i.cost_per_unit) || 0, category: i.category || "" };
+        return { id: i.id, name: i.name, supplierId: i.supplier_id, unit: i.unit, costPerUnit: parseFloat(i.cost_per_unit) || 0, category: i.category || "", lastAlbaranPrice: parseFloat(i.last_albaran_price) || 0, lastAlbaranDate: i.last_albaran_date || "" };
       });
     }
     var { data: recipes } = await supabase.from('recipes').select('*');
@@ -87,6 +87,56 @@ export async function loadAllData() {
         return { id: a.id, fecha: a.fecha, proveedor: a.proveedor, local: a.local, total: parseFloat(a.total) || 0, lineas: a.lineas || [], confirmedBy: a.confirmed_by, confirmedAt: a.confirmed_at };
       });
     }
+    // Stock por local
+    var { data: stockLocal } = await supabase.from('stock_local').select('*');
+    if (stockLocal && stockLocal.length > 0) {
+      result.stockData = {};
+      for (var sli = 0; sli < stockLocal.length; sli++) {
+        var sl = stockLocal[sli];
+        if (!result.stockData[sl.local_name]) result.stockData[sl.local_name] = {};
+        result.stockData[sl.local_name][sl.ingredient_id] = {
+          qty: parseFloat(sl.qty) || 0,
+          unit: sl.unit || "kg",
+          lastUpdate: sl.last_update || "",
+          lastAlbaran: sl.last_albaran_id || "",
+          nombre: sl.ingredient_name || ""
+        };
+      }
+    }
+    // Gamification
+    var { data: gamPoints } = await supabase.from('gamification_points').select('*');
+    var { data: gamHistory } = await supabase.from('gamification_history').select('*').order('created_at', { ascending: false });
+    if (gamPoints && gamPoints.length > 0) {
+      result.gamification = {
+        points: gamPoints.map(function(p) { return { userId: p.user_id, name: p.user_name, dorados: p.dorados || 0, totalPoints: p.total_points || 0 }; }),
+        history: (gamHistory || []).map(function(h) { return { id: h.id, name: h.user_name, type: h.action_type, pts: h.points || 0, date: h.date || "", notes: h.notes || "" }; })
+      };
+    }
+    // Week tasks
+    var { data: wTasks } = await supabase.from('week_tasks').select('*');
+    if (wTasks && wTasks.length > 0) {
+      result.weekTasks = wTasks.map(function(t) { return { id: t.id, title: t.title, assignedTo: t.assigned_to || "", status: t.status || "pendiente", priority: t.priority || "media", due: t.due_date || "", category: t.category || "general", notes: t.notes || "" }; });
+    }
+    // Price history
+    var { data: pHistory } = await supabase.from('price_history').select('*').order('recorded_at', { ascending: false }).limit(200);
+    if (pHistory && pHistory.length > 0) {
+      result.priceHistory = pHistory.map(function(p) { return { id: p.id, ingredientId: p.ingredient_id, ingredientName: p.ingredient_name, oldPrice: parseFloat(p.old_price) || 0, newPrice: parseFloat(p.new_price) || 0, changePct: parseFloat(p.change_pct) || 0, source: p.source || "albaran", albaranId: p.albaran_id || "", proveedor: p.proveedor || "", local: p.local_name || "", date: p.recorded_at }; });
+    }
+    // Prep steps
+    var { data: pSteps } = await supabase.from('prep_steps').select('*').order('step_order', { ascending: true });
+    if (pSteps && pSteps.length > 0) {
+      result.prepSteps = {};
+      for (var psi = 0; psi < pSteps.length; psi++) {
+        var ps = pSteps[psi];
+        if (!result.prepSteps[ps.recipe_id]) result.prepSteps[ps.recipe_id] = [];
+        result.prepSteps[ps.recipe_id].push({ id: ps.id, order: ps.step_order, title: ps.title || "", description: ps.description || "", duration: ps.duration_min || 0, category: ps.category || "preparacion" });
+      }
+    }
+    // App users
+    var { data: appUsers } = await supabase.from('app_users').select('*').eq('active', true);
+    if (appUsers && appUsers.length > 0) {
+      result.appUsers = appUsers.map(function(u) { return { id: u.id, email: u.email || "", name: u.name, role: u.role, local: u.local_name || "", pin: u.pin || "", phone: u.phone || "", avatar: u.avatar_url || "" }; });
+    }
     var hasOps = (protocolos && protocolos.length > 0) || (alertasProd && alertasProd.length > 0);
     if (hasOps) {
       var readMap = {};
@@ -115,7 +165,7 @@ export async function saveIdeas(ideas) {
   try { await supabase.from('ideas').delete().neq('id', ''); if (ideas.length > 0) { await supabase.from('ideas').insert(ideas.map(function(i) { return { id: i.id, title: i.title, description: i.desc, category: i.category, status: i.status, assigned_to: i.assignedTo, feedback: i.feedback }; })); } } catch (err) { console.error("Save ideas error:", err); }
 }
 export async function saveIngredients(ingredients) {
-  try { await supabase.from('ingredients').delete().neq('id', ''); if (ingredients.length > 0) { await supabase.from('ingredients').insert(ingredients.map(function(i) { return { id: i.id, name: i.name, supplier_id: i.supplierId, unit: i.unit, cost_per_unit: i.costPerUnit, category: i.category }; })); } } catch (err) { console.error("Save ingredients error:", err); }
+  try { await supabase.from('ingredients').delete().neq('id', ''); if (ingredients.length > 0) { await supabase.from('ingredients').insert(ingredients.map(function(i) { return { id: i.id, name: i.name, supplier_id: i.supplierId, unit: i.unit, cost_per_unit: i.costPerUnit, category: i.category, last_albaran_price: i.lastAlbaranPrice || null, last_albaran_date: i.lastAlbaranDate || null }; })); } } catch (err) { console.error("Save ingredients error:", err); }
 }
 export async function saveProducts(products) {
   try { await supabase.from('product_prices').delete().neq('id', ''); await supabase.from('products').delete().neq('id', ''); if (products.length > 0) { await supabase.from('products').insert(products.map(function(p) { return { id: p.id, name: p.name, recipe_id: p.recipeId, category: p.category, active: p.active, week_sales: p.weekSales, pack_qty: p.packQty || 1 }; })); var allPrices = []; for (var i = 0; i < products.length; i++) { var p = products[i]; if (p.prices) { var channels = Object.keys(p.prices); for (var j = 0; j < channels.length; j++) { allPrices.push({ product_id: p.id, channel: channels[j], price: p.prices[channels[j]] || 0 }); } } } if (allPrices.length > 0) { await supabase.from('product_prices').insert(allPrices); } } } catch (err) { console.error("Save products error:", err); }
@@ -179,4 +229,91 @@ export async function saveAlbaranes(albaranes) {
       }
     }
   } catch (err) { console.error("Save albaranes error:", err); }
+}
+export async function saveStockData(stockData) {
+  try {
+    var rows = [];
+    var locals = Object.keys(stockData);
+    for (var i = 0; i < locals.length; i++) {
+      var locName = locals[i];
+      var items = stockData[locName] || {};
+      var keys = Object.keys(items);
+      for (var j = 0; j < keys.length; j++) {
+        var it = items[keys[j]];
+        rows.push({
+          local_name: locName,
+          ingredient_id: keys[j],
+          ingredient_name: it.nombre || "",
+          qty: it.qty || 0,
+          unit: it.unit || "kg",
+          last_update: it.lastUpdate || "",
+          last_albaran_id: it.lastAlbaran || "",
+          updated_at: new Date().toISOString()
+        });
+      }
+    }
+    await supabase.from('stock_local').delete().neq('local_name', '');
+    if (rows.length > 0) await supabase.from('stock_local').insert(rows);
+  } catch (err) { console.error("Save stock error:", err); }
+}
+
+export async function saveGamification(gam) {
+  try {
+    if (!gam) return;
+    // Save points
+    await supabase.from('gamification_points').delete().neq('user_id', '');
+    if (gam.points && gam.points.length > 0) {
+      await supabase.from('gamification_points').insert(gam.points.map(function(p) {
+        return { user_id: p.userId, user_name: p.name, dorados: p.dorados || 0, total_points: p.totalPoints || 0 };
+      }));
+    }
+    // Save history (only recent, avoid duplicates)
+    await supabase.from('gamification_history').delete().neq('id', '');
+    if (gam.history && gam.history.length > 0) {
+      await supabase.from('gamification_history').insert(gam.history.slice(0, 100).map(function(h) {
+        return { id: h.id || ('gh_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5)), user_name: h.name, action_type: h.type, points: h.pts || 0, date: h.date || "", notes: h.notes || "" };
+      }));
+    }
+  } catch (err) { console.error("Save gamification error:", err); }
+}
+
+export async function saveWeekTasks(tasks) {
+  try {
+    await supabase.from('week_tasks').delete().neq('id', '');
+    if (tasks && tasks.length > 0) {
+      await supabase.from('week_tasks').insert(tasks.map(function(t) {
+        return { id: t.id, title: t.title, assigned_to: t.assignedTo || "", status: t.status || "pendiente", priority: t.priority || "media", due_date: t.due || "", category: t.category || "general", notes: t.notes || "" };
+      }));
+    }
+  } catch (err) { console.error("Save week tasks error:", err); }
+}
+
+export async function savePriceHistory(entries) {
+  try {
+    // Only insert new entries (append-only, don't delete old)
+    if (entries && entries.length > 0) {
+      var newEntries = entries.filter(function(e) { return e.isNew; });
+      if (newEntries.length > 0) {
+        await supabase.from('price_history').insert(newEntries.map(function(p) {
+          return { id: p.id, ingredient_id: p.ingredientId, ingredient_name: p.ingredientName, old_price: p.oldPrice, new_price: p.newPrice, change_pct: p.changePct, source: p.source || "albaran", albaran_id: p.albaranId || "", proveedor: p.proveedor || "", local_name: p.local || "" };
+        }));
+      }
+    }
+  } catch (err) { console.error("Save price history error:", err); }
+}
+
+export async function savePrepSteps(stepsMap) {
+  try {
+    await supabase.from('prep_steps').delete().neq('id', '');
+    var rows = [];
+    var recipeIds = Object.keys(stepsMap || {});
+    for (var i = 0; i < recipeIds.length; i++) {
+      var steps = stepsMap[recipeIds[i]] || [];
+      for (var j = 0; j < steps.length; j++) {
+        var s = steps[j];
+        rows.push({ id: s.id, recipe_id: recipeIds[i], step_order: s.order || j, title: s.title || "", description: s.description || "", duration_min: s.duration || 0, category: s.category || "preparacion" });
+      }
+    }
+    if (rows.length > 0) await supabase.from('prep_steps').insert(rows);
+  } catch (err) { console.error("Save prep steps error:", err); }
 }
