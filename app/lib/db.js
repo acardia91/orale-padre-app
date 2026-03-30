@@ -165,10 +165,10 @@ export async function saveIdeas(ideas) {
   try { await supabase.from('ideas').delete().neq('id', ''); if (ideas.length > 0) { await supabase.from('ideas').insert(ideas.map(function(i) { return { id: i.id, title: i.title, description: i.desc, category: i.category, status: i.status, assigned_to: i.assignedTo, feedback: i.feedback }; })); } } catch (err) { console.error("Save ideas error:", err); }
 }
 export async function saveIngredients(ingredients) {
-  try { await supabase.from('ingredients').delete().neq('id', ''); if (ingredients.length > 0) { await supabase.from('ingredients').insert(ingredients.map(function(i) { return { id: i.id, name: i.name, supplier_id: i.supplierId, unit: i.unit, cost_per_unit: i.costPerUnit, category: i.category }; })); } } catch (err) { console.error("Save ingredients error:", err); }
+  try { if (ingredients.length > 0) { await supabase.from('ingredients').upsert(ingredients.map(function(i) { return { id: i.id, name: i.name, supplier_id: i.supplierId, unit: i.unit, cost_per_unit: i.costPerUnit, category: i.category }; }), { onConflict: 'id' }); } } catch (err) { console.error("Save ingredients error:", err); }
 }
 export async function saveProducts(products) {
-  try { await supabase.from('product_prices').delete().neq('id', ''); await supabase.from('products').delete().neq('id', ''); if (products.length > 0) { await supabase.from('products').insert(products.map(function(p) { return { id: p.id, name: p.name, recipe_id: p.recipeId, category: p.category, active: p.active, week_sales: p.weekSales, pack_qty: p.packQty || 1 }; })); var allPrices = []; for (var i = 0; i < products.length; i++) { var p = products[i]; if (p.prices) { var channels = Object.keys(p.prices); for (var j = 0; j < channels.length; j++) { allPrices.push({ product_id: p.id, channel: channels[j], price: p.prices[channels[j]] || 0 }); } } } if (allPrices.length > 0) { await supabase.from('product_prices').insert(allPrices); } } } catch (err) { console.error("Save products error:", err); }
+  try { if (products.length > 0) { await supabase.from('products').upsert(products.map(function(p) { return { id: p.id, name: p.name, recipe_id: p.recipeId, category: p.category, active: p.active, week_sales: p.weekSales, pack_qty: p.packQty || 1 }; }), { onConflict: 'id' }); var allPrices = []; for (var i = 0; i < products.length; i++) { var p = products[i]; if (p.prices) { var channels = Object.keys(p.prices); for (var j = 0; j < channels.length; j++) { allPrices.push({ product_id: p.id, channel: channels[j], price: p.prices[channels[j]] || 0 }); } } } if (allPrices.length > 0) { await supabase.from('product_prices').delete().eq('product_id', allPrices[0].product_id); await supabase.from('product_prices').upsert(allPrices); } } } catch (err) { console.error("Save products error:", err); }
 }
 export async function saveMktData(mkt) {
   try {
@@ -307,14 +307,17 @@ export async function savePrepSteps(stepsMap) {
     if (!stepsMap || typeof stepsMap !== 'object') return;
     var recipeIds = Object.keys(stepsMap);
     if (recipeIds.length === 0) return;
-    await supabase.from('prep_steps').delete().neq('id', '');
+    await supabase.from('prep_steps').delete().neq('recipe_id', '');
     var rows = [];
     for (var i = 0; i < recipeIds.length; i++) {
       var steps = stepsMap[recipeIds[i]] || [];
       if (!Array.isArray(steps)) continue;
       for (var j = 0; j < steps.length; j++) {
         var s = steps[j];
-        rows.push({ id: s.id || ('ps_' + Date.now() + '_' + j), recipe_id: recipeIds[i], step_order: s.order || j, title: s.title || "", description: s.description || "", duration_min: s.duration || 0, category: s.category || "preparacion" });
+        // Steps can be strings or objects
+        var title = typeof s === 'string' ? s : (s.title || s.description || "");
+        var desc = typeof s === 'string' ? "" : (s.description || "");
+        rows.push({ recipe_id: recipeIds[i], step_order: j, title: title, description: desc, duration_min: typeof s === 'object' ? (s.duration || 0) : 0, category: "preparacion" });
       }
     }
     if (rows.length > 0) await supabase.from('prep_steps').insert(rows);
