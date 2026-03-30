@@ -178,13 +178,7 @@ export async function saveIngredients(ingredients) {
     if (!ingredients || ingredients.length === 0) return;
     for (var i = 0; i < ingredients.length; i++) {
       var ing = ingredients[i];
-      await supabase.from('ingredients').update({ 
-        name: ing.name, 
-        supplier_id: ing.supplierId, 
-        unit: ing.unit, 
-        cost_per_unit: ing.costPerUnit, 
-        category: ing.category 
-      }).eq('id', ing.id);
+      await supabase.from('ingredients').update({ cost_per_unit: ing.costPerUnit }).eq('id', ing.id);
     }
   } catch (err) { console.error("Save ingredients error:", err); }
 }
@@ -193,30 +187,16 @@ export async function saveProducts(products) {
     if (!products || products.length === 0) return;
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
-      await supabase.from('products').update({ 
-        name: p.name, 
-        recipe_id: p.recipeId, 
-        category: p.category, 
-        active: p.active, 
-        week_sales: p.weekSales, 
-        pack_qty: p.packQty || 1 
-      }).eq('id', p.id);
-      // Update prices per channel
+      await supabase.from('products').update({ week_sales: p.weekSales, active: p.active }).eq('id', p.id);
+      // Delete this product's prices then insert new ones
+      await supabase.from('product_prices').delete().eq('product_id', p.id);
       if (p.prices) {
         var channels = Object.keys(p.prices);
+        var rows = [];
         for (var j = 0; j < channels.length; j++) {
-          var ch = channels[j];
-          var price = p.prices[ch] || 0;
-          // Try update first, if no rows affected then insert
-          var { data: updated } = await supabase.from('product_prices')
-            .update({ price: price })
-            .eq('product_id', p.id)
-            .eq('channel', ch);
-          if (!updated || updated.length === 0) {
-            await supabase.from('product_prices')
-              .insert({ product_id: p.id, channel: ch, price: price });
-          }
+          rows.push({ product_id: p.id, channel: channels[j], price: p.prices[channels[j]] || 0 });
         }
+        if (rows.length > 0) await supabase.from('product_prices').insert(rows);
       }
     }
   } catch (err) { console.error("Save products error:", err); }
