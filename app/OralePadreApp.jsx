@@ -2158,8 +2158,73 @@ function RecView(props) {
 function ProdView(props) {
   var ss = useState(""); var cs = useState(""); var chS = useState("sala");
   var expanded = useState(null);
+  var createMode = useState(false);
+  var createStep = useState(1);
+  var newProd = useState({ name: "", category: "Burritos", desc: "", ingredients: [], prices: { Sala: 0, "Uber Eats": 0, Glovo: 0, "Canal Propio": 0 }, steps: [], channels: ["Sala", "Uber Eats", "Glovo"], active: true, weekSales: 0, packQty: 1 });
+  var addIngSearch = useState("");
   var isDel = chS[0] === "delivery";
   var fl = props.products.filter(function(p) { return p.name.toLowerCase().indexOf(ss[0].toLowerCase()) >= 0 && (!cs[0] || p.category === cs[0]); });
+  var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
+
+  // Calculate cost for new product
+  var newCost = 0;
+  for (var ci = 0; ci < newProd[0].ingredients.length; ci++) {
+    newCost += newProd[0].ingredients[ci].lineCost || 0;
+  }
+  newCost = newCost * (newProd[0].packQty || 1);
+
+  function addIngToProd(ingId) {
+    var ing = null;
+    for (var i = 0; i < props.ingredients.length; i++) { if (props.ingredients[i].id === ingId) { ing = props.ingredients[i]; break; } }
+    if (!ing) return;
+    var already = newProd[0].ingredients.some(function(x) { return x.ingId === ingId; });
+    if (already) return;
+    var np = Object.assign({}, newProd[0]);
+    np.ingredients = np.ingredients.concat([{ ingId: ingId, name: ing.name, unit: ing.unit, costPerUnit: ing.costPerUnit, qty: ing.unit === "ud" ? 1 : 0.05, lineCost: ing.costPerUnit * (ing.unit === "ud" ? 1 : 0.05) }]);
+    newProd[1](np);
+    addIngSearch[1]("");
+  }
+
+  function updateIngQty(idx, qty) {
+    var np = Object.assign({}, newProd[0]);
+    np.ingredients = np.ingredients.map(function(x, i) {
+      if (i !== idx) return x;
+      return Object.assign({}, x, { qty: qty, lineCost: x.costPerUnit * qty });
+    });
+    newProd[1](np);
+  }
+
+  function removeIng(idx) {
+    var np = Object.assign({}, newProd[0]);
+    np.ingredients = np.ingredients.filter(function(x, i) { return i !== idx; });
+    newProd[1](np);
+  }
+
+  function saveNewProduct() {
+    if (!newProd[0].name) return;
+    var np = newProd[0];
+    var recId = "r_" + Date.now().toString(36);
+    var prodId = "p_" + Date.now().toString(36);
+    // Create recipe
+    var newRecipe = { id: recId, name: "Esc " + np.name, type: "escandallo", yield: 1, yieldUnit: "raciones", notes: np.desc, items: np.ingredients.map(function(x) { return { type: "ingredient", refId: x.ingId, qty: x.qty }; }) };
+    props.setRec(props.recipes.concat([newRecipe]));
+    // Create product
+    var newProduct = { id: prodId, name: np.name, recipeId: recId, category: np.category, prices: np.prices, active: np.active, weekSales: np.weekSales, packQty: np.packQty || 1 };
+    var updatedProducts = props.products.concat([newProduct]);
+    props.setProd(updatedProducts);
+    // Save to Supabase
+    if (props.saveIngProd) props.saveIngProd(props.ingredients, updatedProducts);
+    // Add notification to ops
+    if (props.opsData) {
+      var od = Object.assign({}, props.opsData[0]);
+      od.comunicados = (od.comunicados || []).concat([{ id: "com_" + Date.now(), title: "🆕 Nuevo producto: " + np.name, content: "Disponible en " + np.channels.join(", ") + ". Categoria: " + np.category + ". " + (np.steps.length > 0 ? "Tiene " + np.steps.length + " pasos de elaboracion." : ""), author: props.user ? props.user.name : "Sistema", date: new Date().toLocaleDateString("es-ES"), readBy: [] }]);
+      props.opsData[1](od);
+    }
+    // Reset
+    createMode[1](false);
+    createStep[1](1);
+    newProd[1]({ name: "", category: "Burritos", desc: "", ingredients: [], prices: { Sala: 0, "Uber Eats": 0, Glovo: 0, "Canal Propio": 0 }, steps: [], channels: ["Sala", "Uber Eats", "Glovo"], active: true, weekSales: 0, packQty: 1 });
+  }
 
   function getRecipeItems(recipeId) {
     var rec = null;
@@ -2197,7 +2262,232 @@ function ProdView(props) {
           {PROD_CATS.map(function(c) { return <option key={c} value={c}>{c}</option>; })}
         </select>
         <ChannelToggle value={chS[0]} onChange={chS[1]} />
+        <div style={{ flex: 1 }} />
+        <button onClick={function() { createMode[1](!createMode[0]); createStep[1](1); }} style={{ padding: "10px 18px", borderRadius: 10, border: "2px solid #047857", background: createMode[0] ? "#047857" : "#F0FDF4", color: createMode[0] ? "#fff" : "#047857", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+          {createMode[0] ? "✕ Cancelar" : "+ Nuevo Producto"}
+        </button>
       </div>
+
+      {/* === CREATE PRODUCT FLOW === */}
+      {createMode[0] && (
+        <div style={{ ...crd, marginBottom: 20, borderLeft: "4px solid #047857" }}>
+          {/* Step indicator */}
+          <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
+            {["Info", "Escandallo", "Precios", "Elaboracion", "Canales"].map(function(label, idx) {
+              var step = idx + 1;
+              var active = createStep[0] === step;
+              var done = createStep[0] > step;
+              return <button key={step} onClick={function() { createStep[1](step); }} style={{ flex: 1, padding: "8px 4px", borderRadius: 8, border: "none", background: active ? "#047857" : done ? "#ECFDF5" : "#f5f5f5", color: active ? "#fff" : done ? "#047857" : "#aaa", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                {done ? "✓ " : step + ". "}{label}
+              </button>;
+            })}
+          </div>
+
+          {/* STEP 1: Basic Info */}
+          {createStep[0] === 1 && (
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>📋 Informacion basica</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#888", marginBottom: 4 }}>Nombre del producto *</div>
+                  <input value={newProd[0].name} onChange={function(e) { newProd[1](Object.assign({}, newProd[0], { name: e.target.value })); }} placeholder="Ej: Don Padre Burger" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, fontFamily: "inherit", boxSizing: "border-box" }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 11, color: "#888", marginBottom: 4 }}>Categoria *</div>
+                  <select value={newProd[0].category} onChange={function(e) { newProd[1](Object.assign({}, newProd[0], { category: e.target.value })); }} style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, fontFamily: "inherit", boxSizing: "border-box", background: "#fff" }}>
+                    {PROD_CATS.map(function(c) { return <option key={c} value={c}>{c}</option>; })}
+                  </select>
+                </div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 11, color: "#888", marginBottom: 4 }}>Descripcion / notas</div>
+                <input value={newProd[0].desc} onChange={function(e) { newProd[1](Object.assign({}, newProd[0], { desc: e.target.value })); }} placeholder="Ej: Burrito vegano con Heura, ideal para delivery" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <div style={{ fontSize: 11, color: "#888", marginBottom: 4 }}>Pack (unidades por pedido)</div>
+                  <input type="number" value={newProd[0].packQty} onChange={function(e) { newProd[1](Object.assign({}, newProd[0], { packQty: parseInt(e.target.value) || 1 })); }} style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, fontFamily: "inherit", boxSizing: "border-box" }} />
+                  <div style={{ fontSize: 10, color: "#aaa", marginTop: 2 }}>Ej: Tacos x3 = 3</div>
+                </div>
+              </div>
+              <button onClick={function() { if (newProd[0].name) createStep[1](2); }} disabled={!newProd[0].name} style={{ marginTop: 16, padding: "12px 24px", borderRadius: 10, border: "none", background: newProd[0].name ? "#047857" : "#ccc", color: "#fff", fontSize: 14, fontWeight: 700, cursor: newProd[0].name ? "pointer" : "default", fontFamily: "inherit" }}>Siguiente → Escandallo</button>
+            </div>
+          )}
+
+          {/* STEP 2: Escandallo */}
+          {createStep[0] === 2 && (
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>🧬 Escandallo — {newProd[0].name}</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>Añade ingredientes y sus cantidades. El coste se calcula automaticamente.</div>
+              {/* Add ingredient */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+                <select value={addIngSearch[0]} onChange={function(e) { if (e.target.value) addIngToProd(e.target.value); }} style={{ flex: 1, padding: "10px 12px", border: "1.5px solid #047857", borderRadius: 8, fontSize: 13, fontFamily: "inherit", background: "#F0FDF4" }}>
+                  <option value="">+ Añadir ingrediente...</option>
+                  {props.ingredients.filter(function(ing) { return !newProd[0].ingredients.some(function(x) { return x.ingId === ing.id; }); }).map(function(ing) { return <option key={ing.id} value={ing.id}>{ing.name} ({ing.costPerUnit} €/{ing.unit})</option>; })}
+                </select>
+              </div>
+              {/* Ingredients list */}
+              {newProd[0].ingredients.length > 0 && (
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, marginBottom: 12 }}>
+                  <thead><tr style={{ borderBottom: "2px solid #eee" }}>
+                    <th style={{ textAlign: "left", padding: "6px", color: "#888", fontSize: 10 }}>INGREDIENTE</th>
+                    <th style={{ textAlign: "right", padding: "6px", color: "#888", fontSize: 10, width: 90 }}>CANTIDAD</th>
+                    <th style={{ textAlign: "center", padding: "6px", color: "#888", fontSize: 10 }}>UD</th>
+                    <th style={{ textAlign: "right", padding: "6px", color: "#888", fontSize: 10 }}>€/UD</th>
+                    <th style={{ textAlign: "right", padding: "6px", color: "#888", fontSize: 10 }}>COSTE</th>
+                    <th style={{ textAlign: "right", padding: "6px", color: "#888", fontSize: 10 }}>%</th>
+                    <th style={{ width: 30 }}></th>
+                  </tr></thead>
+                  <tbody>
+                    {newProd[0].ingredients.map(function(item, idx) {
+                      var pct = newCost > 0 ? (item.lineCost / newCost * 100) : 0;
+                      return (
+                        <tr key={idx} style={{ borderBottom: "1px solid #f5f5f5" }}>
+                          <td style={{ padding: "6px", fontWeight: 600 }}>{item.name}</td>
+                          <td style={{ padding: "6px" }}>
+                            <input type="number" step={item.unit === "ud" ? "1" : "0.005"} value={item.qty} onChange={function(e) { updateIngQty(idx, parseFloat(e.target.value) || 0); }} style={{ width: "100%", padding: "4px 6px", border: "1px solid #e5e5e5", borderRadius: 6, fontSize: 12, textAlign: "right", fontFamily: "inherit" }} />
+                          </td>
+                          <td style={{ padding: "6px", textAlign: "center", color: "#888" }}>{item.unit === "ud" ? "ud" : "kg"}</td>
+                          <td style={{ padding: "6px", textAlign: "right", color: "#888" }}>{item.costPerUnit.toFixed(2)}</td>
+                          <td style={{ padding: "6px", textAlign: "right", fontWeight: 700, color: "#B45309" }}>{item.lineCost.toFixed(2)}€</td>
+                          <td style={{ padding: "6px", textAlign: "right", fontSize: 10, color: pct > 40 ? "#DC2626" : "#888" }}>{pct.toFixed(0)}%</td>
+                          <td style={{ padding: "6px" }}><button onClick={function() { removeIng(idx); }} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 14 }}>×</button></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+              {newProd[0].ingredients.length === 0 && (
+                <div style={{ textAlign: "center", padding: 20, color: "#aaa", fontSize: 13 }}>Selecciona ingredientes del dropdown</div>
+              )}
+              {/* Cost summary */}
+              <div style={{ display: "flex", gap: 16, padding: "12px 16px", background: "#F0FDF4", borderRadius: 10, marginBottom: 12, flexWrap: "wrap" }}>
+                <div><span style={{ fontSize: 11, color: "#888" }}>Coste total:</span> <strong style={{ color: "#B45309", fontSize: 16 }}>{newCost.toFixed(2)}€</strong></div>
+                <div><span style={{ fontSize: 11, color: "#888" }}>Ingredientes:</span> <strong>{newProd[0].ingredients.length}</strong></div>
+                <div><span style={{ fontSize: 11, color: "#888" }}>Peso aprox:</span> <strong>{Math.round(newProd[0].ingredients.reduce(function(s, x) { return s + (x.unit === "ud" ? 0 : x.qty * 1000); }, 0))}g</strong></div>
+                {newProd[0].packQty > 1 && <div><span style={{ fontSize: 11, color: "#888" }}>x{newProd[0].packQty} =</span> <strong style={{ color: "#B45309" }}>{(newCost * newProd[0].packQty).toFixed(2)}€</strong></div>}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={function() { createStep[1](1); }} style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Atras</button>
+                <button onClick={function() { createStep[1](3); }} disabled={newProd[0].ingredients.length === 0} style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: newProd[0].ingredients.length > 0 ? "#047857" : "#ccc", color: "#fff", fontSize: 13, fontWeight: 700, cursor: newProd[0].ingredients.length > 0 ? "pointer" : "default", fontFamily: "inherit" }}>Siguiente → Precios</button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: Pricing */}
+          {createStep[0] === 3 && (
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>💰 Precios — {newProd[0].name}</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Coste: <strong style={{ color: "#B45309" }}>{newCost.toFixed(2)}€</strong> — Pon precios por canal. Te recomendamos FC entre 25-35%.</div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 16 }}>
+                {["Sala", "Uber Eats", "Glovo", "Canal Propio"].map(function(ch) {
+                  var price = newProd[0].prices[ch] || 0;
+                  var fc = price > 0 ? (newCost / price * 100) : 0;
+                  var fcColor = fc > 35 ? "#DC2626" : fc > 30 ? "#D97706" : fc > 0 ? "#047857" : "#ccc";
+                  var recPrice = newCost > 0 ? (newCost / 0.30).toFixed(2) : "—";
+                  return (
+                    <div key={ch} style={{ background: "#f8f8f8", borderRadius: 10, padding: 12 }}>
+                      <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>{ch}</div>
+                      <input type="number" step="0.05" value={price || ""} placeholder="0.00" onChange={function(e) {
+                        var np = Object.assign({}, newProd[0]);
+                        np.prices = Object.assign({}, np.prices);
+                        np.prices[ch] = parseFloat(e.target.value) || 0;
+                        newProd[1](np);
+                      }} style={{ width: "100%", padding: "8px 10px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 16, fontWeight: 700, fontFamily: "inherit", boxSizing: "border-box", textAlign: "center" }} />
+                      {price > 0 && <div style={{ marginTop: 6, textAlign: "center" }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: fcColor }}>FC: {fc.toFixed(1)}%</span>
+                        <span style={{ fontSize: 11, color: "#888", marginLeft: 6 }}>Mg: {(price - newCost).toFixed(2)}€</span>
+                      </div>}
+                      {price === 0 && newCost > 0 && <div style={{ fontSize: 10, color: "#aaa", marginTop: 4, textAlign: "center" }}>Rec: {recPrice}€ (FC 30%)</div>}
+                    </div>
+                  );
+                })}
+              </div>
+              {/* FC guide */}
+              <div style={{ padding: "10px 14px", background: "#FFF7ED", borderRadius: 8, fontSize: 11, color: "#92400E", marginBottom: 12 }}>
+                💡 <strong>Guia FC:</strong> {"<"}25% = excelente | 25-30% = bueno | 30-35% = aceptable | {">"}35% = revisar coste o subir precio
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={function() { createStep[1](2); }} style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Atras</button>
+                <button onClick={function() { createStep[1](4); }} style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: "#047857", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Siguiente → Elaboracion</button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 4: Elaboration */}
+          {createStep[0] === 4 && (
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>📝 Pasos de elaboracion — {newProd[0].name}</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>Los encargados y empleados veran estos pasos en la seccion Recetas.</div>
+              {newProd[0].steps.map(function(step, idx) {
+                return (
+                  <div key={idx} style={{ display: "flex", gap: 8, marginBottom: 8, alignItems: "center" }}>
+                    <span style={{ width: 24, height: 24, borderRadius: 12, background: "#047857", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{idx + 1}</span>
+                    <input value={step} onChange={function(e) {
+                      var np = Object.assign({}, newProd[0]);
+                      np.steps = np.steps.map(function(s, i) { return i === idx ? e.target.value : s; });
+                      newProd[1](np);
+                    }} placeholder={"Paso " + (idx + 1) + "..."} style={{ flex: 1, padding: "8px 12px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 13, fontFamily: "inherit" }} />
+                    <button onClick={function() {
+                      var np = Object.assign({}, newProd[0]);
+                      np.steps = np.steps.filter(function(s, i) { return i !== idx; });
+                      newProd[1](np);
+                    }} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 16 }}>×</button>
+                  </div>
+                );
+              })}
+              <button onClick={function() {
+                var np = Object.assign({}, newProd[0]);
+                np.steps = np.steps.concat([""]);
+                newProd[1](np);
+              }} style={{ padding: "8px 16px", borderRadius: 8, border: "2px dashed #047857", background: "#F0FDF4", color: "#047857", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", marginBottom: 12 }}>+ Añadir paso</button>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={function() { createStep[1](3); }} style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Atras</button>
+                <button onClick={function() { createStep[1](5); }} style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: "#047857", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Siguiente → Canales</button>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 5: Channels & Confirm */}
+          {createStep[0] === 5 && (
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>🚀 Canales y activacion — {newProd[0].name}</div>
+              <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+                {["Sala", "Uber Eats", "Glovo", "Canal Propio"].map(function(ch) {
+                  var active = newProd[0].channels.indexOf(ch) >= 0;
+                  return <button key={ch} onClick={function() {
+                    var np = Object.assign({}, newProd[0]);
+                    np.channels = active ? np.channels.filter(function(c) { return c !== ch; }) : np.channels.concat([ch]);
+                    newProd[1](np);
+                  }} style={{ padding: "10px 20px", borderRadius: 10, border: "2px solid " + (active ? "#047857" : "#e5e5e5"), background: active ? "#ECFDF5" : "#fff", color: active ? "#047857" : "#888", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                    {active ? "✓ " : ""}{ch}
+                  </button>;
+                })}
+              </div>
+              {/* Summary card */}
+              <div style={{ background: "#f8f8f8", borderRadius: 12, padding: 16, marginBottom: 16 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📋 Resumen</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, fontSize: 12 }}>
+                  <div><span style={{ color: "#888" }}>Producto:</span> <strong>{newProd[0].name}</strong></div>
+                  <div><span style={{ color: "#888" }}>Categoria:</span> <strong>{newProd[0].category}</strong></div>
+                  <div><span style={{ color: "#888" }}>Ingredientes:</span> <strong>{newProd[0].ingredients.length}</strong></div>
+                  <div><span style={{ color: "#888" }}>Coste:</span> <strong style={{ color: "#B45309" }}>{newCost.toFixed(2)}€</strong></div>
+                  <div><span style={{ color: "#888" }}>PVP Sala:</span> <strong>{newProd[0].prices.Sala || "—"}€</strong></div>
+                  <div><span style={{ color: "#888" }}>FC Sala:</span> <strong style={{ color: newProd[0].prices.Sala > 0 && (newCost / newProd[0].prices.Sala * 100) > 35 ? "#DC2626" : "#047857" }}>{newProd[0].prices.Sala > 0 ? (newCost / newProd[0].prices.Sala * 100).toFixed(1) + "%" : "—"}</strong></div>
+                  <div><span style={{ color: "#888" }}>Pasos:</span> <strong>{newProd[0].steps.filter(function(s) { return s; }).length}</strong></div>
+                  <div><span style={{ color: "#888" }}>Canales:</span> <strong>{newProd[0].channels.length}</strong></div>
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: "#047857", marginBottom: 12 }}>✅ Al crear, se notificara a encargados y empleados del nuevo producto.</div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button onClick={function() { createStep[1](4); }} style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Atras</button>
+                <button onClick={saveNewProduct} disabled={!newProd[0].name || newProd[0].ingredients.length === 0} style={{ padding: "12px 28px", borderRadius: 10, border: "none", background: newProd[0].name && newProd[0].ingredients.length > 0 ? "#047857" : "#ccc", color: "#fff", fontSize: 15, fontWeight: 700, cursor: newProd[0].name && newProd[0].ingredients.length > 0 ? "pointer" : "default", fontFamily: "inherit" }}>🚀 Crear producto y notificar al equipo</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {fl.map(function(p) {
           var cost = props.getPC(p);
