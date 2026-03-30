@@ -1350,6 +1350,338 @@ function DashView(props) {
           )} />
       </div>
 
+      {/* === HEALTH SCORE === */}
+      {(function() {
+        var totalProducts = wp.length;
+        var fcScore = totalProducts > 0 ? Math.round((okCount / totalProducts) * 40) : 0;
+        var stockScore = props.stockAlerts[0].length === 0 ? 20 : props.stockAlerts[0].length <= 2 ? 12 : 5;
+        var incScore = props.incidents[0].filter(function(x){return x.status==="abierta";}).length === 0 ? 20 : props.incidents[0].filter(function(x){return x.status==="abierta";}).length <= 2 ? 12 : 5;
+        var priceScore = wrongPrice === 0 ? 10 : wrongPrice <= 2 ? 6 : 2;
+        var dangerScore = dangerCount === 0 ? 10 : dangerCount <= 2 ? 5 : 0;
+        var healthScore = Math.min(100, fcScore + stockScore + incScore + priceScore + dangerScore);
+        var hsColor = healthScore >= 80 ? "#047857" : healthScore >= 60 ? "#D97706" : "#DC2626";
+        var hsLabel = healthScore >= 80 ? "Excelente" : healthScore >= 60 ? "Aceptable" : "Necesita atencion";
+        return (
+          <div style={{ marginTop: 20, marginBottom: 20 }}>
+            <div style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: 16, padding: "24px", color: "#fff", display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+              <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
+                <svg viewBox="0 0 100 100" style={{ width: 100, height: 100, transform: "rotate(-90deg)" }}>
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="#333" strokeWidth="8" />
+                  <circle cx="50" cy="50" r="42" fill="none" stroke={hsColor} strokeWidth="8" strokeDasharray={2 * Math.PI * 42} strokeDashoffset={2 * Math.PI * 42 * (1 - healthScore / 100)} strokeLinecap="round" />
+                </svg>
+                <div style={{ position: "absolute", top: 0, left: 0, width: 100, height: 100, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: hsColor }}>{healthScore}</div>
+                  <div style={{ fontSize: 9, color: "#888" }}>/100</div>
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Salud del Negocio: <span style={{ color: hsColor }}>{hsLabel}</span></div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 8 }}>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Food Cost <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{fcScore}/40</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Stock <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{stockScore}/20</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Incidencias <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{incScore}/20</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Precios <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{priceScore}/10</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Zona roja <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{dangerScore}/10</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* === FC MAP BY CATEGORY === */}
+      {(function() {
+        var catData = [];
+        for (var ci3 = 0; ci3 < PROD_CATS.length; ci3++) {
+          var cat = PROD_CATS[ci3];
+          var catProducts = wp.filter(function(p) { return p.category === cat; });
+          if (catProducts.length === 0) continue;
+          var catFC = 0; for (var j2 = 0; j2 < catProducts.length; j2++) catFC += catProducts[j2].fc;
+          catFC = catFC / catProducts.length;
+          var catMargin = 0; for (var j3 = 0; j3 < catProducts.length; j3++) catMargin += catProducts[j3].margin;
+          catMargin = catMargin / catProducts.length;
+          var catEmojis = { "Burritos": "🌯", "Bowls": "🥗", "Tacos": "🌮", "Quesadillas": "🧀", "Nachos": "🍿", "Extras": "🍟", "Bebidas": "🍺", "Postres": "🍮" };
+          catData.push({ cat: cat, emoji: catEmojis[cat] || "📋", fc: catFC, margin: catMargin, count: catProducts.length });
+        }
+        catData.sort(function(a, b) { return b.fc - a.fc; });
+        var maxFC = catData.length > 0 ? Math.max(catData[0].fc, 50) : 50;
+
+        return (
+          <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", marginBottom: 20 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>📊 Food Cost por Categoria — {chLabel}</div>
+            {catData.map(function(c) {
+              var barW = Math.max(5, (c.fc / maxFC) * 100);
+              var fcC = c.fc > 35 ? "#DC2626" : c.fc > 30 ? "#D97706" : "#047857";
+              return (
+                <div key={c.cat} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <div style={{ width: 90, display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600, flexShrink: 0 }}><span>{c.emoji}</span>{c.cat}</div>
+                  <div style={{ flex: 1, background: "#f5f5f5", borderRadius: 6, height: 24, position: "relative", overflow: "hidden" }}>
+                    <div style={{ width: barW + "%", height: "100%", background: fcC + "25", borderRadius: 6, transition: "width 0.5s" }} />
+                    <div style={{ position: "absolute", left: 8, top: 0, height: "100%", display: "flex", alignItems: "center", fontSize: 11, fontWeight: 700, color: fcC }}>{fPct(c.fc)}</div>
+                    {c.fc <= 32 && <div style={{ position: "absolute", right: 8, top: 0, height: "100%", display: "flex", alignItems: "center", fontSize: 10, color: "#aaa" }}>✓</div>}
+                  </div>
+                  <div style={{ width: 70, textAlign: "right", fontSize: 11, color: "#888" }}>{fmt(c.margin)} mg</div>
+                </div>
+              );
+            })}
+            <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 8, marginTop: 8, display: "flex", gap: 16, fontSize: 10, color: "#aaa" }}>
+              <span>🟢 &lt;30%</span><span>🟡 30-35%</span><span>🔴 &gt;35%</span>
+              <span style={{ marginLeft: "auto" }}>Objetivo: 28-32%</span>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* === CRITICAL INGREDIENTS + SUPPLIER DEPENDENCY === */}
+      <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+        {/* Top ingredients by cost impact */}
+        {(function() {
+          var ingImpact = {};
+          for (var ip = 0; ip < props.products.length; ip++) {
+            var pr = props.products[ip];
+            if (!pr.recipeId) continue;
+            var rec = null;
+            for (var ir = 0; ir < props.recipes.length; ir++) { if (props.recipes[ir].id === pr.recipeId) { rec = props.recipes[ir]; break; } }
+            if (!rec || !rec.items) continue;
+            var ws = pr.weekSales || 0;
+            for (var ii = 0; ii < rec.items.length; ii++) {
+              var it = rec.items[ii];
+              if (it.type !== "ingredient") continue;
+              var ing = null;
+              for (var ik = 0; ik < props.ingredients.length; ik++) { if (props.ingredients[ik].id === it.refId) { ing = props.ingredients[ik]; break; } }
+              if (!ing) continue;
+              var lineCost = ing.costPerUnit * (it.qty || 0) * ws;
+              if (!ingImpact[ing.id]) ingImpact[ing.id] = { name: ing.name, cost: ing.costPerUnit, unit: ing.unit, total: 0 };
+              ingImpact[ing.id].total += lineCost;
+            }
+          }
+          var topIngs = [];
+          for (var ki in ingImpact) topIngs.push(ingImpact[ki]);
+          topIngs.sort(function(a, b) { return b.total - a.total; });
+          var totalCostAll = 0;
+          for (var ti = 0; ti < topIngs.length; ti++) totalCostAll += topIngs[ti].total;
+          return (
+            <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>🔥 Top 8 Ingredientes por Impacto</div>
+              <div style={{ fontSize: 11, color: "#888", marginBottom: 12 }}>Gasto semanal estimado por ingrediente</div>
+              {topIngs.slice(0, 8).map(function(ing, idx) {
+                var pct = totalCostAll > 0 ? (ing.total / totalCostAll * 100) : 0;
+                return (
+                  <div key={idx} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, padding: "6px 0", borderBottom: "1px solid #f8f8f8" }}>
+                    <div style={{ width: 22, height: 22, borderRadius: 11, background: idx < 3 ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: idx < 3 ? "#B45309" : "#aaa" }}>{idx + 1}</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 12, fontWeight: 600 }}>{ing.name}</div>
+                      <div style={{ fontSize: 10, color: "#aaa" }}>{ing.cost.toFixed(2)}€/{ing.unit}</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: pct > 15 ? "#DC2626" : "#333" }}>{ing.total.toFixed(1)}€/sem</div>
+                      <div style={{ fontSize: 10, color: pct > 15 ? "#DC2626" : "#aaa" }}>{pct.toFixed(1)}%</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {/* Supplier dependency */}
+        {(function() {
+          var supCost = {};
+          for (var ip2 = 0; ip2 < props.ingredients.length; ip2++) {
+            var ing2 = props.ingredients[ip2];
+            var supName = "Sin proveedor";
+            for (var is2 = 0; is2 < props.suppliers.length; is2++) { if (props.suppliers[is2].id === ing2.supplierId) { supName = props.suppliers[is2].name; break; } }
+            if (!supCost[supName]) supCost[supName] = { name: supName, items: 0, totalCost: 0 };
+            supCost[supName].items++;
+            var weekImpact = 0;
+            for (var ip3 = 0; ip3 < props.products.length; ip3++) {
+              var pr2 = props.products[ip3];
+              if (!pr2.recipeId) continue;
+              var rec2 = null;
+              for (var ir2 = 0; ir2 < props.recipes.length; ir2++) { if (props.recipes[ir2].id === pr2.recipeId) { rec2 = props.recipes[ir2]; break; } }
+              if (!rec2 || !rec2.items) continue;
+              for (var ii2 = 0; ii2 < rec2.items.length; ii2++) {
+                if (rec2.items[ii2].refId === ing2.id) weekImpact += ing2.costPerUnit * (rec2.items[ii2].qty || 0) * (pr2.weekSales || 0);
+              }
+            }
+            supCost[supName].totalCost += weekImpact;
+          }
+          var supList = [];
+          for (var ks in supCost) supList.push(supCost[ks]);
+          supList.sort(function(a, b) { return b.totalCost - a.totalCost; });
+          var totalAll = 0;
+          for (var ts = 0; ts < supList.length; ts++) totalAll += supList[ts].totalCost;
+          return (
+            <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>🏭 Dependencia de Proveedores</div>
+              <div style={{ fontSize: 11, color: "#888", marginBottom: 12 }}>% del gasto semanal por proveedor</div>
+              {supList.filter(function(s) { return s.totalCost > 0; }).map(function(s, idx) {
+                var pct = totalAll > 0 ? (s.totalCost / totalAll * 100) : 0;
+                var barColors = ["#B45309", "#1E40AF", "#047857", "#7C3AED", "#DC2626", "#D97706", "#0E7490", "#4338CA"];
+                var bc = barColors[idx % barColors.length];
+                return (
+                  <div key={idx} style={{ marginBottom: 10 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                      <span style={{ fontSize: 12, fontWeight: 600 }}>{s.name}</span>
+                      <span style={{ fontSize: 11, color: "#888" }}>{s.items} ingr. | {s.totalCost.toFixed(0)}€/sem | <strong style={{ color: pct > 30 ? "#DC2626" : "#333" }}>{pct.toFixed(0)}%</strong></span>
+                    </div>
+                    <div style={{ background: "#f5f5f5", borderRadius: 4, height: 8, overflow: "hidden" }}>
+                      <div style={{ width: pct + "%", height: "100%", background: bc, borderRadius: 4 }} />
+                    </div>
+                  </div>
+                );
+              })}
+              {supList.filter(function(s) { return s.totalCost > 0 && (s.totalCost / totalAll * 100) > 30; }).length > 0 && (
+                <div style={{ marginTop: 10, padding: "8px 12px", background: "#FEF2F2", borderRadius: 8, fontSize: 11, color: "#991B1B" }}>
+                  ⚠️ Alta concentracion: proveedores con &gt;30% del gasto son un riesgo. Diversifica si puedes.
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* === STOCK VALUE + PROMOS HOY === */}
+      <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+        {/* Stock value per local */}
+        {(function() {
+          var sData = props.stockData ? props.stockData[0] || {} : {};
+          var locals = LOCALS;
+          var localValues = [];
+          var totalValue = 0;
+          for (var li = 0; li < locals.length; li++) {
+            var loc = locals[li];
+            var locStock = sData[loc] || {};
+            var locVal = 0;
+            var locItems = 0;
+            for (var si in locStock) {
+              var qty = locStock[si] || 0;
+              if (qty <= 0) continue;
+              var ing3 = null;
+              for (var ii3 = 0; ii3 < props.ingredients.length; ii3++) { if (props.ingredients[ii3].id === si) { ing3 = props.ingredients[ii3]; break; } }
+              if (ing3) { locVal += qty * ing3.costPerUnit; locItems++; }
+            }
+            totalValue += locVal;
+            localValues.push({ local: loc, value: locVal, items: locItems });
+          }
+          return (
+            <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>📦 Valor del Stock por Local</div>
+              {localValues.map(function(lv) {
+                return (
+                  <div key={lv.local} onClick={function(){props.setPage("stock");}} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 10px", borderBottom: "1px solid #f5f5f5", cursor: "pointer" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: lv.value > 0 ? "#F0FDF4" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>📍</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 14, fontWeight: 700 }}>{lv.local}</div>
+                      <div style={{ fontSize: 11, color: "#aaa" }}>{lv.items} ingredientes registrados</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontSize: 18, fontWeight: 800, color: lv.value > 0 ? "#047857" : "#ccc" }}>{lv.value > 0 ? lv.value.toFixed(0) + "€" : "—"}</div>
+                    </div>
+                  </div>
+                );
+              })}
+              <div style={{ borderTop: "1px solid #eee", paddingTop: 10, marginTop: 8, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 13, fontWeight: 700 }}>Total inventario</span>
+                <span style={{ fontSize: 20, fontWeight: 800, color: totalValue > 0 ? "#047857" : "#ccc" }}>{totalValue > 0 ? totalValue.toFixed(0) + "€" : "Sin datos"}</span>
+              </div>
+              {totalValue === 0 && <div style={{ marginTop: 8, fontSize: 11, color: "#aaa" }}>Registra stock en la seccion Stock para ver el valor.</div>}
+            </div>
+          );
+        })()}
+
+        {/* Promos activas hoy */}
+        {(function() {
+          var dias = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+          var hoyDia = dias[new Date().getDay()];
+          var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && (p.dias || []).indexOf(hoyDia) >= 0; }) : [];
+          var byLocal = {};
+          for (var ph = 0; ph < promosHoy.length; ph++) {
+            var loc2 = promosHoy[ph].local || "Sin local";
+            if (!byLocal[loc2]) byLocal[loc2] = [];
+            byLocal[loc2].push(promosHoy[ph]);
+          }
+          return (
+            <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>🏷️ Promos Activas Hoy ({promosHoy.length})</div>
+              {promosHoy.length === 0 && <div style={{ padding: 20, textAlign: "center", color: "#ccc", fontSize: 13 }}>No hay promos activas hoy</div>}
+              {Object.keys(byLocal).map(function(loc3) {
+                return (
+                  <div key={loc3} style={{ marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginBottom: 6 }}>{loc3}</div>
+                    {byLocal[loc3].map(function(p2) {
+                      var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
+                      return (
+                        <div key={p2.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 8px", marginBottom: 4, borderRadius: 8, background: "#f8f8f8" }}>
+                          <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (platColors[p2.plataforma] || "#888") + "15", color: platColors[p2.plataforma] || "#888" }}>{p2.plataforma}</span>
+                          <div style={{ flex: 1, fontSize: 12, fontWeight: 600 }}>{p2.promo}% — {p2.products}</div>
+                          <span style={{ fontSize: 10, color: "#aaa" }}>{p2.usuarios}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+              <button onClick={function(){props.setPage("promos");}} style={{ marginTop: 8, padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Ver todas las promos →</button>
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* === EQUIPO === */}
+      {(function() {
+        var today = new Date().toISOString().slice(0, 10);
+        var todayClocks = props.clockRecords ? props.clockRecords[0].filter(function(c) { return c.date === today; }) : [];
+        var pendingTasks = props.weekTasks ? props.weekTasks[0].filter(function(t) { return !t.done; }) : [];
+        var doneTasks = props.weekTasks ? props.weekTasks[0].filter(function(t) { return t.done; }) : [];
+        var gamif = props.gamification ? props.gamification[0] : {};
+        var teamPoints = [];
+        if (gamif && gamif.points) {
+          for (var gk in gamif.points) teamPoints.push({ name: gk, points: gamif.points[gk] || 0 });
+        }
+        teamPoints.sort(function(a, b) { return b.points - a.points; });
+
+        return (
+          <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", marginBottom: 20 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 16 }}>👥 Equipo</div>
+            <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 16 }}>
+              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#F0FDF4" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#047857" }}>{todayClocks.length}</div>
+                <div style={{ fontSize: 10, color: "#888" }}>Fichajes hoy</div>
+              </div>
+              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#FEF3C7" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#D97706" }}>{pendingTasks.length}</div>
+                <div style={{ fontSize: 10, color: "#888" }}>Tareas pendientes</div>
+              </div>
+              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#ECFDF5" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#047857" }}>{doneTasks.length}</div>
+                <div style={{ fontSize: 10, color: "#888" }}>Tareas hechas</div>
+              </div>
+              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#FAF6F1" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#B45309" }}>{teamPoints.reduce(function(s, t) { return s + t.points; }, 0)}</div>
+                <div style={{ fontSize: 10, color: "#888" }}>Alubias Doradas 🫘</div>
+              </div>
+            </div>
+            {teamPoints.length > 0 && (
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 600, color: "#888", marginBottom: 8 }}>RANKING ALUBIAS DORADAS 🫘</div>
+                {teamPoints.slice(0, 5).map(function(tp, idx) {
+                  var medals = ["🥇", "🥈", "🥉"];
+                  return (
+                    <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 4px", borderBottom: "1px solid #f8f8f8" }}>
+                      <span style={{ fontSize: 16, width: 24, textAlign: "center" }}>{medals[idx] || (idx + 1)}</span>
+                      <div style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{tp.name}</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#B45309" }}>{tp.points} 🫘</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            {teamPoints.length === 0 && todayClocks.length === 0 && <div style={{ textAlign: "center", padding: 12, color: "#ccc", fontSize: 12 }}>Aun no hay datos de equipo registrados</div>}
+          </div>
+        );
+      })()}
+
       {/* Live Alerts from team - filtered by local */}
       {(props.stockAlerts[0].length > 0 || props.incidents[0].filter(function(x){return x.status==="abierta";}).length > 0) && (
         <div style={{ marginTop: 20 }}>
@@ -1464,6 +1796,9 @@ function EncargadoPanel(props) {
       </div>
 
       <div style={{ marginBottom: 24 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Panel de Control</div>
+        <div style={{ fontSize: 13, color: "#888" }}>{props.user.local || "Todos los locales"} - Resumen operativo</div>
+      </div>
 
       <NovedadesBlock role="encargado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
