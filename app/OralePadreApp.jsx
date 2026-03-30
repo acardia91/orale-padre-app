@@ -436,8 +436,6 @@ export default function App() {
         .then(function() { return dbModule.saveStockAlerts(stockAlerts[0]).catch(function(){}); })
         .then(function() { return dbModule.saveIncidents(incidents[0]).catch(function(){}); })
         .then(function() { return dbModule.saveIdeas(ideasState[0]).catch(function(){}); })
-        .then(function() { return dbModule.saveIngredients(ing[0]).catch(function(){}); })
-        .then(function() { return dbModule.saveProducts(prod[0]).catch(function(){}); })
         .then(function() { return dbModule.saveMktData(mktData[0]).catch(function(){}); })
         .then(function() { return dbModule.saveCombos(savedCombos[0]).catch(function(){}); })
         .then(function() { if (dbModule.saveClockRecords) return dbModule.saveClockRecords(clockRecords[0]).catch(function(){}); })
@@ -456,7 +454,18 @@ export default function App() {
         .catch(function() { isSavingRef.current = false; });
     }, 5000);
     return function() { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  }, [promosData[0], stockAlerts[0], incidents[0], ideasState[0], ing[0], prod[0], savedCombos[0], clockRecords[0], checklistRecords[0], albaranesData[0], stockData[0], gamification[0], weekTasks[0], stockMins[0]]);
+  }, [promosData[0], stockAlerts[0], incidents[0], ideasState[0], savedCombos[0], clockRecords[0], checklistRecords[0], albaranesData[0], stockData[0], gamification[0], weekTasks[0], stockMins[0]]);
+
+  // Explicit save for ingredients & products (not auto-saved to avoid 409 conflicts)
+  function saveIngProd() {
+    if (!dbModule) return;
+    dbModule.saveIngredients(ing[0]).then(function() {
+      return dbModule.saveProducts(prod[0]);
+    }).then(function() {
+      toast[1]("✅ Ingredientes y precios guardados");
+      setTimeout(function() { toast[1](null); }, 2000);
+    }).catch(function(e) { console.error("Save ing/prod error:", e); });
+  }
 
   function getPC(p) {
     if (!p.recipeId) return 0;
@@ -722,7 +731,7 @@ export default function App() {
            n.k.toLowerCase().indexOf(searchQuery[0].toLowerCase()) >= 0;
   }) : nav;
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins };
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd };
 
   return (
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
@@ -1978,6 +1987,7 @@ function IngView(props) {
     if (isNaN(v) || v <= 0) { editing[1](null); return; }
     props.setIng(props.ingredients.map(function(i) { return i.id === ingId ? Object.assign({}, i, { costPerUnit: v }) : i; }));
     editing[1](null);
+    setTimeout(function() { if (props.saveIngProd) props.saveIngProd(); }, 500);
   }
   return (
     <div>
@@ -2321,6 +2331,8 @@ function ProdView(props) {
                           });
                           var newSales = parseInt(salesEl ? salesEl.value : curSales) || 0;
                           props.setProd(props.products.map(function(x) { return x.id === pId ? Object.assign({}, x, { prices: newPrices, weekSales: newSales }) : x; }));
+                          // Explicit save to Supabase
+                          setTimeout(function() { if (props.saveIngProd) props.saveIngProd(); }, 500);
                           var btn = document.getElementById("savebtn_" + pId);
                           if (btn) { btn.textContent = "Guardado!"; btn.style.background = "#047857"; setTimeout(function() { btn.textContent = "Guardar precios"; btn.style.background = "#B45309"; }, 2000); }
                         }} id={"savebtn_" + pId} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "#B45309", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "background 0.2s" }}>
@@ -8469,6 +8481,8 @@ function AlbaranesView(props) {
     fechaDetected[1]("");
     totalDetected[1](0);
     mainTab[1]("historial");
+    // Save ingredients with updated prices
+    setTimeout(function() { if (props.saveIngProd) props.saveIngProd(); }, 1000);
   }
 
   function cancelReview() {
