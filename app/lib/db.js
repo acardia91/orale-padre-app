@@ -359,3 +359,22 @@ export async function saveStockMins(mins) {
     if (rows.length > 0) await supabase.from('stock_minimums').insert(rows);
   } catch (err) { console.error("Save stock mins error:", err); }
 }
+export async function createProduct(recipe, items, product, prices) {
+  try {
+    await supabase.rpc('create_product', {
+      p_recipe_id: recipe.id,
+      p_recipe_name: recipe.name,
+      p_recipe_notes: recipe.notes || '',
+      p_items: JSON.stringify(items),
+      p_product_id: product.id,
+      p_product_name: product.name,
+      p_category: product.category,
+      p_pack_qty: product.packQty || 1,
+      p_sala: prices.Sala || 0,
+      p_uber: prices["Uber Eats"] || 0,
+      p_glovo: prices.Glovo || 0,
+      p_canal: prices["Canal Propio"] || 0,
+      p_week_sales: product.weekSales || 0
+    });
+  } catch (err) { console.error("Create product error:", err); }
+}
