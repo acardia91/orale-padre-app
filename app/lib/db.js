@@ -81,6 +81,12 @@ export async function loadAllData() {
     var { data: checkRecs } = await supabase.from('checklist_records').select('*').order('created_at', { ascending: false });
     if (clockRecs && clockRecs.length > 0) result.clockRecords = clockRecs;
     if (checkRecs && checkRecs.length > 0) result.checklistRecords = checkRecs;
+    var { data: albaranesRecs } = await supabase.from('albaranes').select('*').order('confirmed_at', { ascending: false });
+    if (albaranesRecs && albaranesRecs.length > 0) {
+      result.albaranes = albaranesRecs.map(function(a) {
+        return { id: a.id, fecha: a.fecha, proveedor: a.proveedor, local: a.local, total: parseFloat(a.total) || 0, lineas: a.lineas || [], confirmedBy: a.confirmed_by, confirmedAt: a.confirmed_at };
+      });
+    }
     var hasOps = (protocolos && protocolos.length > 0) || (alertasProd && alertasProd.length > 0);
     if (hasOps) {
       var readMap = {};
@@ -154,4 +160,23 @@ export async function saveChecklistRecords(checklists) {
       }));
     }
   } catch (err) { console.error("Save checklist records error:", err); }
+}
+export async function saveAlbaranes(albaranes) {
+  try {
+    if (albaranes && albaranes.length > 0) {
+      for (var i = 0; i < albaranes.length; i++) {
+        var a = albaranes[i];
+        await supabase.from('albaranes').upsert({
+          id: a.id,
+          fecha: a.fecha,
+          proveedor: a.proveedor,
+          local: a.local,
+          total: a.total,
+          lineas: a.lineas,
+          confirmed_by: a.confirmedBy,
+          confirmed_at: a.confirmedAt
+        });
+      }
+    }
+  } catch (err) { console.error("Save albaranes error:", err); }
 }
