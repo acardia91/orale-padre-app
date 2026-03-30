@@ -401,7 +401,14 @@ export default function App() {
         if (data.checklistRecords && (data.checklistRecords || []).length > 0) checklistRecords[1](data.checklistRecords);
         if (data.albaranes && (data.albaranes || []).length > 0) albaranesData[1](data.albaranes);
         if (data.stockData) stockData[1](data.stockData);
-        if (data.gamification) gamification[1](data.gamification);
+        if (data.gamification) {
+          var gDef = gamification[0];
+          gamification[1](Object.assign({}, gDef, data.gamification, {
+            rewards: data.gamification.rewards || gDef.rewards,
+            config: data.gamification.config || gDef.config,
+            points: data.gamification.points || gDef.points
+          }));
+        }
         if (data.weekTasks && (data.weekTasks || []).length > 0) weekTasks[1](data.weekTasks);
         if (data.priceHistory && (data.priceHistory || []).length > 0) priceHistory[1](data.priceHistory);
         if (data.prepSteps) prepStepsState[1](data.prepSteps);
@@ -7438,7 +7445,7 @@ function RRHHView(props) {
   // Sync tab with nav clicks
   useEffect(function() { var t = props.currentTab === "rrhh-dorados" ? "dorados" : props.currentTab === "rrhh-fichajes" ? "fichajes" : "equipo"; tab[1](t); }, [props.currentTab]);
   var gam = props.gamification;
-  var data = gam[0];
+  var data = gam[0] || {};
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
   var userName = props.user ? props.user.name : "";
 
@@ -7770,7 +7777,7 @@ function RRHHView(props) {
 /* ====== MI PERFIL (Empleado/Encargado) ====== */
 function MiPerfilView(props) {
   var gam = props.gamification;
-  var data = gam[0];
+  var data = gam[0] || {};
   var userName = props.user ? props.user.name : "";
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
 
@@ -8173,7 +8180,7 @@ function AlbaranesView(props) {
   var LOCS = ["San Luis","Los Remedios","Sevilla Este"];
   var albaranes = props.albaranesData[0];
   var setAlbaranes = props.albaranesData[1];
-  var stock = props.stockData[0];
+  var stock = props.stockData[0] || {};
   var setStock = props.stockData[1];
   var isSocio = props.isSocio;
   var userLocal = props.user && props.user.local ? props.user.local : "San Luis";
@@ -8395,7 +8402,7 @@ function AlbaranesView(props) {
     };
 
     // Update ingredient prices
-    var updatedIngs = props.ingredients.slice();
+    var updatedIngs = (props.ingredients || []).slice();
     for (var i = 0; i < aiLines[0].length; i++) {
       var line = aiLines[0][i];
       if (!line.ingredienteId) continue;
