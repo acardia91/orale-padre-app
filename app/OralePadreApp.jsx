@@ -1208,8 +1208,45 @@ function DashView(props) {
     }
   }
 
+  var frases = [
+    { txt: "El cliente no siempre tiene razon, pero siempre tiene hambre. Asegurate de que se vaya satisfecho.", autor: "Danny Meyer" },
+    { txt: "La consistencia es mas importante que la excelencia ocasional. Cada burrito debe ser perfecto.", autor: "Ray Kroc" },
+    { txt: "En street food, la velocidad sin calidad es ruido. La calidad sin velocidad es quiebra.", autor: "Orale Padre" },
+    { txt: "Trata a tus empleados como quieres que traten a tus clientes.", autor: "Richard Branson" },
+    { txt: "No vendas comida, vende experiencias. La comida se olvida, la experiencia se comparte.", autor: "Gordon Ramsay" },
+    { txt: "El food cost no miente. Controla tus numeros o tus numeros te controlaran a ti.", autor: "Orale Padre" },
+    { txt: "El mejor marketing de un restaurante es un cliente que vuelve y trae a un amigo.", autor: "Anonimo" },
+    { txt: "Cocina con pasion, gestiona con datos. Esa es la formula.", autor: "Orale Padre" },
+    { txt: "Un equipo motivado cocina mejor que un chef estrella solo.", autor: "Jose Andres" },
+    { txt: "El detalle que tu ignoras es el que el cliente recuerda.", autor: "Orale Padre" },
+    { txt: "En delivery, tienes 30 minutos para demostrar quien eres. Cada pedido es una primera cita.", autor: "Orale Padre" },
+    { txt: "La limpieza no es un extra, es el minimo. Si tu cocina no brilla, tu comida tampoco.", autor: "Marco Pierre White" },
+    { txt: "Innova o muere. El street food de hoy es el fine dining de manana.", autor: "Roy Choi" },
+    { txt: "No compitas en precio, compite en valor. El cliente paga mas por algo que le haga sentir especial.", autor: "Orale Padre" },
+    { txt: "Cada albaran es una oportunidad de negociar mejor. Revisa, compara, actua.", autor: "Orale Padre" },
+    { txt: "El exito en hosteleria se construye turno a turno, no de golpe.", autor: "Thomas Keller" },
+    { txt: "Un buen escandallo te dice la verdad que las ventas esconden.", autor: "Orale Padre" },
+    { txt: "La mejor receta del mundo fracasa si el equipo no la ejecuta igual cada vez.", autor: "Ferran Adria" },
+    { txt: "Street food no es comida barata, es comida honesta. Ingredientes reales, sabor real, precio justo.", autor: "Orale Padre" },
+    { txt: "Mide todo. Lo que no se mide, no se mejora. Lo que no se mejora, se muere.", autor: "Peter Drucker" },
+    { txt: "Tu marca no es tu logo, es lo que dicen de ti cuando cierras la persiana.", autor: "Orale Padre" },
+  ];
+  var fraseIdx = Math.floor(Date.now() / 86400000) % frases.length;
+  var frase = frases[fraseIdx];
+  var hora = new Date().getHours();
+  var saludo = hora < 14 ? "Buenos dias" : hora < 20 ? "Buenas tardes" : "Buenas noches";
+
   return (
     <div>
+      {/* Motivational banner */}
+      <div style={{ background: "#111", borderRadius: 16, padding: "22px 24px", marginBottom: 20, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: -20, right: -20, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, rgba(180,83,9,0.15) 0%, transparent 70%)" }} />
+        <div style={{ position: "absolute", bottom: -30, left: -10, width: 80, height: 80, borderRadius: "50%", background: "radial-gradient(circle, rgba(4,120,87,0.1) 0%, transparent 70%)" }} />
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#FAF6F1", marginBottom: 4 }}>{saludo}, Orale Padre 🌮</div>
+        <div style={{ fontSize: 13, color: "#FAF6F1", opacity: 0.85, lineHeight: 1.5, maxWidth: 700, marginBottom: 6, fontStyle: "italic" }}>"{frase.txt}"</div>
+        <div style={{ fontSize: 11, color: "#B45309", fontWeight: 600 }}>— {frase.autor}</div>
+      </div>
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
         <div>
           <div style={{ fontSize: 22, fontWeight: 800 }}>Dashboard</div>
