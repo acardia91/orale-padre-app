@@ -412,34 +412,41 @@ export default function App() {
     }).catch(function() { dbLoaded[1](true); });
   }, []);
 
-  // Auto-save to Supabase when state changes (debounced 3s)
+  var isSavingRef = useRef(false);
+  // Auto-save to Supabase when state changes (debounced 5s)
   useEffect(function() {
     if (!dbLoaded[0] || !dbModule) return;
+    if (isSavingRef.current) return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(function() {
       saveCountRef.current++;
-      // Skip initial save on first load
       if (saveCountRef.current <= 1) return;
-      try { dbModule.savePromotions(promosData[0]); } catch(e) {}
-      try { dbModule.saveStockAlerts(stockAlerts[0]); } catch(e) {}
-      try { dbModule.saveIncidents(incidents[0]); } catch(e) {}
-      try { dbModule.saveIdeas(ideasState[0]); } catch(e) {}
-      try { dbModule.saveIngredients(ing[0]); } catch(e) {}
-      try { dbModule.saveProducts(prod[0]); } catch(e) {}
-      try { dbModule.saveMktData(mktData[0]); } catch(e) {}
-      try { dbModule.saveCombos(savedCombos[0]); } catch(e) {}
-      try { if (dbModule.saveClockRecords) dbModule.saveClockRecords(clockRecords[0]); } catch(e) {}
-      try { if (dbModule.saveChecklistRecords) dbModule.saveChecklistRecords(checklistRecords[0]); } catch(e) {}
-      try { if (dbModule.saveAlbaranes) dbModule.saveAlbaranes(albaranesData[0]); } catch(e) {}
-      try { if (dbModule.saveStockData) dbModule.saveStockData(stockData[0]); } catch(e) {}
-      try { if (dbModule.saveGamification) dbModule.saveGamification(gamification[0]); } catch(e) {}
-      try { if (dbModule.saveWeekTasks) dbModule.saveWeekTasks(weekTasks[0]); } catch(e) {}
-      try { if (dbModule.savePrepSteps) dbModule.savePrepSteps(prepStepsState[0]); } catch(e) {}
-      toast[1]("✅ Guardado");
-      setTimeout(function() { toast[1](null); }, 2000);
-    }, 3000);
+      isSavingRef.current = true;
+      Promise.resolve()
+        .then(function() { return dbModule.savePromotions(promosData[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveStockAlerts(stockAlerts[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveIncidents(incidents[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveIdeas(ideasState[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveIngredients(ing[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveProducts(prod[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveMktData(mktData[0]).catch(function(){}); })
+        .then(function() { return dbModule.saveCombos(savedCombos[0]).catch(function(){}); })
+        .then(function() { if (dbModule.saveClockRecords) return dbModule.saveClockRecords(clockRecords[0]).catch(function(){}); })
+        .then(function() { if (dbModule.saveChecklistRecords) return dbModule.saveChecklistRecords(checklistRecords[0]).catch(function(){}); })
+        .then(function() { if (dbModule.saveAlbaranes) return dbModule.saveAlbaranes(albaranesData[0]).catch(function(){}); })
+        .then(function() { if (dbModule.saveStockData) return dbModule.saveStockData(stockData[0]).catch(function(){}); })
+        .then(function() { if (dbModule.saveGamification) return dbModule.saveGamification(gamification[0]).catch(function(){}); })
+        .then(function() { if (dbModule.saveWeekTasks) return dbModule.saveWeekTasks(weekTasks[0]).catch(function(){}); })
+        .then(function() { if (dbModule.savePrepSteps) return dbModule.savePrepSteps(prepStepsState[0]).catch(function(){}); })
+        .then(function() {
+          isSavingRef.current = false;
+          toast[1]("✅ Guardado");
+          setTimeout(function() { toast[1](null); }, 1500);
+        })
+        .catch(function() { isSavingRef.current = false; });
+    }, 5000);
     return function() { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  });
+  }, [promosData[0], stockAlerts[0], incidents[0], ideasState[0], ing[0], prod[0], savedCombos[0], clockRecords[0], checklistRecords[0], albaranesData[0], stockData[0], gamification[0], weekTasks[0]]);
 
   function getPC(p) {
     if (!p.recipeId) return 0;
