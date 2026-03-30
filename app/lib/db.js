@@ -176,21 +176,17 @@ export async function saveIdeas(ideas) {
 export async function saveIngredients(ingredients) {
   try {
     if (!ingredients || ingredients.length === 0) return;
-    for (var i = 0; i < ingredients.length; i++) {
-      var ing = ingredients[i];
-      await supabase.from('ingredients').upsert({ id: ing.id, name: ing.name, supplier_id: ing.supplierId, unit: ing.unit, cost_per_unit: ing.costPerUnit, category: ing.category }, { onConflict: 'id' });
-    }
+    var rows = ingredients.map(function(i) { return { id: i.id, name: i.name, supplier_id: i.supplierId, unit: i.unit, cost_per_unit: i.costPerUnit, category: i.category }; });
+    await supabase.from('ingredients').upsert(rows, { onConflict: 'id', ignoreDuplicates: false });
   } catch (err) { console.error("Save ingredients error:", err); }
 }
 export async function saveProducts(products) {
   try {
     if (!products || products.length === 0) return;
-    for (var i = 0; i < products.length; i++) {
-      var p = products[i];
-      await supabase.from('products').upsert({ id: p.id, name: p.name, recipe_id: p.recipeId, category: p.category, active: p.active, week_sales: p.weekSales, pack_qty: p.packQty || 1 }, { onConflict: 'id' });
-    }
+    var rows = products.map(function(p) { return { id: p.id, name: p.name, recipe_id: p.recipeId, category: p.category, active: p.active, week_sales: p.weekSales, pack_qty: p.packQty || 1 }; });
+    await supabase.from('products').upsert(rows, { onConflict: 'id', ignoreDuplicates: false });
     // Prices: delete all then insert fresh
-    await supabase.from('product_prices').delete().gt('price', -1);
+    await supabase.from('product_prices').delete().gt('price', -999);
     var allPrices = [];
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
