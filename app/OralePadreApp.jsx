@@ -839,7 +839,7 @@ export default function App() {
               g.items.forEach(function(it) {
                 if (it.k === "stock") groupBadge += stockAlerts[0].length;
                 if (it.k === "incidencias") groupBadge += incidents[0].filter(function(x){return x.status==="abierta";}).length;
-                if (it.k === "operaciones" && usr[0]) groupBadge += opsData[0].comunicados.filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
+                if (it.k === "operaciones" && usr[0]) groupBadge += (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
               });
               return (
                 <div key={g.area.k}>
@@ -858,7 +858,7 @@ export default function App() {
                     var badge = 0;
                     if (item.k === "stock") badge = stockAlerts[0].length;
                     if (item.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
-                    if (item.k === "operaciones" && usr[0]) badge = opsData[0].comunicados.filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
+                    if (item.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
                     return (
                       <button key={ik} className={"op-sidebar-item" + (isActive ? " op-sidebar-item-active" : "")} onClick={function() { navigateTo(ik); }} style={{ paddingLeft: 36 }}>
                         <span>{item.l}</span>
@@ -884,7 +884,7 @@ export default function App() {
                 var badge = 0;
                 if (n.k === "stock") badge = stockAlerts[0].length;
                 if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
-                if (n.k === "operaciones" && usr[0]) badge = opsData[0].comunicados.filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
+                if (n.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
                 return (
                   <button key={nk} onClick={function() { navigateTo(nk); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#B45309" : "#ffffff08", color: active ? "#fff" : "#999", fontWeight: active ? 700 : 500, fontSize: 12, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
                     {n.l}
@@ -1053,7 +1053,7 @@ function NovedadesBlock(props) {
 
   // Promos hoy (todos menos community)
   if (role !== "community") {
-    var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoyDia) >= 0 && (!miLocal || !props.user.local || p.local === miLocal); }) : [];
+    var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && (p.dias || []).indexOf(hoyDia) >= 0 && (!miLocal || !props.user.local || p.local === miLocal); }) : [];
     if (promosHoy.length > 0) items.push({ icon: "🏷️", text: promosHoy.length + " promo" + (promosHoy.length > 1 ? "s" : "") + " activa" + (promosHoy.length > 1 ? "s" : "") + " hoy", color: "#7C3AED", page: role === "socio" ? "promos" : "promos-hoy", priority: 4 });
   }
 
@@ -1396,7 +1396,7 @@ function EncargadoPanel(props) {
           var DIAS_SEMANA = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
           var hoyDia = DIAS_SEMANA[new Date().getDay()];
           var miLocal = props.user ? props.user.local : null;
-          var promosHoy = props.promosData[0].filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoyDia) >= 0 && (!miLocal || p.local === miLocal); });
+          var promosHoy = props.promosData[0].filter(function(p) { return p.estado === "activa" && (p.dias || []).indexOf(hoyDia) >= 0 && (!miLocal || p.local === miLocal); });
           var usrCol = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
           var platCol = { Uber: "#1E40AF", Glovo: "#D97706" };
           if (promosHoy.length === 0) return null;
@@ -1549,7 +1549,7 @@ function EncargadoPanel(props) {
         var DIAS = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
         var hoy = DIAS[new Date().getDay()];
         var userLocal = props.user ? props.user.local : null;
-        var promosHoy = allPromos.filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoy) >= 0 && (!userLocal || p.local === userLocal); });
+        var promosHoy = allPromos.filter(function(p) { return p.estado === "activa" && (p.dias || []).indexOf(hoy) >= 0 && (!userLocal || p.local === userLocal); });
         var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
         var usrColors = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
         if (promosHoy.length === 0) return null;
@@ -1579,20 +1579,20 @@ function EncargadoPanel(props) {
         var od = props.opsData ? props.opsData[0] : null;
         if (!od) return null;
         var userName = props.user ? props.user.name : "";
-        var unreadComs = od.comunicados.filter(function(c) { return (c.readBy || []).indexOf(userName) < 0; });
+        var unreadComs = (od.comunicados || []).filter(function(c) { return (c.readBy || []).indexOf(userName) < 0; });
         var lvlColors = { sanitaria: "#DC2626", critico: "#D97706", vigilar: "#1E40AF", atencion: "#7C3AED" };
 
         return (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginTop: 16 }}>
             {/* Alertas producto */}
-            {od.alertasProducto.length > 0 && (
+            {(od.alertasProducto || []).length > 0 && (
               <div style={{ ...crd, borderLeft: "4px solid #DC2626" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                   <span style={{ fontSize: 18 }}>⚠️</span>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>Productos a vigilar</div>
-                  <Pill t={od.alertasProducto.length + ""} c="#DC2626" />
+                  <Pill t={(od.alertasProducto || []).length + ""} c="#DC2626" />
                 </div>
-                {od.alertasProducto.map(function(a) {
+                {(od.alertasProducto || []).map(function(a) {
                   var lc = lvlColors[a.level] || "#888";
                   return (
                     <div key={a.id} style={{ padding: "10px 12px", marginBottom: 6, borderRadius: 10, background: lc + "08", borderLeft: "3px solid " + lc }}>
@@ -2606,7 +2606,7 @@ function PromoView(props) {
         }
         function deletePromo(id) { setAllPromos(allPromos.filter(function(p) { return p.id !== id; })); }
         function editPromo(p) {
-          promoForm[1]({ promo: p.promo, products: p.products, usuarios: p.usuarios, local: p.local, dias: p.dias.slice(), plataforma: p.plataforma, estado: p.estado });
+          promoForm[1]({ promo: p.promo, products: p.products, usuarios: p.usuarios, local: p.local, dias: (p.dias || []).slice(), plataforma: p.plataforma, estado: p.estado });
           editId[1](p.id); showAddPromo[1](true);
         }
         function toggleEstado(id) {
@@ -2680,7 +2680,7 @@ function PromoView(props) {
                           <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
                         </td>
                         {DIAS.map(function(d) {
-                          var active = p.dias.indexOf(d) >= 0;
+                          var active = (p.dias || []).indexOf(d) >= 0;
                           return <td key={d} style={{ textAlign: "center", padding: "10px 4px" }}>
                             {active ? <div style={{ width: 24, height: 24, borderRadius: 6, background: "#04785715", display: "inline-flex", alignItems: "center", justifyContent: "center", color: "#047857", fontSize: 14, fontWeight: 700 }}>✓</div> : <div style={{ width: 24, height: 24, borderRadius: 6, background: "#f5f5f5", display: "inline-block" }} />}
                           </td>;
@@ -4108,7 +4108,7 @@ function FichasEmpView(props) {
         var DIAS_SEMANA = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
         var hoyDia = DIAS_SEMANA[new Date().getDay()];
         var miLocal = props.user ? props.user.local : null;
-        var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && p.dias.indexOf(hoyDia) >= 0 && (!miLocal || p.local === miLocal); }) : [];
+        var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && (p.dias || []).indexOf(hoyDia) >= 0 && (!miLocal || p.local === miLocal); }) : [];
         if (promosHoy.length === 0) return null;
         var platCol = { Uber: "#1E40AF", Glovo: "#D97706" };
         var usrCol = { TODOS: "#047857", NUEVOS: "#D97706", "UBER ONE": "#7C3AED", INACTIVOS: "#DC2626" };
@@ -4138,9 +4138,9 @@ function FichasEmpView(props) {
         var od = props.opsData ? props.opsData[0] : null;
         if (!od) return null;
         var uName = props.user ? props.user.name : "";
-        var unread = od.comunicados.filter(function(c) { return (c.readBy || []).indexOf(uName) < 0; });
+        var unread = (od.comunicados || []).filter(function(c) { return (c.readBy || []).indexOf(uName) < 0; });
         var lvlC = { sanitaria: "#DC2626", critico: "#D97706", vigilar: "#1E40AF", atencion: "#7C3AED" };
-        var hasContent = od.alertasProducto.length > 0 || unread.length > 0;
+        var hasContent = (od.alertasProducto || []).length > 0 || unread.length > 0;
         if (!hasContent) return null;
         return (
           <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12, marginBottom: 20 }}>
@@ -4158,10 +4158,10 @@ function FichasEmpView(props) {
                 <div style={{ fontSize: 11, color: "#B45309", marginTop: 4 }}>Ve a Operaciones para leer completos y marcar como leido</div>
               </div>
             )}
-            {od.alertasProducto.length > 0 && (
+            {(od.alertasProducto || []).length > 0 && (
               <div style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid #eee", borderLeft: "4px solid #DC2626" }}>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>PRODUCTOS A VIGILAR HOY ({od.alertasProducto.length})</div>
-                {od.alertasProducto.slice(0, 4).map(function(a) {
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>PRODUCTOS A VIGILAR HOY ({(od.alertasProducto || []).length})</div>
+                {(od.alertasProducto || []).slice(0, 4).map(function(a) {
                   var lc = lvlC[a.level] || "#888";
                   return (
                     <div key={a.id} style={{ display: "flex", gap: 8, alignItems: "flex-start", padding: "6px 0", borderBottom: "1px solid #f5f5f5" }}>
@@ -4173,7 +4173,7 @@ function FichasEmpView(props) {
                     </div>
                   );
                 })}
-                {od.alertasProducto.length > 4 && <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>+{od.alertasProducto.length - 4} mas en Operaciones</div>}
+                {(od.alertasProducto || []).length > 4 && <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>+{(od.alertasProducto || []).length - 4} mas en Operaciones</div>}
               </div>
             )}
           </div>
@@ -6808,9 +6808,9 @@ function MarketingView(props) {
     showForm[1](false);
   }
   function updateTask(id, field, val) {
-    updateData("tasks", data.tasks.map(function(t) { if (t.id !== id) return t; var n = Object.assign({}, t); n[field] = val; return n; }));
+    updateData("tasks", (data.tasks || []).map(function(t) { if (t.id !== id) return t; var n = Object.assign({}, t); n[field] = val; return n; }));
   }
-  function deleteTask(id) { updateData("tasks", data.tasks.filter(function(t) { return t.id !== id; })); }
+  function deleteTask(id) { updateData("tasks", (data.tasks || []).filter(function(t) { return t.id !== id; })); }
 
   // Helper: add calendar item
   function addCalItem() {
@@ -6821,9 +6821,9 @@ function MarketingView(props) {
     showForm[1](false);
   }
   function updateCalItem(id, field, val) {
-    updateData("calendar", data.calendar.map(function(c) { if (c.id !== id) return c; var n = Object.assign({}, c); n[field] = val; return n; }));
+    updateData("calendar", (data.calendar || []).map(function(c) { if (c.id !== id) return c; var n = Object.assign({}, c); n[field] = val; return n; }));
   }
-  function deleteCalItem(id) { updateData("calendar", data.calendar.filter(function(c) { return c.id !== id; })); }
+  function deleteCalItem(id) { updateData("calendar", (data.calendar || []).filter(function(c) { return c.id !== id; })); }
 
   // Helper: add influencer
   function addInfluencer() {
@@ -6834,7 +6834,7 @@ function MarketingView(props) {
     showForm[1](false);
   }
   function updateInfluencer(id, field, val) {
-    updateData("influencers", data.influencers.map(function(i) { if (i.id !== id) return i; var n = Object.assign({}, i); n[field] = val; return n; }));
+    updateData("influencers", (data.influencers || []).map(function(i) { if (i.id !== id) return i; var n = Object.assign({}, i); n[field] = val; return n; }));
   }
 
   // Helper: add catering lead
@@ -6846,7 +6846,7 @@ function MarketingView(props) {
     showForm[1](false);
   }
   function updateCateringLead(id, field, val) {
-    updateData("catering", data.catering.map(function(c) { if (c.id !== id) return c; var n = Object.assign({}, c); n[field] = val; return n; }));
+    updateData("catering", (data.catering || []).map(function(c) { if (c.id !== id) return c; var n = Object.assign({}, c); n[field] = val; return n; }));
   }
 
   // Helper: add action
@@ -6882,11 +6882,11 @@ function MarketingView(props) {
 
   // ============ PANEL ============
   if (tab === "mkt-panel") {
-    var pendTasks = data.tasks.filter(function(t) { return t.status === "pendiente"; }).length;
-    var inProgTasks = data.tasks.filter(function(t) { return t.status === "en curso"; }).length;
-    var thisWeekContent = data.calendar.filter(function(c) { var d = new Date(c.date); var now = new Date(); var diff = (d - now) / 86400000; return diff >= -1 && diff <= 7; }).length;
-    var pendInfluencers = data.influencers.filter(function(i) { return i.status === "identificado" || i.status === "contactado"; }).length;
-    var pendCatering = data.catering.filter(function(c) { return c.status !== "cerrado" && c.status !== "sin respuesta" && c.name; }).length;
+    var pendTasks = (data.tasks || []).filter(function(t) { return t.status === "pendiente"; }).length;
+    var inProgTasks = (data.tasks || []).filter(function(t) { return t.status === "en curso"; }).length;
+    var thisWeekContent = (data.calendar || []).filter(function(c) { var d = new Date(c.date); var now = new Date(); var diff = (d - now) / 86400000; return diff >= -1 && diff <= 7; }).length;
+    var pendInfluencers = (data.influencers || []).filter(function(i) { return i.status === "identificado" || i.status === "contactado"; }).length;
+    var pendCatering = (data.catering || []).filter(function(c) { return c.status !== "cerrado" && c.status !== "sin respuesta" && c.name; }).length;
     var pendDesigns = (data.designs||[]).filter(function(d) { return d.status === "pendiente"; }).length;
 
     return (
@@ -6905,10 +6905,10 @@ function MarketingView(props) {
           <div style={{ padding: 16, borderRadius: 12, background: pendDesigns > 0 ? "#E11D4810" : "#fafaf8", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>DISENOS PEND.</div><div style={{ fontSize: 28, fontWeight: 800, color: pendDesigns > 0 ? "#E11D48" : "#888" }}>{pendDesigns}</div></div>
         </div>
         {/* Urgent tasks */}
-        {data.tasks.filter(function(t) { return t.priority === "alta" && t.status !== "completada"; }).length > 0 && (
+        {(data.tasks || []).filter(function(t) { return t.priority === "alta" && t.status !== "completada"; }).length > 0 && (
           <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #DC2626" }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>TAREAS URGENTES</div>
-            {data.tasks.filter(function(t) { return t.priority === "alta" && t.status !== "completada"; }).map(function(t) {
+            {(data.tasks || []).filter(function(t) { return t.priority === "alta" && t.status !== "completada"; }).map(function(t) {
               return <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
                 <div style={{ width: 8, height: 8, borderRadius: 4, background: "#DC2626", flexShrink: 0 }} />
                 <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{t.title}</div><div style={{ fontSize: 11, color: "#aaa" }}>{t.category} | Vence: {t.due || "Sin fecha"}</div></div>
@@ -6945,7 +6945,7 @@ function MarketingView(props) {
 
   // ============ CALENDAR ============
   if (tab === "mkt-calendar") {
-    var calItems = data.calendar.slice().sort(function(a, b) { return a.date > b.date ? 1 : -1; });
+    var calItems = (data.calendar || []).slice().sort(function(a, b) { return a.date > b.date ? 1 : -1; });
     var days = {};
     for (var ci = 0; ci < calItems.length; ci++) {
       var d2 = calItems[ci].date || "Sin fecha";
@@ -7021,7 +7021,7 @@ function MarketingView(props) {
         )}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 }}>
           {taskStatuses.map(function(status) {
-            var tasks = data.tasks.filter(function(t) { return t.status === status; });
+            var tasks = (data.tasks || []).filter(function(t) { return t.status === status; });
             var headerColors = { pendiente: "#D97706", "en curso": "#1E40AF", completada: "#047857" };
             return (
               <div key={status}>
@@ -7095,7 +7095,7 @@ function MarketingView(props) {
   // ============ INFLUENCERS ============
   if (tab === "mkt-influencers") {
     var infStatuses = ["identificado","contactado","negociando","acordado","descartado"];
-    var validInfs = data.influencers.filter(function(i) { return i.name; });
+    var validInfs = (data.influencers || []).filter(function(i) { return i.name; });
     return (
       <div>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 20, gap: 12 }}>
@@ -7148,7 +7148,7 @@ function MarketingView(props) {
   if (tab === "mkt-catering") {
     var catStatuses = ["por contactar","dm enviado","respondido","reunion","cerrado","sin respuesta"];
     var catTypes = { wedding_planner: "Wedding Planner", evento_empresa: "Eventos Empresa", catering_corp: "Catering Corporativo", particular: "Particular", otro: "Otro" };
-    var validCats = data.catering.filter(function(c) { return c.name; });
+    var validCats = (data.catering || []).filter(function(c) { return c.name; });
     return (
       <div>
         <div style={{ display: "flex", alignItems: "center", marginBottom: 20, gap: 12 }}>
@@ -7321,7 +7321,7 @@ function PromosHoyView(props) {
     return promos.filter(function(p) {
       if (p.estado !== "activa") return false;
       if (userLocal && p.local !== userLocal) return false;
-      if (dia && p.dias.indexOf(dia) < 0) return false;
+      if (dia && (p.dias || []).indexOf(dia) < 0) return false;
       if (plat && plat !== "todas" && p.plataforma !== plat) return false;
       return true;
     });
@@ -7441,9 +7441,9 @@ function RRHHView(props) {
   function updateGam(newData) { gam[1](newData); }
 
   // Sort leaderboard
-  var leaderboard = data.points.slice().sort(function(a, b) { return b.dorados - a.dorados; });
+  var leaderboard = (data.points || []).slice().sort(function(a, b) { return b.dorados - a.dorados; });
   var totalDorados = 0;
-  for (var ti = 0; ti < data.points.length; ti++) totalDorados += data.points[ti].dorados;
+  for (var ti = 0; ti < (data.points || []).length; ti++) totalDorados += (data.points || [])[ti].dorados;
 
   var actionLabels = data.config;
   var roleColors = { encargado: "#047857", empleado: "#1E40AF", community: "#E11D48" };
@@ -7476,7 +7476,7 @@ function RRHHView(props) {
       {tab[0] === "equipo" && (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
-            {data.points.map(function(p) {
+            {(data.points || []).map(function(p) {
               var rc = roleColors[p.role] || "#888";
               var recentActions = p.actions.slice(0, 5);
               return (
@@ -7517,7 +7517,7 @@ function RRHHView(props) {
                   <div><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Empleado</div>
                     <select value={ptsForm[0].userId} onChange={function(e) { ptsForm[1](Object.assign({}, ptsForm[0], { userId: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit", background: "#fff" }}>
                       <option value="">Seleccionar...</option>
-                      {data.points.map(function(p) { return <option key={p.userId} value={p.userId}>{p.name} ({p.role})</option>; })}
+                      {(data.points || []).map(function(p) { return <option key={p.userId} value={p.userId}>{p.name} ({p.role})</option>; })}
                     </select>
                   </div>
                   <div><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Cantidad 🌟</div>
@@ -7529,7 +7529,7 @@ function RRHHView(props) {
                   <button onClick={function() {
                     var amt = parseInt(ptsForm[0].amount) || 0;
                     if (!ptsForm[0].userId || amt <= 0) return;
-                    var newPts = data.points.map(function(p) {
+                    var newPts = (data.points || []).map(function(p) {
                       if (p.userId === ptsForm[0].userId) {
                         return Object.assign({}, p, { dorados: p.dorados + amt, actions: [{ type: "bonus_manual", date: new Date().toISOString().slice(0, 10), pts: amt, reason: ptsForm[0].reason }].concat(p.actions) });
                       }
@@ -7554,7 +7554,7 @@ function RRHHView(props) {
             <div style={{ ...crd, padding: 16, textAlign: "center", background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", color: "#fff" }}>
               <div style={{ fontSize: 10, fontWeight: 600, opacity: 0.7 }}>TOTAL ALUBIAS</div>
               <div style={{ fontSize: 36, fontWeight: 800 }}>{totalDorados} 🌟</div>
-              <div style={{ fontSize: 11, opacity: 0.7 }}>{data.points.length} miembros</div>
+              <div style={{ fontSize: 11, opacity: 0.7 }}>{(data.points || []).length} miembros</div>
             </div>
             {leaderboard.map(function(p, idx) {
               var medals = ["🥇", "🥈", "🥉"];
@@ -7592,7 +7592,7 @@ function RRHHView(props) {
         <div>
           <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>Recompensas canjeables con Alubias Doradas. Gestiona el catalogo.</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 20 }}>
-            {data.rewards.map(function(rw) {
+            {(data.rewards || []).map(function(rw) {
               return (
                 <div key={rw.id} style={{ ...crd, textAlign: "center", position: "relative" }}>
                   <div style={{ fontSize: 40, marginBottom: 8 }}>{rw.icon}</div>
@@ -7600,7 +7600,7 @@ function RRHHView(props) {
                   <div style={{ fontSize: 20, fontWeight: 800, color: "#B45309" }}>{rw.cost} 🌟</div>
                   <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>{rw.claimed.length} canjeada{rw.claimed.length !== 1 ? "s" : ""}</div>
                   <button onClick={function() {
-                    updateGam(Object.assign({}, data, { rewards: data.rewards.filter(function(x) { return x.id !== rw.id; }) }));
+                    updateGam(Object.assign({}, data, { rewards: (data.rewards || []).filter(function(x) { return x.id !== rw.id; }) }));
                   }} style={{ position: "absolute", top: 10, right: 10, background: "none", border: "none", color: "#ccc", cursor: "pointer", fontSize: 16 }}>x</button>
                 </div>
               );
@@ -7773,7 +7773,7 @@ function MiPerfilView(props) {
   // Find my data
   var myData = null;
   var myRank = 0;
-  var sorted = data.points.slice().sort(function(a, b) { return b.dorados - a.dorados; });
+  var sorted = (data.points || []).slice().sort(function(a, b) { return b.dorados - a.dorados; });
   for (var i = 0; i < sorted.length; i++) {
     if (sorted[i].name === userName) { myData = sorted[i]; myRank = i + 1; break; }
   }
@@ -7807,7 +7807,7 @@ function MiPerfilView(props) {
         {/* Recompensas canjeables */}
         <div style={{ ...crd }}>
           <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>🎁 Recompensas disponibles</div>
-          {data.rewards.map(function(rw) {
+          {(data.rewards || []).map(function(rw) {
             var canClaim = myData.dorados >= rw.cost;
             return (
               <div key={rw.id} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 10px", borderBottom: "1px solid #f5f5f5" }}>
@@ -7818,13 +7818,13 @@ function MiPerfilView(props) {
                 </div>
                 <button onClick={function() {
                   if (!canClaim) return;
-                  var newPts = data.points.map(function(p) {
+                  var newPts = (data.points || []).map(function(p) {
                     if (p.name === userName) {
                       return Object.assign({}, p, { dorados: p.dorados - rw.cost, actions: [{ type: "canje_" + rw.id, date: new Date().toISOString().slice(0, 10), pts: -rw.cost }].concat(p.actions) });
                     }
                     return p;
                   });
-                  var newRewards = data.rewards.map(function(r) {
+                  var newRewards = (data.rewards || []).map(function(r) {
                     if (r.id === rw.id) return Object.assign({}, r, { claimed: r.claimed.concat([{ user: userName, date: new Date().toISOString().slice(0, 10) }]) });
                     return r;
                   });
