@@ -389,12 +389,13 @@ export default function App() {
       dbModule.saveCombos(savedCombos[0]);
       if (dbModule.saveClockRecords) dbModule.saveClockRecords(clockRecords[0]);
       if (dbModule.saveChecklistRecords) dbModule.saveChecklistRecords(checklistRecords[0]);
+      if (dbModule.saveAlbaranes) dbModule.saveAlbaranes(albaranesData[0]);
+      if (dbModule.saveStockData) dbModule.saveStockData(stockData[0]);
       // Show toast only after first load (skip initial save)
       if (saveCountRef.current > 1) {
         toast[1]("✅ Guardado");
         setTimeout(function() { toast[1](null); }, 2000);
       }
-    }, 3000);
     }, 3000);
     return function() { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   });
@@ -8175,6 +8176,10 @@ function AlbaranesView(props) {
   var histFilter = useState({ local: isSocio ? "Todos" : userLocal, proveedor: "Todos" });
   var stockViewLocal = useState(isSocio ? "San Luis" : userLocal);
   var expandedAlb = useState(null);
+  var showManualStock = useState(false);
+  var manualStockForm = useState({ ingredienteId: "", cantidad: 0, unidad: "kg", tipo: "entrada", notas: "" });
+  var showTransfer = useState(false);
+  var transferForm = useState({ ingredienteId: "", cantidad: 0, unidad: "kg", from: "San Luis", to: "Los Remedios", motivo: "" });
 
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
   var fmt = function(n) { return typeof n === "number" ? n.toFixed(2) + "€" : "—"; };
@@ -8379,9 +8384,9 @@ function AlbaranesView(props) {
       if (!line.ingredienteId) continue;
       for (var j = 0; j < updatedIngs.length; j++) {
         if (updatedIngs[j].id === line.ingredienteId) {
-          var oldPrice = updatedIngs[j].price;
+          var oldPrice = updatedIngs[j].costPerUnit;
           updatedIngs[j] = Object.assign({}, updatedIngs[j], {
-            price: line.precioUnit,
+            costPerUnit: line.precioUnit,
             lastAlbaranPrice: oldPrice,
             lastAlbaranDate: albaran.fecha
           });
@@ -8752,8 +8757,8 @@ function AlbaranesView(props) {
       {/* ============ TAB: STOCK ============ */}
       {mainTab[0] === "stock" && (
         <div>
-          {/* Local selector */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+          {/* Local selector + action buttons */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap", alignItems: "center" }}>
             {(isSocio ? LOCS : [userLocal]).map(function(l) {
               var a = stockViewLocal[0] === l;
               var localSt = stock[l] || {};
@@ -8762,20 +8767,152 @@ function AlbaranesView(props) {
                 📍 {l} <span style={{ fontSize: 11, color: "#aaa" }}>({count})</span>
               </button>;
             })}
+            <div style={{ flex: 1 }} />
+            <button onClick={function() { showManualStock[1](!showManualStock[0]); showTransfer[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "2px solid #B45309", background: showManualStock[0] ? "#B45309" : "#FFF7ED", color: showManualStock[0] ? "#fff" : "#B45309", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              ✍️ Entrada manual
+            </button>
+            <button onClick={function() { showTransfer[1](!showTransfer[0]); showManualStock[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "2px solid #7C3AED", background: showTransfer[0] ? "#7C3AED" : "#F5F3FF", color: showTransfer[0] ? "#fff" : "#7C3AED", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              🔄 Traspaso
+            </button>
           </div>
+
+          {/* Manual stock entry form */}
+          {showManualStock[0] && (
+            <div style={{ ...crd, marginBottom: 14, borderLeft: "4px solid #B45309" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#B45309", marginBottom: 10 }}>Entrada/Salida manual de stock — {stockViewLocal[0]}</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 100px 80px 100px", gap: 8, marginBottom: 10 }}>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Ingrediente</div>
+                  <select value={manualStockForm[0].ingredienteId} onChange={function(e) { manualStockForm[1](Object.assign({}, manualStockForm[0], { ingredienteId: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit" }}>
+                    <option value="">Seleccionar...</option>
+                    {props.ingredients.map(function(ing) { return <option key={ing.id} value={ing.id}>{ing.name} ({ing.unit})</option>; })}
+                  </select>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Cantidad</div>
+                  <input type="number" value={manualStockForm[0].cantidad} onChange={function(e) { manualStockForm[1](Object.assign({}, manualStockForm[0], { cantidad: parseFloat(e.target.value) || 0 })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 13, fontFamily: "inherit" }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Ud.</div>
+                  <select value={manualStockForm[0].unidad} onChange={function(e) { manualStockForm[1](Object.assign({}, manualStockForm[0], { unidad: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit" }}>
+                    {["kg","ud","L","caja","bolsa"].map(function(u) { return <option key={u} value={u}>{u}</option>; })}
+                  </select>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Tipo</div>
+                  <select value={manualStockForm[0].tipo} onChange={function(e) { manualStockForm[1](Object.assign({}, manualStockForm[0], { tipo: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit" }}>
+                    <option value="entrada">📥 Entrada</option>
+                    <option value="salida">📤 Salida</option>
+                    <option value="ajuste">🔧 Ajuste</option>
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "end" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Notas (opcional)</div>
+                  <input value={manualStockForm[0].notas} onChange={function(e) { manualStockForm[1](Object.assign({}, manualStockForm[0], { notas: e.target.value })); }} placeholder="Ej: Merma, error conteo, donacion..." style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit", boxSizing: "border-box" }} />
+                </div>
+                <button onClick={function() {
+                  var f = manualStockForm[0];
+                  if (!f.ingredienteId || f.cantidad <= 0) return;
+                  var ing = null;
+                  for (var i = 0; i < props.ingredients.length; i++) { if (props.ingredients[i].id === f.ingredienteId) { ing = props.ingredients[i]; break; } }
+                  var loc = stockViewLocal[0];
+                  var newStock = Object.assign({}, stock);
+                  if (!newStock[loc]) newStock[loc] = {};
+                  var ls = Object.assign({}, newStock[loc]);
+                  var prev = ls[f.ingredienteId] || { qty: 0, unit: f.unidad, lastUpdate: "", nombre: ing ? ing.name : "" };
+                  var newQty = prev.qty;
+                  if (f.tipo === "entrada") newQty += f.cantidad;
+                  else if (f.tipo === "salida") newQty = Math.max(0, newQty - f.cantidad);
+                  else newQty = f.cantidad;
+                  ls[f.ingredienteId] = { qty: newQty, unit: f.unidad, lastUpdate: new Date().toLocaleDateString("es-ES"), nombre: ing ? ing.name : prev.nombre };
+                  newStock[loc] = ls;
+                  setStock(newStock);
+                  manualStockForm[1]({ ingredienteId: "", cantidad: 0, unidad: "kg", tipo: "entrada", notas: "" });
+                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#B45309", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Aplicar</button>
+              </div>
+            </div>
+          )}
+
+          {/* Transfer form */}
+          {showTransfer[0] && (
+            <div style={{ ...crd, marginBottom: 14, borderLeft: "4px solid #7C3AED" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#7C3AED", marginBottom: 10 }}>🔄 Traspaso entre locales</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 100px 80px 1fr 1fr", gap: 8, marginBottom: 10 }}>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Ingrediente</div>
+                  <select value={transferForm[0].ingredienteId} onChange={function(e) { transferForm[1](Object.assign({}, transferForm[0], { ingredienteId: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit" }}>
+                    <option value="">Seleccionar...</option>
+                    {props.ingredients.map(function(ing) { return <option key={ing.id} value={ing.id}>{ing.name}</option>; })}
+                  </select>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Cantidad</div>
+                  <input type="number" value={transferForm[0].cantidad} onChange={function(e) { transferForm[1](Object.assign({}, transferForm[0], { cantidad: parseFloat(e.target.value) || 0 })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 13, fontFamily: "inherit" }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Ud.</div>
+                  <select value={transferForm[0].unidad} onChange={function(e) { transferForm[1](Object.assign({}, transferForm[0], { unidad: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit" }}>
+                    {["kg","ud","L","caja"].map(function(u) { return <option key={u} value={u}>{u}</option>; })}
+                  </select>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Desde</div>
+                  <select value={transferForm[0].from} onChange={function(e) { transferForm[1](Object.assign({}, transferForm[0], { from: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #DC2626", borderRadius: 8, fontSize: 12, fontFamily: "inherit", background: "#FEF2F2" }}>
+                    {LOCS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}
+                  </select>
+                </div>
+                <div>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Hacia</div>
+                  <select value={transferForm[0].to} onChange={function(e) { transferForm[1](Object.assign({}, transferForm[0], { to: e.target.value })); }} style={{ width: "100%", padding: "8px", border: "1.5px solid #047857", borderRadius: 8, fontSize: 12, fontFamily: "inherit", background: "#F0FDF4" }}>
+                    {LOCS.filter(function(l) { return l !== transferForm[0].from; }).map(function(l) { return <option key={l} value={l}>{l}</option>; })}
+                  </select>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8, alignItems: "end" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Motivo</div>
+                  <input value={transferForm[0].motivo} onChange={function(e) { transferForm[1](Object.assign({}, transferForm[0], { motivo: e.target.value })); }} placeholder="Ej: Rotura stock, evento especial..." style={{ width: "100%", padding: "8px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 12, fontFamily: "inherit", boxSizing: "border-box" }} />
+                </div>
+                <button onClick={function() {
+                  var f = transferForm[0];
+                  if (!f.ingredienteId || f.cantidad <= 0 || f.from === f.to) return;
+                  var ing = null;
+                  for (var i = 0; i < props.ingredients.length; i++) { if (props.ingredients[i].id === f.ingredienteId) { ing = props.ingredients[i]; break; } }
+                  var newStock = Object.assign({}, stock);
+                  // Restar del origen
+                  if (!newStock[f.from]) newStock[f.from] = {};
+                  var fromLs = Object.assign({}, newStock[f.from]);
+                  var fromPrev = fromLs[f.ingredienteId] || { qty: 0, unit: f.unidad, nombre: ing ? ing.name : "" };
+                  fromLs[f.ingredienteId] = Object.assign({}, fromPrev, { qty: Math.max(0, fromPrev.qty - f.cantidad), lastUpdate: new Date().toLocaleDateString("es-ES") + " (traspaso →" + f.to + ")" });
+                  newStock[f.from] = fromLs;
+                  // Sumar al destino
+                  if (!newStock[f.to]) newStock[f.to] = {};
+                  var toLs = Object.assign({}, newStock[f.to]);
+                  var toPrev = toLs[f.ingredienteId] || { qty: 0, unit: f.unidad, nombre: ing ? ing.name : "" };
+                  toLs[f.ingredienteId] = Object.assign({}, toPrev, { qty: toPrev.qty + f.cantidad, lastUpdate: new Date().toLocaleDateString("es-ES") + " (traspaso ←" + f.from + ")", nombre: ing ? ing.name : toPrev.nombre });
+                  newStock[f.to] = toLs;
+                  setStock(newStock);
+                  transferForm[1]({ ingredienteId: "", cantidad: 0, unidad: "kg", from: f.from, to: f.to, motivo: "" });
+                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#7C3AED", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Traspasar</button>
+              </div>
+              <div style={{ fontSize: 11, color: "#888", marginTop: 8 }}>El stock se resta de "{transferForm[0].from}" y se suma a "{transferForm[0].to}"</div>
+            </div>
+          )}
 
           {/* Stock table */}
           {(function() {
             var localSt = stock[stockViewLocal[0]] || {};
             var items = [];
             for (var k in localSt) items.push(Object.assign({ id: k }, localSt[k]));
-            items.sort(function(a, b) { return a.nombre < b.nombre ? -1 : 1; });
+            items.sort(function(a, b) { return (a.nombre || "").localeCompare(b.nombre || ""); });
 
             if (items.length === 0) return (
               <div style={{ ...crd, textAlign: "center", padding: 40, color: "#aaa" }}>
                 <div style={{ fontSize: 36, marginBottom: 8 }}>📦</div>
                 <div style={{ fontSize: 14, fontWeight: 600 }}>Sin stock registrado en {stockViewLocal[0]}</div>
-                <div style={{ fontSize: 12 }}>Al confirmar albaranes de este local, el stock se actualiza automaticamente</div>
+                <div style={{ fontSize: 12 }}>Confirma albaranes o usa "Entrada manual" para añadir stock</div>
               </div>
             );
 
@@ -8787,16 +8924,21 @@ function AlbaranesView(props) {
                     <th style={{ textAlign: "left", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11 }}>Ingrediente</th>
                     <th style={{ textAlign: "right", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11 }}>Cantidad</th>
                     <th style={{ textAlign: "center", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11 }}>Unidad</th>
-                    <th style={{ textAlign: "right", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11 }}>Ultima entrada</th>
+                    <th style={{ textAlign: "right", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11 }}>Ultima actualizacion</th>
                   </tr></thead>
                   <tbody>
                     {items.map(function(it) {
+                      var isLow = it.qty > 0 && it.qty < 2;
                       return (
-                        <tr key={it.id} style={{ borderBottom: "1px solid #f5f5f5" }}>
-                          <td style={{ padding: "8px 6px", fontWeight: 600 }}>{it.nombre}</td>
-                          <td style={{ padding: "8px 6px", textAlign: "right", fontSize: 15, fontWeight: 800, color: "#047857" }}>{it.qty}</td>
+                        <tr key={it.id} style={{ borderBottom: "1px solid #f5f5f5", background: it.qty <= 0 ? "#FEF2F2" : isLow ? "#FFFBEB" : "#fff" }}>
+                          <td style={{ padding: "8px 6px", fontWeight: 600 }}>
+                            {it.nombre}
+                            {it.qty <= 0 && <span style={{ fontSize: 10, color: "#DC2626", marginLeft: 6 }}>AGOTADO</span>}
+                            {isLow && <span style={{ fontSize: 10, color: "#D97706", marginLeft: 6 }}>BAJO</span>}
+                          </td>
+                          <td style={{ padding: "8px 6px", textAlign: "right", fontSize: 15, fontWeight: 800, color: it.qty <= 0 ? "#DC2626" : isLow ? "#D97706" : "#047857" }}>{it.qty}</td>
                           <td style={{ padding: "8px 6px", textAlign: "center", color: "#888" }}>{it.unit}</td>
-                          <td style={{ padding: "8px 6px", textAlign: "right", fontSize: 12, color: "#888" }}>{it.lastUpdate}</td>
+                          <td style={{ padding: "8px 6px", textAlign: "right", fontSize: 11, color: "#888" }}>{it.lastUpdate}</td>
                         </tr>
                       );
                     })}
@@ -8845,10 +8987,10 @@ function AlbaranesView(props) {
               var alerts = [];
               for (var ai = 0; ai < props.ingredients.length; ai++) {
                 var ing = props.ingredients[ai];
-                if (ing.lastAlbaranPrice && ing.lastAlbaranPrice > 0 && ing.price > 0) {
-                  var pDiff = ((ing.price - ing.lastAlbaranPrice) / ing.lastAlbaranPrice) * 100;
+                if (ing.lastAlbaranPrice && ing.lastAlbaranPrice > 0 && ing.costPerUnit > 0) {
+                  var pDiff = ((ing.costPerUnit - ing.lastAlbaranPrice) / ing.lastAlbaranPrice) * 100;
                   if (Math.abs(pDiff) > 5) {
-                    alerts.push({ name: ing.name, old: ing.lastAlbaranPrice, now: ing.price, diff: pDiff, date: ing.lastAlbaranDate || "" });
+                    alerts.push({ name: ing.name, old: ing.lastAlbaranPrice, now: ing.costPerUnit, diff: pDiff, date: ing.lastAlbaranDate || "" });
                   }
                 }
               }
