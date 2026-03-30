@@ -137,6 +137,15 @@ export async function loadAllData() {
     if (appUsers && appUsers.length > 0) {
       result.appUsers = appUsers.map(function(u) { return { id: u.id, email: u.email || "", name: u.name, role: u.role, local: u.local_name || "", pin: u.pin || "", phone: u.phone || "", avatar: u.avatar_url || "" }; });
     }
+    // Stock minimums
+    try { var { data: stockMinsData } = await supabase.from('stock_minimums').select('*'); } catch(e) { var stockMinsData = null; }
+    if (stockMinsData && stockMinsData.length > 0) {
+      result.stockMins = {};
+      for (var smi = 0; smi < stockMinsData.length; smi++) {
+        var sm = stockMinsData[smi];
+        result.stockMins[sm.ingredient_id + "_" + sm.local_name] = parseFloat(sm.min_qty) || 0;
+      }
+    }
     var hasOps = (protocolos && protocolos.length > 0) || (alertasProd && alertasProd.length > 0);
     if (hasOps) {
       var readMap = {};
@@ -336,4 +345,28 @@ export async function savePriceHistory(entries) {
 export async function savePrepSteps(stepsMap) {
   // Prep steps are hardcoded in PREP_STEPS constant - skip save for now
   return;
+}
+export async function saveStockMins(mins) {
+  try {
+    if (!mins || typeof mins !== 'object') return;
+    await supabase.from('stock_minimums').delete().neq('ingredient_id', '');
+    var LOCS = ["San Luis","Los Remedios","Sevilla Este"];
+    var rows = [];
+    var keys = Object.keys(mins);
+    for (var i = 0; i < keys.length; i++) {
+      if (mins[keys[i]] <= 0) continue;
+      // Key format: ingredientId_localName
+      var loc = null;
+      var ingId = null;
+      for (var li = 0; li < LOCS.length; li++) {
+        if (keys[i].endsWith("_" + LOCS[li])) {
+          loc = LOCS[li];
+          ingId = keys[i].substring(0, keys[i].length - loc.length - 1);
+          break;
+        }
+      }
+      if (loc && ingId) rows.push({ ingredient_id: ingId, local_name: loc, min_qty: mins[keys[i]] });
+    }
+    if (rows.length > 0) await supabase.from('stock_minimums').insert(rows);
+  } catch (err) { console.error("Save stock mins error:", err); }
 }
