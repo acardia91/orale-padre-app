@@ -1636,8 +1636,11 @@ function DashView(props) {
         var doneTasks = props.weekTasks ? props.weekTasks[0].filter(function(t) { return t.done; }) : [];
         var gamif = props.gamification ? props.gamification[0] : {};
         var teamPoints = [];
-        if (gamif && gamif.points) {
-          for (var gk in gamif.points) teamPoints.push({ name: gk, points: gamif.points[gk] || 0 });
+        if (gamif && gamif.points && Array.isArray(gamif.points)) {
+          for (var gk = 0; gk < gamif.points.length; gk++) {
+            var gp = gamif.points[gk];
+            teamPoints.push({ name: gp.name || "?", points: gp.dorados || 0 });
+          }
         }
         teamPoints.sort(function(a, b) { return b.points - a.points; });
 
