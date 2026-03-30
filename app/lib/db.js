@@ -178,7 +178,7 @@ export async function saveIngredients(ingredients) {
     if (!ingredients || ingredients.length === 0) return;
     for (var i = 0; i < ingredients.length; i++) {
       var ing = ingredients[i];
-      await supabase.rpc('update_ingredient_cost', { p_id: ing.id, p_cost: ing.costPerUnit || 0 });
+      await supabase.rpc('save_cost', { iid: ing.id, cost: parseFloat(ing.costPerUnit) || 0 });
     }
   } catch (err) { console.error("Save ingredients error:", err); }
 }
@@ -187,10 +187,11 @@ export async function saveProducts(products) {
     if (!products || products.length === 0) return;
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
-      var sala = p.prices ? (p.prices.Sala || 0) : 0;
-      var uber = p.prices ? (p.prices["Uber Eats"] || 0) : 0;
-      var glovo = p.prices ? (p.prices.Glovo || 0) : 0;
-      await supabase.rpc('update_product_price', { p_product_id: p.id, p_sala: sala, p_uber: uber, p_glovo: glovo, p_sales: p.weekSales || 0 });
+      var sala = p.prices ? parseFloat(p.prices.Sala) || 0 : 0;
+      var uber = p.prices ? parseFloat(p.prices["Uber Eats"]) || 0 : 0;
+      var glovo = p.prices ? parseFloat(p.prices.Glovo) || 0 : 0;
+      var sales = parseInt(p.weekSales) || 0;
+      await supabase.rpc('save_price', { pid: p.id, sala: sala, uber: uber, glovo: glovo, sales: sales });
     }
   } catch (err) { console.error("Save products error:", err); }
 }
