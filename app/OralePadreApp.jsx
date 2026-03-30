@@ -295,6 +295,8 @@ export default function App() {
   var albaranesData = useState([]);
   var stockData = useState({ "San Luis": {}, "Los Remedios": {}, "Sevilla Este": {} });
   var stockMins = useState({});
+  var cierresCaja = useState([]);
+  var fraudeData = useState([]);
   var promosData = useState([
     { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
     { id: uid(), promo: 10, products: "Combos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Glovo", estado: "activa" },
@@ -611,6 +613,9 @@ export default function App() {
     { k: "rrhh", l: "Equipo", roles: ["socio"], group: "rrhh" },
     { k: "rrhh-dorados", l: "Alubias Doradas", roles: ["socio"], group: "rrhh" },
     { k: "rrhh-fichajes", l: "Fichajes", roles: ["socio"], group: "rrhh" },
+    { k: "ventas-cierre", l: "Cierre de Caja", roles: ["socio","encargado"], group: "ventas" },
+    { k: "ventas-fraude", l: "Control Fraude", roles: ["socio"], group: "ventas" },
+    { k: "ventas-volcado", l: "Ventas", roles: ["socio"], group: "ventas" },
     { k: "fichaje", l: "Fichaje", roles: ["encargado","empleado"], group: "inicio" },
     { k: "checklist", l: "Checklist", roles: ["encargado"], group: "ops" },
     { k: "mi-perfil", l: "Mi Perfil", roles: ["encargado","empleado"], group: "inicio" },
@@ -625,6 +630,7 @@ export default function App() {
     { k: "ops", l: "Operaciones", icon: "⚙️" },
     { k: "mkt", l: "Marketing", icon: "📸" },
     { k: "rrhh", l: "RRHH", icon: "👥" },
+    { k: "ventas", l: "Ventas", icon: "💵" },
   ];
 
   // Default page per role
@@ -737,7 +743,7 @@ export default function App() {
            n.k.toLowerCase().indexOf(searchQuery[0].toLowerCase()) >= 0;
   }) : nav;
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd };
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData };
 
   return (
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
@@ -952,6 +958,7 @@ export default function App() {
             {pg[0] === "equipo" && <EquipoView {...PP} />}
             {(pg[0] === "rrhh" || pg[0] === "rrhh-dorados" || pg[0] === "rrhh-fichajes") && <RRHHView {...PP} currentTab={pg[0]} />}
             {pg[0] === "mi-perfil" && <MiPerfilView {...PP} />}
+            {(pg[0] === "ventas-cierre" || pg[0] === "ventas-fraude" || pg[0] === "ventas-volcado") && <VentasView {...PP} currentTab={pg[0]} />}
             {pg[0] === "fichaje" && <FichajeView {...PP} />}
             {pg[0] === "checklist" && <ChecklistView {...PP} />}
             {pg[0] === "albaranes" && <AlbaranesView {...PP} />}
@@ -1630,19 +1637,24 @@ function DashView(props) {
 
       {/* === EQUIPO === */}
       {(function() {
+        try {
         var today = new Date().toISOString().slice(0, 10);
         var todayClocks = props.clockRecords ? props.clockRecords[0].filter(function(c) { return c.date === today; }) : [];
         var pendingTasks = props.weekTasks ? props.weekTasks[0].filter(function(t) { return !t.done; }) : [];
         var doneTasks = props.weekTasks ? props.weekTasks[0].filter(function(t) { return t.done; }) : [];
-        var gamif = props.gamification ? props.gamification[0] : {};
+        var gamif = props.gamification ? props.gamification[0] : null;
         var teamPoints = [];
         if (gamif && gamif.points && Array.isArray(gamif.points)) {
           for (var gk = 0; gk < gamif.points.length; gk++) {
             var gp = gamif.points[gk];
-            teamPoints.push({ name: gp.name || "?", points: gp.dorados || 0 });
+            if (gp && typeof gp === "object") {
+              teamPoints.push({ name: String(gp.name || "?"), points: Number(gp.dorados) || 0 });
+            }
           }
         }
         teamPoints.sort(function(a, b) { return b.points - a.points; });
+        var totalPts = 0;
+        for (var tpi = 0; tpi < teamPoints.length; tpi++) totalPts += teamPoints[tpi].points;
 
         return (
           <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", marginBottom: 20 }}>
@@ -1661,7 +1673,7 @@ function DashView(props) {
                 <div style={{ fontSize: 10, color: "#888" }}>Tareas hechas</div>
               </div>
               <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#FAF6F1" }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#B45309" }}>{teamPoints.reduce(function(s, t) { return s + t.points; }, 0)}</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#B45309" }}>{totalPts}</div>
                 <div style={{ fontSize: 10, color: "#888" }}>Alubias Doradas 🫘</div>
               </div>
             </div>
@@ -1683,6 +1695,7 @@ function DashView(props) {
             {teamPoints.length === 0 && todayClocks.length === 0 && <div style={{ textAlign: "center", padding: 12, color: "#ccc", fontSize: 12 }}>Aun no hay datos de equipo registrados</div>}
           </div>
         );
+        } catch(e) { return null; }
       })()}
 
       {/* Live Alerts from team - filtered by local */}
@@ -8567,6 +8580,299 @@ function RRHHView(props) {
 }
 
 /* ====== MI PERFIL (Empleado/Encargado) ====== */
+/* ====== VENTAS: CIERRE CAJA + FRAUDE + VOLCADO ====== */
+function VentasView(props) {
+  var tabMap = { "ventas-cierre": "cierre", "ventas-fraude": "fraude", "ventas-volcado": "volcado" };
+  var tab = useState(tabMap[props.currentTab] || "cierre");
+  var cierres = props.cierresCaja;
+  var fraude = props.fraudeData;
+  var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
+
+  // Cierre de caja form
+  var cierreForm = useState({ local: "San Luis", fecha: new Date().toISOString().slice(0, 10), efectivo: "", tarjeta: "", uberEats: "", glovo: "", canalPropio: "", encargado: props.user ? props.user.name : "", observaciones: "" });
+  var cierreFilter = useState({ local: "Todos", mes: new Date().toISOString().slice(0, 7) });
+
+  // Fraude form
+  var fraudeForm = useState({ tipo: "producto_eliminado", empleado: "", producto: "", ticket: "", local: "San Luis", fecha: new Date().toISOString().slice(0, 10), hora: "", importe: "", notas: "" });
+  var fraudeFilter = useState({ local: "Todos", tipo: "Todos", empleado: "Todos", desde: new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10), hasta: new Date().toISOString().slice(0, 10) });
+  var showAddFraude = useState(false);
+  var showAddCierre = useState(false);
+
+  function saveCierre() {
+    var f = cierreForm[0];
+    if (!f.fecha || !f.local) return;
+    var total = (parseFloat(f.efectivo) || 0) + (parseFloat(f.tarjeta) || 0) + (parseFloat(f.uberEats) || 0) + (parseFloat(f.glovo) || 0) + (parseFloat(f.canalPropio) || 0);
+    var entry = Object.assign({ id: uid(), total: total, createdAt: new Date().toISOString() }, f, { efectivo: parseFloat(f.efectivo) || 0, tarjeta: parseFloat(f.tarjeta) || 0, uberEats: parseFloat(f.uberEats) || 0, glovo: parseFloat(f.glovo) || 0, canalPropio: parseFloat(f.canalPropio) || 0 });
+    cierres[1](cierres[0].concat([entry]));
+    cierreForm[1]({ local: f.local, fecha: new Date().toISOString().slice(0, 10), efectivo: "", tarjeta: "", uberEats: "", glovo: "", canalPropio: "", encargado: props.user ? props.user.name : "", observaciones: "" });
+    showAddCierre[1](false);
+  }
+
+  function saveFraude() {
+    var f = fraudeForm[0];
+    if (!f.empleado || !f.importe) return;
+    var entry = Object.assign({ id: uid(), createdAt: new Date().toISOString() }, f, { importe: parseFloat(f.importe) || 0 });
+    fraude[1](fraude[0].concat([entry]));
+    fraudeForm[1]({ tipo: "producto_eliminado", empleado: "", producto: "", ticket: "", local: f.local, fecha: new Date().toISOString().slice(0, 10), hora: "", importe: "", notas: "" });
+    showAddFraude[1](false);
+  }
+
+  var tabs = [{ k: "cierre", l: "Cierre de Caja", e: "💰" }, { k: "fraude", l: "Control Fraude", e: "🔍" }, { k: "volcado", l: "Ventas", e: "📊" }];
+  var inp = { width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" };
+  var sel = Object.assign({}, inp, { background: "#fff" });
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Ventas y Control</div>
+        <div style={{ fontSize: 13, color: "#888" }}>Cierres de caja, control de fraude y registro de ventas</div>
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
+        {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
+      </div>
+
+      {/* === CIERRE DE CAJA === */}
+      {tab[0] === "cierre" && (
+        <div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+            <select value={cierreFilter[0].local} onChange={function(e) { cierreFilter[1](Object.assign({}, cierreFilter[0], { local: e.target.value })); }} style={{ padding: "8px 14px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit", background: "#fff" }}>
+              <option value="Todos">Todos los locales</option>
+              {LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}
+            </select>
+            <input type="month" value={cierreFilter[0].mes} onChange={function(e) { cierreFilter[1](Object.assign({}, cierreFilter[0], { mes: e.target.value })); }} style={{ padding: "8px 14px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit" }} />
+            <div style={{ flex: 1 }} />
+            <button onClick={function() { showAddCierre[1](!showAddCierre[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddCierre[0] ? "#DC2626" : "#047857", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddCierre[0] ? "Cancelar" : "+ Cerrar caja"}</button>
+          </div>
+
+          {showAddCierre[0] && (
+            <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #047857" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Nuevo cierre de caja</div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>LOCAL</div><select value={cierreForm[0].local} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { local: e.target.value })); }} style={sel}>{LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}</select></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>FECHA</div><input type="date" value={cierreForm[0].fecha} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { fecha: e.target.value })); }} style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>ENCARGADO</div><input value={cierreForm[0].encargado} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { encargado: e.target.value })); }} style={inp} /></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(5, 1fr)", gap: 10, marginBottom: 12 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>EFECTIVO</div><input type="number" step="0.01" value={cierreForm[0].efectivo} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { efectivo: e.target.value })); }} placeholder="0.00" style={Object.assign({}, inp, { textAlign: "right", fontWeight: 700 })} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TARJETA</div><input type="number" step="0.01" value={cierreForm[0].tarjeta} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { tarjeta: e.target.value })); }} placeholder="0.00" style={Object.assign({}, inp, { textAlign: "right", fontWeight: 700 })} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>UBER EATS</div><input type="number" step="0.01" value={cierreForm[0].uberEats} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { uberEats: e.target.value })); }} placeholder="0.00" style={Object.assign({}, inp, { textAlign: "right", fontWeight: 700 })} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>GLOVO</div><input type="number" step="0.01" value={cierreForm[0].glovo} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { glovo: e.target.value })); }} placeholder="0.00" style={Object.assign({}, inp, { textAlign: "right", fontWeight: 700 })} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>CANAL PROPIO</div><input type="number" step="0.01" value={cierreForm[0].canalPropio} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { canalPropio: e.target.value })); }} placeholder="0.00" style={Object.assign({}, inp, { textAlign: "right", fontWeight: 700 })} /></div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12, padding: "12px 16px", background: "#F0FDF4", borderRadius: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>TOTAL DIA:</span>
+                <span style={{ fontSize: 22, fontWeight: 800, color: "#047857" }}>{((parseFloat(cierreForm[0].efectivo) || 0) + (parseFloat(cierreForm[0].tarjeta) || 0) + (parseFloat(cierreForm[0].uberEats) || 0) + (parseFloat(cierreForm[0].glovo) || 0) + (parseFloat(cierreForm[0].canalPropio) || 0)).toFixed(2)} €</span>
+              </div>
+              <div style={{ marginBottom: 12 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>OBSERVACIONES</div><input value={cierreForm[0].observaciones} onChange={function(e) { cierreForm[1](Object.assign({}, cierreForm[0], { observaciones: e.target.value })); }} placeholder="Ej: Faltaron 5€ en caja, descuadre con Uber..." style={inp} /></div>
+              <button onClick={saveCierre} style={{ padding: "10px 24px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Guardar cierre</button>
+            </div>
+          )}
+
+          {/* KPIs del mes */}
+          {(function() {
+            var mesFilter = cierreFilter[0].mes;
+            var locFilter = cierreFilter[0].local;
+            var mesCierres = cierres[0].filter(function(c) { return c.fecha.slice(0, 7) === mesFilter && (locFilter === "Todos" || c.local === locFilter); });
+            var totalMes = 0; var totalEf = 0; var totalTj = 0; var totalUb = 0; var totalGl = 0; var totalCp = 0;
+            for (var i = 0; i < mesCierres.length; i++) { totalMes += mesCierres[i].total; totalEf += mesCierres[i].efectivo; totalTj += mesCierres[i].tarjeta; totalUb += mesCierres[i].uberEats; totalGl += mesCierres[i].glovo; totalCp += mesCierres[i].canalPropio; }
+            return (
+              <div>
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(6, 1fr)", gap: 10, marginBottom: 16 }}>
+                  <div style={{ ...crd, padding: 14, textAlign: "center", borderTop: "4px solid #047857" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>TOTAL MES</div><div style={{ fontSize: 20, fontWeight: 800, color: "#047857" }}>{totalMes.toFixed(0)}€</div></div>
+                  <div style={{ ...crd, padding: 14, textAlign: "center" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>EFECTIVO</div><div style={{ fontSize: 16, fontWeight: 800 }}>{totalEf.toFixed(0)}€</div></div>
+                  <div style={{ ...crd, padding: 14, textAlign: "center" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>TARJETA</div><div style={{ fontSize: 16, fontWeight: 800 }}>{totalTj.toFixed(0)}€</div></div>
+                  <div style={{ ...crd, padding: 14, textAlign: "center" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>UBER EATS</div><div style={{ fontSize: 16, fontWeight: 800, color: "#1E40AF" }}>{totalUb.toFixed(0)}€</div></div>
+                  <div style={{ ...crd, padding: 14, textAlign: "center" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>GLOVO</div><div style={{ fontSize: 16, fontWeight: 800, color: "#D97706" }}>{totalGl.toFixed(0)}€</div></div>
+                  <div style={{ ...crd, padding: 14, textAlign: "center" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>CIERRES</div><div style={{ fontSize: 16, fontWeight: 800 }}>{mesCierres.length}</div></div>
+                </div>
+
+                {/* Historial */}
+                <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
+                  <div style={{ padding: "14px 20px", borderBottom: "1px solid #eee", fontSize: 14, fontWeight: 700 }}>Historial de cierres</div>
+                  {mesCierres.length === 0 && <div style={{ padding: 30, textAlign: "center", color: "#ccc" }}>No hay cierres en este periodo</div>}
+                  <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 600 }}>
+                    {mesCierres.length > 0 && <thead><tr style={{ borderBottom: "2px solid #eee" }}>
+                      <th style={{ padding: "10px 12px", textAlign: "left", color: "#888", fontWeight: 600 }}>FECHA</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>LOCAL</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>EFECT.</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>TARJ.</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>UBER</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>GLOVO</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", color: "#047857", fontWeight: 700 }}>TOTAL</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>ENCARG.</th>
+                    </tr></thead>}
+                    <tbody>
+                      {mesCierres.slice().sort(function(a, b) { return b.fecha.localeCompare(a.fecha); }).map(function(c) {
+                        return (
+                          <tr key={c.id} style={{ borderBottom: "1px solid #f5f5f5" }}>
+                            <td style={{ padding: "10px 12px", fontWeight: 600 }}>{c.fecha}</td>
+                            <td style={{ padding: "10px 8px" }}>{c.local}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "right" }}>{c.efectivo.toFixed(2)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "right" }}>{c.tarjeta.toFixed(2)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "right", color: "#1E40AF" }}>{c.uberEats.toFixed(2)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "right", color: "#D97706" }}>{c.glovo.toFixed(2)}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "right", fontWeight: 800, color: "#047857" }}>{c.total.toFixed(2)}€</td>
+                            <td style={{ padding: "10px 8px", color: "#888" }}>{c.encargado}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* === CONTROL FRAUDE === */}
+      {tab[0] === "fraude" && (
+        <div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+            <select value={fraudeFilter[0].local} onChange={function(e) { fraudeFilter[1](Object.assign({}, fraudeFilter[0], { local: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit", background: "#fff" }}>
+              <option value="Todos">Todos los locales</option>
+              {LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}
+            </select>
+            <select value={fraudeFilter[0].tipo} onChange={function(e) { fraudeFilter[1](Object.assign({}, fraudeFilter[0], { tipo: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit", background: "#fff" }}>
+              <option value="Todos">Todos los tipos</option>
+              <option value="factura_eliminada">Factura eliminada</option>
+              <option value="producto_eliminado">Producto eliminado</option>
+              <option value="eliminado_post_cocina">Eliminado post-cocina</option>
+              <option value="eliminado_post_factura">Eliminado post-factura</option>
+            </select>
+            <input type="date" value={fraudeFilter[0].desde} onChange={function(e) { fraudeFilter[1](Object.assign({}, fraudeFilter[0], { desde: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit" }} />
+            <input type="date" value={fraudeFilter[0].hasta} onChange={function(e) { fraudeFilter[1](Object.assign({}, fraudeFilter[0], { hasta: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit" }} />
+            <div style={{ flex: 1 }} />
+            <button onClick={function() { showAddFraude[1](!showAddFraude[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddFraude[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddFraude[0] ? "Cancelar" : "+ Registrar"}</button>
+          </div>
+
+          {showAddFraude[0] && (
+            <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #DC2626" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#DC2626", marginBottom: 12 }}>Registrar incidencia de fraude</div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TIPO</div><select value={fraudeForm[0].tipo} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { tipo: e.target.value })); }} style={sel}><option value="factura_eliminada">Factura eliminada</option><option value="producto_eliminado">Producto eliminado</option><option value="eliminado_post_cocina">Eliminado post-cocina</option><option value="eliminado_post_factura">Eliminado post-factura</option></select></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>EMPLEADO</div><input value={fraudeForm[0].empleado} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { empleado: e.target.value })); }} placeholder="Nombre" style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>LOCAL</div><select value={fraudeForm[0].local} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { local: e.target.value })); }} style={sel}>{LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}</select></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PRODUCTO</div><input value={fraudeForm[0].producto} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { producto: e.target.value })); }} placeholder="Burro Don Juarez..." style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TICKET</div><input value={fraudeForm[0].ticket} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { ticket: e.target.value })); }} placeholder="R576" style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>FECHA / HORA</div><div style={{ display: "flex", gap: 6 }}><input type="date" value={fraudeForm[0].fecha} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { fecha: e.target.value })); }} style={Object.assign({}, inp, { flex: 1 })} /><input type="time" value={fraudeForm[0].hora} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { hora: e.target.value })); }} style={Object.assign({}, inp, { flex: 1 })} /></div></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>IMPORTE</div><input type="number" step="0.01" value={fraudeForm[0].importe} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { importe: e.target.value })); }} placeholder="9.20" style={Object.assign({}, inp, { textAlign: "right", fontWeight: 700 })} /></div>
+              </div>
+              <div style={{ marginBottom: 10 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOTAS</div><input value={fraudeForm[0].notas} onChange={function(e) { fraudeForm[1](Object.assign({}, fraudeForm[0], { notas: e.target.value })); }} placeholder="Observaciones..." style={inp} /></div>
+              <button onClick={saveFraude} style={{ padding: "10px 24px", borderRadius: 10, background: "#DC2626", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Registrar</button>
+            </div>
+          )}
+
+          {/* KPIs fraude */}
+          {(function() {
+            var ff = fraudeFilter[0];
+            var filtered = fraude[0].filter(function(f) { return (ff.local === "Todos" || f.local === ff.local) && (ff.tipo === "Todos" || f.tipo === ff.tipo) && f.fecha >= ff.desde && f.fecha <= ff.hasta; });
+            var tipoLabels = { factura_eliminada: "Facturas eliminadas", producto_eliminado: "Productos eliminados", eliminado_post_cocina: "Eliminados post-cocina", eliminado_post_factura: "Eliminados post-factura" };
+            var tipoColors = { factura_eliminada: "#DC2626", producto_eliminado: "#D97706", eliminado_post_cocina: "#7C3AED", eliminado_post_factura: "#1E40AF" };
+            var tipoIcons = { factura_eliminada: "🔴", producto_eliminado: "🟡", eliminado_post_cocina: "🟣", eliminado_post_factura: "🔵" };
+            var tipos = ["factura_eliminada", "producto_eliminado", "eliminado_post_cocina", "eliminado_post_factura"];
+            var totalImporte = 0;
+            for (var fi = 0; fi < filtered.length; fi++) totalImporte += filtered[fi].importe;
+
+            // Employee summary
+            var empMap = {};
+            for (var ei = 0; ei < filtered.length; ei++) {
+              var emp = filtered[ei].empleado || "Desconocido";
+              if (!empMap[emp]) empMap[emp] = { count: 0, total: 0 };
+              empMap[emp].count++;
+              empMap[emp].total += filtered[ei].importe;
+            }
+            var empList = [];
+            for (var ek in empMap) empList.push({ name: ek, count: empMap[ek].count, total: empMap[ek].total });
+            empList.sort(function(a, b) { return b.total - a.total; });
+
+            return (
+              <div>
+                {/* Totals by type */}
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(5, 1fr)", gap: 10, marginBottom: 16 }}>
+                  <div style={{ ...crd, padding: 14, textAlign: "center", borderTop: "4px solid #DC2626" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>TOTAL FRAUDE</div><div style={{ fontSize: 20, fontWeight: 800, color: "#DC2626" }}>{totalImporte.toFixed(2)}€</div><div style={{ fontSize: 10, color: "#aaa" }}>{filtered.length} registros</div></div>
+                  {tipos.map(function(t) {
+                    var items = filtered.filter(function(f) { return f.tipo === t; });
+                    var sum = 0; for (var si = 0; si < items.length; si++) sum += items[si].importe;
+                    return <div key={t} style={{ ...crd, padding: 14, textAlign: "center" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>{tipoLabels[t].toUpperCase()}</div><div style={{ fontSize: 16, fontWeight: 800, color: tipoColors[t] }}>{sum.toFixed(2)}€</div><div style={{ fontSize: 10, color: "#aaa" }}>{items.length} reg.</div></div>;
+                  })}
+                </div>
+
+                {/* Employees ranking */}
+                {empList.length > 0 && (
+                  <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #DC2626" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>EMPLEADOS CON MAS ELIMINACIONES</div>
+                    {empList.map(function(emp, idx) {
+                      return (
+                        <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 4px", borderBottom: "1px solid #f8f8f8" }}>
+                          <div style={{ width: 24, height: 24, borderRadius: 12, background: idx === 0 ? "#DC262620" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: idx === 0 ? "#DC2626" : "#aaa" }}>{idx + 1}</div>
+                          <div style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{emp.name}</div>
+                          <div style={{ fontSize: 11, color: "#888" }}>{emp.count} eliminaciones</div>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: "#DC2626" }}>{emp.total.toFixed(2)}€</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Detail table */}
+                <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
+                  <div style={{ padding: "14px 20px", borderBottom: "1px solid #eee", fontSize: 14, fontWeight: 700 }}>Detalle de registros</div>
+                  {filtered.length === 0 && <div style={{ padding: 30, textAlign: "center", color: "#ccc" }}>No hay registros en este periodo</div>}
+                  <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 650 }}>
+                    {filtered.length > 0 && <thead><tr style={{ borderBottom: "2px solid #eee" }}>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>TIPO</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>PRODUCTO</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>LOCAL</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>TICKET</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>FECHA</th>
+                      <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>EMPLEADO</th>
+                      <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>IMPORTE</th>
+                    </tr></thead>}
+                    <tbody>
+                      {filtered.slice().sort(function(a, b) { return (b.fecha + b.hora).localeCompare(a.fecha + a.hora); }).map(function(f) {
+                        return (
+                          <tr key={f.id} style={{ borderBottom: "1px solid #f5f5f5" }}>
+                            <td style={{ padding: "10px 8px" }}><span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (tipoColors[f.tipo] || "#888") + "15", color: tipoColors[f.tipo] || "#888" }}>{tipoIcons[f.tipo]} {tipoLabels[f.tipo]}</span></td>
+                            <td style={{ padding: "10px 8px", fontWeight: 600 }}>{f.producto}</td>
+                            <td style={{ padding: "10px 8px" }}>{f.local}</td>
+                            <td style={{ padding: "10px 8px", color: "#888" }}>{f.ticket}</td>
+                            <td style={{ padding: "10px 8px", color: "#888" }}>{f.fecha} {f.hora}</td>
+                            <td style={{ padding: "10px 8px", fontWeight: 600 }}>{f.empleado}</td>
+                            <td style={{ padding: "10px 8px", textAlign: "right", fontWeight: 800, color: "#DC2626" }}>{f.importe.toFixed(2)}€</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* === VOLCADO VENTAS === */}
+      {tab[0] === "volcado" && (
+        <div style={{ ...crd, textAlign: "center", padding: "60px 40px" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
+          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Volcado de Ventas</div>
+          <div style={{ fontSize: 13, color: "#888", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
+            Aqui podras registrar ventas diarias por canal y local de forma manual. Proximamente podremos cruzar estos datos con los escandallos para obtener el P&L real por producto.
+          </div>
+          <div style={{ marginTop: 20, fontSize: 12, color: "#aaa" }}>🚧 Funcionalidad en desarrollo</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function MiPerfilView(props) {
   var gam = props.gamification;
   var data = gam[0] || {};
@@ -9198,11 +9504,20 @@ function AlbaranesView(props) {
     for (var i = 0; i < aiLines[0].length; i++) {
       var line = aiLines[0][i];
       if (!line.ingredienteId) continue;
+      // Calculate real unit price: total / quantity (safeguard against AI returning total instead of unit price)
+      var realUnitPrice = line.precioUnit || 0;
+      if (line.cantidad > 0 && line.totalLinea > 0) {
+        var calcUnitPrice = line.totalLinea / line.cantidad;
+        // If precioUnit is suspiciously close to totalLinea, use calculated price
+        if (Math.abs(realUnitPrice - line.totalLinea) < 0.01 || realUnitPrice > calcUnitPrice * 3) {
+          realUnitPrice = calcUnitPrice;
+        }
+      }
       for (var j = 0; j < updatedIngs.length; j++) {
         if (updatedIngs[j].id === line.ingredienteId) {
           var oldPrice = updatedIngs[j].costPerUnit;
           updatedIngs[j] = Object.assign({}, updatedIngs[j], {
-            costPerUnit: line.precioUnit,
+            costPerUnit: realUnitPrice,
             lastAlbaranPrice: oldPrice,
             lastAlbaranDate: albaran.fecha
           });
