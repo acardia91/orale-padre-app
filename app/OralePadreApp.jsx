@@ -613,9 +613,9 @@ export default function App() {
     { k: "rrhh", l: "Equipo", roles: ["socio"], group: "rrhh" },
     { k: "rrhh-dorados", l: "Alubias Doradas", roles: ["socio"], group: "rrhh" },
     { k: "rrhh-fichajes", l: "Fichajes", roles: ["socio"], group: "rrhh" },
+    { k: "ventas-volcado", l: "Dashboard", roles: ["socio"], group: "ventas" },
     { k: "ventas-cierre", l: "Cierre de Caja", roles: ["socio","encargado"], group: "ventas" },
     { k: "ventas-fraude", l: "Control Fraude", roles: ["socio"], group: "ventas" },
-    { k: "ventas-volcado", l: "Ventas", roles: ["socio"], group: "ventas" },
     { k: "fichaje", l: "Fichaje", roles: ["encargado","empleado"], group: "inicio" },
     { k: "checklist", l: "Checklist", roles: ["encargado"], group: "ops" },
     { k: "mi-perfil", l: "Mi Perfil", roles: ["encargado","empleado"], group: "inicio" },
@@ -8582,8 +8582,8 @@ function RRHHView(props) {
 /* ====== MI PERFIL (Empleado/Encargado) ====== */
 /* ====== VENTAS: CIERRE CAJA + FRAUDE + VOLCADO ====== */
 function VentasView(props) {
-  var tabMap = { "ventas-cierre": "cierre", "ventas-fraude": "fraude", "ventas-volcado": "volcado" };
-  var tab = useState(tabMap[props.currentTab] || "cierre");
+  var tabMap = { "ventas-cierre": "cierre", "ventas-fraude": "fraude", "ventas-volcado": "dashboard" };
+  var tab = useState(tabMap[props.currentTab] || "dashboard");
   var cierres = props.cierresCaja;
   var fraude = props.fraudeData;
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
@@ -8617,7 +8617,7 @@ function VentasView(props) {
     showAddFraude[1](false);
   }
 
-  var tabs = [{ k: "cierre", l: "Cierre de Caja", e: "💰" }, { k: "fraude", l: "Control Fraude", e: "🔍" }, { k: "volcado", l: "Ventas", e: "📊" }];
+  var tabs = [{ k: "dashboard", l: "Dashboard", e: "📊" }, { k: "cierre", l: "Cierre de Caja", e: "💰" }, { k: "fraude", l: "Control Fraude", e: "🔍" }];
   var inp = { width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" };
   var sel = Object.assign({}, inp, { background: "#fff" });
 
@@ -8858,17 +8858,209 @@ function VentasView(props) {
         </div>
       )}
 
-      {/* === VOLCADO VENTAS === */}
-      {tab[0] === "volcado" && (
-        <div style={{ ...crd, textAlign: "center", padding: "60px 40px" }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>📊</div>
-          <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Volcado de Ventas</div>
-          <div style={{ fontSize: 13, color: "#888", maxWidth: 400, margin: "0 auto", lineHeight: 1.6 }}>
-            Aqui podras registrar ventas diarias por canal y local de forma manual. Proximamente podremos cruzar estos datos con los escandallos para obtener el P&L real por producto.
+      {/* === DASHBOARD VENTAS === */}
+      {tab[0] === "dashboard" && (function() {
+        var allCierres = cierres[0];
+        var allFraude = fraude[0];
+        var now = new Date();
+        var mesActual = now.toISOString().slice(0, 7);
+        var mesCierres = allCierres.filter(function(c) { return c.fecha.slice(0, 7) === mesActual; });
+        var mesFraude = allFraude.filter(function(f) { return f.fecha.slice(0, 7) === mesActual; });
+
+        // Totals
+        var totalMes = 0; var totalEf = 0; var totalTj = 0; var totalUb = 0; var totalGl = 0; var totalCp = 0;
+        for (var i = 0; i < mesCierres.length; i++) { totalMes += mesCierres[i].total; totalEf += mesCierres[i].efectivo; totalTj += mesCierres[i].tarjeta; totalUb += mesCierres[i].uberEats; totalGl += mesCierres[i].glovo; totalCp += mesCierres[i].canalPropio; }
+        var mediaDiaria = mesCierres.length > 0 ? totalMes / mesCierres.length : 0;
+        var totalFraude = 0;
+        for (var fi = 0; fi < mesFraude.length; fi++) totalFraude += mesFraude[fi].importe;
+        var fraudeRatio = totalMes > 0 ? (totalFraude / totalMes * 100) : 0;
+
+        // Best / worst day
+        var bestDay = null; var worstDay = null;
+        for (var bd = 0; bd < mesCierres.length; bd++) {
+          if (!bestDay || mesCierres[bd].total > bestDay.total) bestDay = mesCierres[bd];
+          if (!worstDay || mesCierres[bd].total < worstDay.total) worstDay = mesCierres[bd];
+        }
+
+        // By local
+        var byLocal = {};
+        for (var bl = 0; bl < mesCierres.length; bl++) {
+          var loc = mesCierres[bl].local;
+          if (!byLocal[loc]) byLocal[loc] = { total: 0, efectivo: 0, tarjeta: 0, uberEats: 0, glovo: 0, canalPropio: 0, count: 0 };
+          byLocal[loc].total += mesCierres[bl].total;
+          byLocal[loc].efectivo += mesCierres[bl].efectivo;
+          byLocal[loc].tarjeta += mesCierres[bl].tarjeta;
+          byLocal[loc].uberEats += mesCierres[bl].uberEats;
+          byLocal[loc].glovo += mesCierres[bl].glovo;
+          byLocal[loc].canalPropio += mesCierres[bl].canalPropio;
+          byLocal[loc].count++;
+        }
+
+        // Channel data for bars
+        var channels = [
+          { name: "Efectivo", value: totalEf, color: "#047857" },
+          { name: "Tarjeta", value: totalTj, color: "#1E40AF" },
+          { name: "Uber Eats", value: totalUb, color: "#0E7490" },
+          { name: "Glovo", value: totalGl, color: "#D97706" },
+          { name: "Canal Propio", value: totalCp, color: "#7C3AED" },
+        ];
+        var maxChannel = 1;
+        for (var mc = 0; mc < channels.length; mc++) { if (channels[mc].value > maxChannel) maxChannel = channels[mc].value; }
+
+        // Daily evolution (last 14 days)
+        var dailyData = [];
+        for (var dd = 13; dd >= 0; dd--) {
+          var d = new Date(Date.now() - dd * 86400000);
+          var ds = d.toISOString().slice(0, 10);
+          var dayTotal = 0; var dayCount = 0;
+          for (var dc = 0; dc < allCierres.length; dc++) { if (allCierres[dc].fecha === ds) { dayTotal += allCierres[dc].total; dayCount++; } }
+          dailyData.push({ date: ds, label: d.getDate() + "/" + (d.getMonth() + 1), total: dayTotal, count: dayCount });
+        }
+        var maxDaily = 1;
+        for (var md = 0; md < dailyData.length; md++) { if (dailyData[md].total > maxDaily) maxDaily = dailyData[md].total; }
+
+        // Fraude by type
+        var fraudeTipos = [
+          { key: "factura_eliminada", label: "Facturas elim.", color: "#DC2626" },
+          { key: "producto_eliminado", label: "Prod. elim.", color: "#D97706" },
+          { key: "eliminado_post_cocina", label: "Post-cocina", color: "#7C3AED" },
+          { key: "eliminado_post_factura", label: "Post-factura", color: "#1E40AF" },
+        ];
+
+        var noData = mesCierres.length === 0;
+
+        return (
+          <div>
+            {noData && (
+              <div style={{ ...crd, textAlign: "center", padding: "40px", marginBottom: 20 }}>
+                <div style={{ fontSize: 36, marginBottom: 12 }}>📊</div>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>Sin datos de cierres este mes</div>
+                <div style={{ fontSize: 13, color: "#888" }}>Registra cierres de caja en la pestana "Cierre de Caja" para ver el dashboard.</div>
+                <button onClick={function() { tab[1]("cierre"); showAddCierre[1](true); }} style={{ marginTop: 16, padding: "10px 24px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Registrar primer cierre</button>
+              </div>
+            )}
+
+            {!noData && (
+              <div>
+                {/* Top KPIs */}
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+                  <div style={{ background: "linear-gradient(135deg, #111 0%, #1a2a1a 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff" }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>TOTAL MES</div>
+                    <div style={{ fontSize: 28, fontWeight: 800, color: "#4ADE80" }}>{totalMes.toFixed(0)}€</div>
+                    <div style={{ fontSize: 10, color: "#666", marginTop: 4 }}>{mesCierres.length} cierres</div>
+                  </div>
+                  <div style={{ ...crd, padding: "18px 16px", textAlign: "center" }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>MEDIA DIARIA</div>
+                    <div style={{ fontSize: 24, fontWeight: 800 }}>{mediaDiaria.toFixed(0)}€</div>
+                    <div style={{ fontSize: 10, color: "#aaa", marginTop: 4 }}>por cierre</div>
+                  </div>
+                  <div style={{ ...crd, padding: "18px 16px", textAlign: "center", borderTop: "4px solid #047857" }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>MEJOR DIA</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: "#047857" }}>{bestDay ? bestDay.total.toFixed(0) + "€" : "—"}</div>
+                    <div style={{ fontSize: 10, color: "#aaa", marginTop: 4 }}>{bestDay ? bestDay.fecha + " " + bestDay.local : ""}</div>
+                  </div>
+                  <div style={{ ...crd, padding: "18px 16px", textAlign: "center", borderTop: fraudeRatio > 1 ? "4px solid #DC2626" : "4px solid #047857" }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>FRAUDE / VENTAS</div>
+                    <div style={{ fontSize: 20, fontWeight: 800, color: fraudeRatio > 1 ? "#DC2626" : fraudeRatio > 0.5 ? "#D97706" : "#047857" }}>{fraudeRatio.toFixed(2)}%</div>
+                    <div style={{ fontSize: 10, color: "#aaa", marginTop: 4 }}>{totalFraude.toFixed(0)}€ eliminados</div>
+                  </div>
+                </div>
+
+                {/* Channel breakdown + Local comparison */}
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+                  {/* Channel bars */}
+                  <div style={{ ...crd }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>💳 Desglose por Canal</div>
+                    {channels.map(function(ch) {
+                      var pct = totalMes > 0 ? (ch.value / totalMes * 100) : 0;
+                      var barW = Math.max(3, (ch.value / maxChannel) * 100);
+                      return (
+                        <div key={ch.name} style={{ marginBottom: 10 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600 }}>{ch.name}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, color: ch.color }}>{ch.value.toFixed(0)}€ <span style={{ fontSize: 10, color: "#aaa", fontWeight: 400 }}>({pct.toFixed(0)}%)</span></span>
+                          </div>
+                          <div style={{ background: "#f5f5f5", borderRadius: 4, height: 10, overflow: "hidden" }}>
+                            <div style={{ width: barW + "%", height: "100%", background: ch.color, borderRadius: 4, transition: "width 0.5s" }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Local comparison */}
+                  <div style={{ ...crd }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>📍 Comparativa Locales</div>
+                    {LOCALS.map(function(loc) {
+                      var ld = byLocal[loc] || { total: 0, efectivo: 0, tarjeta: 0, uberEats: 0, glovo: 0, count: 0 };
+                      var pct = totalMes > 0 ? (ld.total / totalMes * 100) : 0;
+                      var barW = totalMes > 0 ? Math.max(3, (ld.total / totalMes) * 100) : 0;
+                      return (
+                        <div key={loc} style={{ marginBottom: 14 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                            <span style={{ fontSize: 13, fontWeight: 700 }}>{loc}</span>
+                            <span style={{ fontSize: 14, fontWeight: 800, color: "#047857" }}>{ld.total.toFixed(0)}€</span>
+                          </div>
+                          <div style={{ background: "#f5f5f5", borderRadius: 4, height: 12, overflow: "hidden", marginBottom: 4 }}>
+                            <div style={{ width: barW + "%", height: "100%", background: "#B45309", borderRadius: 4 }} />
+                          </div>
+                          <div style={{ display: "flex", gap: 10, fontSize: 10, color: "#888" }}>
+                            <span>Efect: {ld.efectivo.toFixed(0)}€</span>
+                            <span>Tarj: {ld.tarjeta.toFixed(0)}€</span>
+                            <span>Uber: {ld.uberEats.toFixed(0)}€</span>
+                            <span>Glovo: {ld.glovo.toFixed(0)}€</span>
+                            <span style={{ marginLeft: "auto" }}>{ld.count} cierres | {pct.toFixed(0)}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {Object.keys(byLocal).length === 0 && <div style={{ textAlign: "center", padding: 20, color: "#ccc" }}>Sin datos</div>}
+                  </div>
+                </div>
+
+                {/* Daily evolution */}
+                <div style={{ ...crd, marginBottom: 20 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>📈 Ultimos 14 dias</div>
+                  <div style={{ display: "flex", alignItems: "flex-end", gap: 4, height: 120 }}>
+                    {dailyData.map(function(d) {
+                      var barH = d.total > 0 ? Math.max(8, (d.total / maxDaily) * 100) : 4;
+                      var isToday = d.date === now.toISOString().slice(0, 10);
+                      return (
+                        <div key={d.date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                          {d.total > 0 && <div style={{ fontSize: 8, color: "#888", fontWeight: 600 }}>{d.total.toFixed(0)}</div>}
+                          <div style={{ width: "100%", height: barH + "%", minHeight: 4, background: d.total > 0 ? (isToday ? "#B45309" : "#047857") : "#f0f0f0", borderRadius: 3 }} />
+                          <div style={{ fontSize: 8, color: isToday ? "#B45309" : "#aaa", fontWeight: isToday ? 700 : 400 }}>{d.label}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Fraude summary */}
+                {mesFraude.length > 0 && (
+                  <div style={{ ...crd, borderLeft: "4px solid #DC2626" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: "#DC2626", marginBottom: 14 }}>🔍 Resumen Fraude del Mes</div>
+                    <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 12 }}>
+                      {fraudeTipos.map(function(ft) {
+                        var items = mesFraude.filter(function(f) { return f.tipo === ft.key; });
+                        var sum = 0; for (var fti = 0; fti < items.length; fti++) sum += items[fti].importe;
+                        return (
+                          <div key={ft.key} style={{ textAlign: "center", padding: 10, borderRadius: 10, background: ft.color + "08" }}>
+                            <div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>{ft.label}</div>
+                            <div style={{ fontSize: 16, fontWeight: 800, color: ft.color }}>{sum.toFixed(0)}€</div>
+                            <div style={{ fontSize: 10, color: "#aaa" }}>{items.length} reg.</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <button onClick={function() { tab[1]("fraude"); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Ver detalle de fraude →</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <div style={{ marginTop: 20, fontSize: 12, color: "#aaa" }}>🚧 Funcionalidad en desarrollo</div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
