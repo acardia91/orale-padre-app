@@ -7482,7 +7482,7 @@ function RRHHView(props) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
             {(data.points || []).map(function(p) {
               var rc = roleColors[p.role] || "#888";
-              var recentActions = p.actions.slice(0, 5);
+              var recentActions = (p.actions || []).slice(0, 5);
               return (
                 <div key={p.userId} style={{ ...crd, borderTop: "4px solid " + rc }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
@@ -7535,7 +7535,7 @@ function RRHHView(props) {
                     if (!ptsForm[0].userId || amt <= 0) return;
                     var newPts = (data.points || []).map(function(p) {
                       if (p.userId === ptsForm[0].userId) {
-                        return Object.assign({}, p, { dorados: p.dorados + amt, actions: [{ type: "bonus_manual", date: new Date().toISOString().slice(0, 10), pts: amt, reason: ptsForm[0].reason }].concat(p.actions) });
+                        return Object.assign({}, p, { dorados: p.dorados + amt, actions: [{ type: "bonus_manual", date: new Date().toISOString().slice(0, 10), pts: amt, reason: ptsForm[0].reason }].concat(p.actions || []) });
                       }
                       return p;
                     });
@@ -7824,12 +7824,12 @@ function MiPerfilView(props) {
                   if (!canClaim) return;
                   var newPts = (data.points || []).map(function(p) {
                     if (p.name === userName) {
-                      return Object.assign({}, p, { dorados: p.dorados - rw.cost, actions: [{ type: "canje_" + rw.id, date: new Date().toISOString().slice(0, 10), pts: -rw.cost }].concat(p.actions) });
+                      return Object.assign({}, p, { dorados: p.dorados - rw.cost, actions: [{ type: "canje_" + rw.id, date: new Date().toISOString().slice(0, 10), pts: -rw.cost }].concat(p.actions || []) });
                     }
                     return p;
                   });
                   var newRewards = (data.rewards || []).map(function(r) {
-                    if (r.id === rw.id) return Object.assign({}, r, { claimed: r.claimed.concat([{ user: userName, date: new Date().toISOString().slice(0, 10) }]) });
+                    if (r.id === rw.id) return Object.assign({}, r, { claimed: (r.claimed || []).concat([{ user: userName, date: new Date().toISOString().slice(0, 10) }]) });
                     return r;
                   });
                   gam[1](Object.assign({}, data, { points: newPts, rewards: newRewards }));
