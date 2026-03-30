@@ -453,6 +453,20 @@ export default function App() {
     return unitCost * (p.packQty || 1);
   }
 
+  // Global search keyboard shortcut (Cmd+K / Ctrl+K)
+  useEffect(function() {
+    function handleKey(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchOpen[1](true);
+        searchQuery[1]("");
+      }
+      if (e.key === "Escape") { searchOpen[1](false); searchQuery[1](""); }
+    }
+    window.addEventListener("keydown", handleKey);
+    return function() { window.removeEventListener("keydown", handleKey); };
+  }, []);
+
   if (!usr[0]) {
     return (
       <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", minHeight: "100vh", background: "#050505", display: "flex", position: "relative", overflow: "hidden" }}>
@@ -687,20 +701,6 @@ export default function App() {
     sup[1](fresh.suppliers); ing[1](fresh.ingredients); rec[1](fresh.recipes); prod[1](fresh.products);
     stockAlerts[1]([]); incidents[1]([]); team[1]([]);
   }
-
-  // Global search keyboard shortcut (Cmd+K / Ctrl+K)
-  useEffect(function() {
-    function handleKey(e) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        searchOpen[1](true);
-        searchQuery[1]("");
-      }
-      if (e.key === "Escape") { searchOpen[1](false); searchQuery[1](""); }
-    }
-    window.addEventListener("keydown", handleKey);
-    return function() { window.removeEventListener("keydown", handleKey); };
-  }, []);
 
   // Filtered search results
   var searchResults = searchQuery[0].length > 0 ? nav.filter(function(n) {
