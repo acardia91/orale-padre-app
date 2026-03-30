@@ -292,6 +292,7 @@ export default function App() {
   var savedCombos = useState([]);
   var clockRecords = useState([]);
   var checklistRecords = useState([]);
+  var albaranesData = useState([]);
   var promosData = useState([
     { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
     { id: uid(), promo: 10, products: "Combos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Glovo", estado: "activa" },
@@ -514,6 +515,8 @@ export default function App() {
     { k: "ingredients", l: "Ingredientes", roles: ["socio"], group: "cocina" },
     { k: "recipes", l: "Escandallos", roles: ["socio"], group: "cocina" },
     { k: "suppliers", l: "Proveedores", roles: ["socio"], group: "cocina" },
+    { k: "albaranes", l: "Albaranes", roles: ["socio"], group: "cocina" },
+    { k: "albaranes", l: "Albaranes", roles: ["encargado"], group: "ops" },
     { k: "fichas", l: "Fichas", roles: ["socio"], group: "cocina" },
     { k: "pricing", l: "Precios", roles: ["socio"], group: "analisis" },
     { k: "matrix", l: "Matrix", roles: ["socio"], group: "analisis" },
@@ -660,7 +663,7 @@ export default function App() {
     stockAlerts[1]([]); incidents[1]([]); team[1]([]);
   }
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords };
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData };
 
   return (
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
@@ -817,6 +820,7 @@ export default function App() {
             {pg[0] === "mi-perfil" && <MiPerfilView {...PP} />}
             {pg[0] === "fichaje" && <FichajeView {...PP} />}
             {pg[0] === "checklist" && <ChecklistView {...PP} />}
+            {pg[0] === "albaranes" && <AlbaranesView {...PP} />}
           </div>
 
           {/* Reset button for socio */}
@@ -8030,6 +8034,506 @@ function ChecklistView(props) {
               </div>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+/* ====== ALBARANES — Escaneo IA ====== */
+function AlbaranesView(props) {
+  var LOCS = ["San Luis","Los Remedios","Sevilla Este"];
+  var albaranes = props.albaranesData[0];
+  var setAlbaranes = props.albaranesData[1];
+
+  var view = useState("list");
+  var imgSrc = useState(null);
+  var imgFile = useState(null);
+  var aiLines = useState([]);
+  var loading = useState(false);
+  var error = useState(null);
+  var local = useState(props.user && props.user.local ? props.user.local : "San Luis");
+  var proveedorDetected = useState("");
+  var fechaDetected = useState("");
+  var totalDetected = useState(0);
+  var debugMsg = useState(null);
+
+  var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
+  var fmt = function(n) { return typeof n === "number" ? n.toFixed(2) + "€" : "—"; };
+
+  function compressImage(dataUrl, cb) {
+    var img = new Image();
+    img.onload = function() {
+      try {
+        var canvas = document.createElement("canvas");
+        var MAX = 1200;
+        var w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL("image/jpeg", 0.65));
+      } catch(err) { cb(dataUrl); }
+    };
+    img.onerror = function() { cb(dataUrl); };
+    img.src = dataUrl;
+  }
+
+  function handleFile(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    imgFile[1](file);
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var raw = ev.target.result;
+      if (file.type && file.type.indexOf("image") >= 0) {
+        compressImage(raw, function(compressed) {
+          imgSrc[1](compressed);
+          view[1]("upload");
+          error[1](null);
+        });
+      } else {
+        imgSrc[1](raw);
+        view[1]("upload");
+        error[1](null);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function analyzeAlbaran() {
+    if (!imgSrc[0]) return;
+    loading[1](true);
+    error[1](null);
+    debugMsg[1]("Preparando imagen...");
+
+    var base64Data = imgSrc[0].split(",")[1];
+    var mediaType = imgSrc[0].split(";")[0].split(":")[1] || "image/jpeg";
+    var sizeKB = Math.round(base64Data.length * 3 / 4 / 1024);
+    debugMsg[1]("Imagen lista: " + sizeKB + "KB. Enviando a Claude API...");
+
+    var systemPrompt = "Eres un asistente experto en leer albaranes de proveedores de restaurantes en España. " +
+      "Extrae TODOS los productos/líneas del albarán con su cantidad, unidad de medida, precio unitario y precio total de línea. " +
+      "También extrae: nombre del proveedor, fecha del albarán, y total general. " +
+      "Responde SOLO con JSON válido, sin markdown ni backticks. Formato exacto: " +
+      '{"proveedor":"nombre","fecha":"DD/MM/YYYY","total":123.45,"lineas":[{"producto":"nombre","cantidad":1,"unidad":"kg","precioUnit":1.50,"totalLinea":1.50}]}' +
+      " Si no puedes leer algo claramente, pon tu mejor estimación y añade un campo \"duda\":true en esa línea. " +
+      "Unidades comunes: kg, ud, L, caja, bolsa, paquete, lata, bote, bandeja. " +
+      "Si ves IVA, extrae los precios SIN IVA (base imponible).";
+
+    var controller = new AbortController();
+    var timeout = setTimeout(function() { controller.abort(); }, 45000);
+
+    fetch("/api/analyze-albaran", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+      body: JSON.stringify({ image: base64Data, mediaType: mediaType })
+    })
+    .then(function(res) {
+      clearTimeout(timeout);
+      debugMsg[1]("Respuesta recibida: HTTP " + res.status);
+      if (!res.ok) return res.text().then(function(t) { throw new Error("API " + res.status + ": " + t.substring(0, 300)); });
+      return res.json();
+    })
+    .then(function(parsed) {
+      loading[1](false);
+      debugMsg[1](null);
+      if (!parsed || parsed.error) {
+        error[1]("Error IA: " + (parsed ? parsed.error : "sin respuesta") + ". Usa entrada manual.");
+        return;
+      }
+      try {
+        proveedorDetected[1](parsed.proveedor || "Desconocido");
+        fechaDetected[1](parsed.fecha || new Date().toLocaleDateString("es-ES"));
+        totalDetected[1](parsed.total || 0);
+        var lines = (parsed.lineas || []).map(function(l, idx) {
+          var matchId = "";
+          var matchName = "";
+          var prodLower = (l.producto || "").toLowerCase();
+          for (var j = 0; j < props.ingredients.length; j++) {
+            var ingName = props.ingredients[j].name.toLowerCase();
+            if (prodLower.indexOf(ingName) >= 0 || ingName.indexOf(prodLower) >= 0 ||
+                (prodLower.length > 3 && ingName.indexOf(prodLower.substring(0, Math.min(prodLower.length, 8))) >= 0)) {
+              matchId = props.ingredients[j].id;
+              matchName = props.ingredients[j].name;
+              break;
+            }
+          }
+          return {
+            id: "al_" + Date.now() + "_" + idx,
+            producto: l.producto || "",
+            cantidad: l.cantidad || 0,
+            unidad: l.unidad || "ud",
+            precioUnit: l.precioUnit || 0,
+            totalLinea: l.totalLinea || 0,
+            duda: l.duda || false,
+            ingredienteId: matchId,
+            ingredienteMatch: matchName,
+            confirmed: false
+          };
+        });
+        aiLines[1](lines);
+        view[1]("review");
+      } catch (err) {
+        error[1]("Error al interpretar respuesta IA: " + err.message + ". Usa entrada manual.");
+      }
+    })
+    .catch(function(err) {
+      clearTimeout(timeout);
+      loading[1](false);
+      debugMsg[1](null);
+      if (err.name === "AbortError") {
+        error[1]("Timeout (45s). En el artifact de prueba las llamadas con imagen son lentas. En produccion (Vercel) funciona rapido. Usa entrada manual por ahora.");
+      } else {
+        error[1]("Error: " + err.message + ". Prueba entrada manual.");
+      }
+    });
+  }
+
+  function goManualEntry() {
+    proveedorDetected[1]("");
+    fechaDetected[1](new Date().toLocaleDateString("es-ES"));
+    totalDetected[1](0);
+    aiLines[1]([{
+      id: "al_" + Date.now() + "_0",
+      producto: "",
+      cantidad: 0,
+      unidad: "kg",
+      precioUnit: 0,
+      totalLinea: 0,
+      duda: false,
+      ingredienteId: "",
+      ingredienteMatch: "",
+      confirmed: false
+    }]);
+    view[1]("review");
+  }
+
+  function addEmptyLine() {
+    aiLines[1](aiLines[0].concat([{
+      id: "al_" + Date.now() + "_" + aiLines[0].length,
+      producto: "",
+      cantidad: 0,
+      unidad: "kg",
+      precioUnit: 0,
+      totalLinea: 0,
+      duda: false,
+      ingredienteId: "",
+      ingredienteMatch: "",
+      confirmed: false
+    }]));
+  }
+
+  function updateLine(lineId, field, value) {
+    aiLines[1](aiLines[0].map(function(l) {
+      if (l.id !== lineId) return l;
+      var updated = Object.assign({}, l);
+      updated[field] = value;
+      if (field === "cantidad" || field === "precioUnit") {
+        updated.totalLinea = (parseFloat(updated.cantidad) || 0) * (parseFloat(updated.precioUnit) || 0);
+      }
+      return updated;
+    }));
+  }
+
+  function linkIngredient(lineId, ingId) {
+    var ing = null;
+    for (var i = 0; i < props.ingredients.length; i++) {
+      if (props.ingredients[i].id === ingId) { ing = props.ingredients[i]; break; }
+    }
+    aiLines[1](aiLines[0].map(function(l) {
+      if (l.id !== lineId) return l;
+      return Object.assign({}, l, { ingredienteId: ingId, ingredienteMatch: ing ? ing.name : "" });
+    }));
+  }
+
+  function deleteLine(lineId) {
+    aiLines[1](aiLines[0].filter(function(l) { return l.id !== lineId; }));
+  }
+
+  function confirmAlbaran() {
+    var albaran = {
+      id: "alb_" + Date.now(),
+      fecha: fechaDetected[0],
+      proveedor: proveedorDetected[0],
+      local: local[0],
+      total: aiLines[0].reduce(function(s, l) { return s + (l.totalLinea || 0); }, 0),
+      lineas: aiLines[0],
+      confirmedBy: props.user ? props.user.name : "",
+      confirmedAt: new Date().toISOString()
+    };
+
+    var updatedIngs = props.ingredients.slice();
+    for (var i = 0; i < aiLines[0].length; i++) {
+      var line = aiLines[0][i];
+      if (!line.ingredienteId) continue;
+      for (var j = 0; j < updatedIngs.length; j++) {
+        if (updatedIngs[j].id === line.ingredienteId) {
+          var oldPrice = updatedIngs[j].price;
+          updatedIngs[j] = Object.assign({}, updatedIngs[j], {
+            price: line.precioUnit,
+            lastAlbaranPrice: oldPrice,
+            lastAlbaranDate: albaran.fecha
+          });
+          break;
+        }
+      }
+    }
+    props.setIng(updatedIngs);
+    setAlbaranes([albaran].concat(albaranes));
+
+    view[1]("list");
+    imgSrc[1](null);
+    imgFile[1](null);
+    aiLines[1]([]);
+    proveedorDetected[1]("");
+    fechaDetected[1]("");
+    totalDetected[1](0);
+  }
+
+  function cancelReview() {
+    view[1]("list");
+    imgSrc[1](null);
+    imgFile[1](null);
+    aiLines[1]([]);
+    error[1](null);
+  }
+
+  var linkedCount = aiLines[0].filter(function(l) { return l.ingredienteId; }).length;
+  var totalCalc = aiLines[0].reduce(function(s, l) { return s + (l.totalLinea || 0); }, 0);
+  var dudasCount = aiLines[0].filter(function(l) { return l.duda; }).length;
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Albaranes</div>
+        <div style={{ fontSize: 13, color: "#888" }}>Sube foto o PDF del albaran y la IA extrae productos, cantidades y precios automaticamente</div>
+      </div>
+
+      {/* === LIST VIEW === */}
+      {view[0] === "list" && (
+        <div>
+          <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "24px 20px", borderRadius: 14, border: "2px dashed #B45309", background: "#FFF7ED", cursor: "pointer", marginBottom: 20 }}>
+            <input type="file" accept="image/*,application/pdf" capture="environment" onChange={handleFile} style={{ display: "none" }} />
+            <span style={{ fontSize: 28 }}>📸</span>
+            <div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#B45309" }}>Subir albaran</div>
+              <div style={{ fontSize: 12, color: "#92400E" }}>Haz foto al albaran o selecciona PDF</div>
+            </div>
+          </label>
+
+          {albaranes.length > 0 && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10, marginBottom: 20 }}>
+              <div style={{ ...crd, padding: 14, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#B45309" }}>{albaranes.length}</div>
+                <div style={{ fontSize: 11, color: "#888" }}>Albaranes</div>
+              </div>
+              <div style={{ ...crd, padding: 14, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#047857" }}>{fmt(albaranes.reduce(function(s, a) { return s + a.total; }, 0))}</div>
+                <div style={{ fontSize: 11, color: "#888" }}>Total compras</div>
+              </div>
+              <div style={{ ...crd, padding: 14, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#1E40AF" }}>{(function() { var p = {}; albaranes.forEach(function(a) { p[a.proveedor] = true; }); return Object.keys(p).length; })()}</div>
+                <div style={{ fontSize: 11, color: "#888" }}>Proveedores</div>
+              </div>
+              <div style={{ ...crd, padding: 14, textAlign: "center" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#7C3AED" }}>{albaranes.reduce(function(s, a) { return s + a.lineas.length; }, 0)}</div>
+                <div style={{ fontSize: 11, color: "#888" }}>Lineas totales</div>
+              </div>
+            </div>
+          )}
+
+          {albaranes.length === 0 && (
+            <div style={{ ...crd, textAlign: "center", padding: 40, color: "#aaa" }}>
+              <div style={{ fontSize: 36, marginBottom: 8 }}>📋</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Sin albaranes registrados</div>
+              <div style={{ fontSize: 12 }}>Sube tu primer albaran para empezar</div>
+            </div>
+          )}
+
+          {albaranes.map(function(a) {
+            var priceChanges = a.lineas.filter(function(l) { return l.ingredienteId; }).length;
+            return (
+              <div key={a.id} style={{ ...crd, marginBottom: 10 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <div>
+                    <span style={{ fontSize: 15, fontWeight: 700 }}>{a.proveedor}</span>
+                    <span style={{ fontSize: 12, color: "#888", marginLeft: 10 }}>{a.fecha}</span>
+                  </div>
+                  <span style={{ fontSize: 16, fontWeight: 800, color: "#047857" }}>{fmt(a.total)}</span>
+                </div>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, background: "#F3F4F6", color: "#555" }}>📍 {a.local}</span>
+                  <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, background: "#F3F4F6", color: "#555" }}>{a.lineas.length} lineas</span>
+                  <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, background: "#ECFDF5", color: "#047857" }}>🔗 {priceChanges} vinculados</span>
+                  <span style={{ fontSize: 11, padding: "3px 8px", borderRadius: 6, background: "#F3F4F6", color: "#888" }}>✅ {a.confirmedBy}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* === UPLOAD PREVIEW === */}
+      {view[0] === "upload" && (
+        <div>
+          <div style={{ ...crd, marginBottom: 16 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Vista previa del albaran</div>
+            {imgSrc[0] && (
+              <div style={{ textAlign: "center", marginBottom: 16 }}>
+                <img src={imgSrc[0]} alt="Albarán" style={{ maxWidth: "100%", maxHeight: 400, borderRadius: 10, border: "1px solid #eee" }} />
+              </div>
+            )}
+            <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 11, color: "#888", marginBottom: 4 }}>Local de recepcion</div>
+                <select value={local[0]} onChange={function(e) { local[1](e.target.value); }} style={{ width: "100%", padding: "8px 12px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 13, fontFamily: "inherit" }}>
+                  {LOCS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}
+                </select>
+              </div>
+            </div>
+            {error[0] && (
+              <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FEF2F2", color: "#DC2626", fontSize: 12, marginBottom: 12 }}>⚠️ {error[0]}</div>
+            )}
+            {debugMsg[0] && loading[0] && (
+              <div style={{ padding: "8px 14px", borderRadius: 8, background: "#EFF6FF", color: "#1E40AF", fontSize: 12, marginBottom: 12 }}>🔍 {debugMsg[0]}</div>
+            )}
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <button onClick={analyzeAlbaran} disabled={loading[0]} style={{ flex: 1, padding: "12px 20px", borderRadius: 10, border: "none", background: loading[0] ? "#888" : "#B45309", color: "#fff", fontSize: 14, fontWeight: 700, cursor: loading[0] ? "wait" : "pointer", fontFamily: "inherit", minWidth: 180 }}>
+                {loading[0] ? "🔄 Analizando con IA..." : "🤖 Analizar con IA"}
+              </button>
+              <button onClick={goManualEntry} style={{ padding: "12px 20px", borderRadius: 10, border: "2px solid #047857", background: "#F0FDF4", color: "#047857", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✍️ Entrada manual</button>
+              <button onClick={cancelReview} style={{ padding: "12px 20px", borderRadius: 10, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+            </div>
+            {loading[0] && (
+              <div style={{ fontSize: 11, color: "#888", marginTop: 8 }}>Si tarda mas de 30s, usa "Entrada manual" para registrar el albaran directamente</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* === REVIEW VIEW === */}
+      {view[0] === "review" && (
+        <div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+            <div style={{ ...crd, padding: 12 }}>
+              <div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Proveedor</div>
+              <input value={proveedorDetected[0]} onChange={function(e) { proveedorDetected[1](e.target.value); }} style={{ width: "100%", fontSize: 14, fontWeight: 700, border: "none", outline: "none", background: "transparent", fontFamily: "inherit" }} />
+            </div>
+            <div style={{ ...crd, padding: 12 }}>
+              <div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Fecha</div>
+              <input value={fechaDetected[0]} onChange={function(e) { fechaDetected[1](e.target.value); }} style={{ width: "100%", fontSize: 14, fontWeight: 700, border: "none", outline: "none", background: "transparent", fontFamily: "inherit" }} />
+            </div>
+            <div style={{ ...crd, padding: 12 }}>
+              <div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Local</div>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>{local[0]}</div>
+            </div>
+            <div style={{ ...crd, padding: 12 }}>
+              <div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Total calculado</div>
+              <div style={{ fontSize: 14, fontWeight: 800, color: "#047857" }}>{fmt(totalCalc)}</div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#F0FDF4", color: "#047857", fontWeight: 600 }}>🔗 {linkedCount}/{aiLines[0].length} vinculados</span>
+            {dudasCount > 0 && <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#FEF3C7", color: "#92400E", fontWeight: 600 }}>⚠️ {dudasCount} dudas IA</span>}
+            {totalDetected[0] > 0 && Math.abs(totalCalc - totalDetected[0]) > 0.10 && (
+              <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#FEF2F2", color: "#DC2626", fontWeight: 600 }}>❌ Total albaran ({fmt(totalDetected[0])}) no cuadra</span>
+            )}
+            {totalDetected[0] > 0 && Math.abs(totalCalc - totalDetected[0]) <= 0.10 && (
+              <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#F0FDF4", color: "#047857", fontWeight: 600 }}>✅ Total cuadra</span>
+            )}
+          </div>
+
+          <div style={{ ...crd, overflowX: "auto" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Lineas del albaran ({aiLines[0].length})</div>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+              <thead>
+                <tr style={{ borderBottom: "2px solid #eee" }}>
+                  <th style={{ textAlign: "left", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11 }}>Producto (albaran)</th>
+                  <th style={{ textAlign: "right", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11, width: 70 }}>Cant.</th>
+                  <th style={{ textAlign: "center", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11, width: 60 }}>Ud.</th>
+                  <th style={{ textAlign: "right", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11, width: 80 }}>P.Unit</th>
+                  <th style={{ textAlign: "right", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11, width: 80 }}>Total</th>
+                  <th style={{ textAlign: "left", padding: "8px 6px", color: "#888", fontWeight: 600, fontSize: 11, minWidth: 150 }}>Vincular ingrediente</th>
+                  <th style={{ width: 36 }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {aiLines[0].map(function(line) {
+                  var bgColor = line.duda ? "#FFFBEB" : line.ingredienteId ? "#F0FDF4" : "#fff";
+                  var priceAlert = null;
+                  if (line.ingredienteId) {
+                    for (var pi = 0; pi < props.ingredients.length; pi++) {
+                      if (props.ingredients[pi].id === line.ingredienteId) {
+                        var oldP = props.ingredients[pi].price;
+                        if (oldP > 0 && line.precioUnit > 0) {
+                          var diff = ((line.precioUnit - oldP) / oldP) * 100;
+                          if (Math.abs(diff) > 5) priceAlert = { diff: diff, old: oldP };
+                        }
+                        break;
+                      }
+                    }
+                  }
+                  return (
+                    <tr key={line.id} style={{ borderBottom: "1px solid #f5f5f5", background: bgColor }}>
+                      <td style={{ padding: "8px 6px" }}>
+                        <input value={line.producto} onChange={function(e) { updateLine(line.id, "producto", e.target.value); }} style={{ width: "100%", border: "none", background: "transparent", fontSize: 13, fontWeight: 600, fontFamily: "inherit", outline: "none" }} />
+                        {line.duda && <span style={{ fontSize: 10, color: "#D97706" }}>⚠️ lectura dudosa</span>}
+                      </td>
+                      <td style={{ padding: "8px 6px" }}>
+                        <input type="number" value={line.cantidad} onChange={function(e) { updateLine(line.id, "cantidad", parseFloat(e.target.value) || 0); }} style={{ width: "100%", border: "1px solid #e5e5e5", borderRadius: 6, padding: "4px 6px", fontSize: 13, textAlign: "right", fontFamily: "inherit" }} />
+                      </td>
+                      <td style={{ padding: "8px 6px", textAlign: "center" }}>
+                        <select value={line.unidad} onChange={function(e) { updateLine(line.id, "unidad", e.target.value); }} style={{ border: "1px solid #e5e5e5", borderRadius: 6, padding: "4px", fontSize: 12, fontFamily: "inherit" }}>
+                          {["kg","ud","L","caja","bolsa","paquete","lata","bote","bandeja"].map(function(u) { return <option key={u} value={u}>{u}</option>; })}
+                        </select>
+                      </td>
+                      <td style={{ padding: "8px 6px" }}>
+                        <input type="number" step="0.01" value={line.precioUnit} onChange={function(e) { updateLine(line.id, "precioUnit", parseFloat(e.target.value) || 0); }} style={{ width: "100%", border: "1px solid #e5e5e5", borderRadius: 6, padding: "4px 6px", fontSize: 13, textAlign: "right", fontFamily: "inherit" }} />
+                      </td>
+                      <td style={{ padding: "8px 6px", textAlign: "right", fontWeight: 700 }}>
+                        {fmt(line.totalLinea)}
+                      </td>
+                      <td style={{ padding: "8px 6px" }}>
+                        <select value={line.ingredienteId} onChange={function(e) { linkIngredient(line.id, e.target.value); }} style={{ width: "100%", border: "1px solid " + (line.ingredienteId ? "#047857" : "#e5e5e5"), borderRadius: 6, padding: "4px 6px", fontSize: 12, fontFamily: "inherit", background: line.ingredienteId ? "#F0FDF4" : "#fff" }}>
+                          <option value="">— Sin vincular —</option>
+                          {props.ingredients.map(function(ing) { return <option key={ing.id} value={ing.id}>{ing.name} ({ing.unit})</option>; })}
+                        </select>
+                        {priceAlert && (
+                          <div style={{ fontSize: 10, marginTop: 2, color: priceAlert.diff > 0 ? "#DC2626" : "#047857", fontWeight: 600 }}>
+                            {priceAlert.diff > 0 ? "📈" : "📉"} {priceAlert.diff > 0 ? "+" : ""}{priceAlert.diff.toFixed(1)}% vs anterior ({fmt(priceAlert.old)})
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: "8px 6px" }}>
+                        <button onClick={function() { deleteLine(line.id); }} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 16 }}>×</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {imgSrc[0] && (
+            <div style={{ ...crd, marginTop: 12 }}>
+              <button onClick={addEmptyLine} style={{ marginBottom: 10, display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, border: "2px dashed #B45309", background: "#FFF7ED", color: "#B45309", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Añadir linea manualmente</button>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#888", marginBottom: 8 }}>Imagen original</div>
+              <img src={imgSrc[0]} alt="Albarán" style={{ maxWidth: "100%", maxHeight: 250, borderRadius: 8, border: "1px solid #eee" }} />
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+            <button onClick={confirmAlbaran} style={{ flex: 1, padding: "14px 20px", borderRadius: 12, border: "none", background: "#047857", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              ✅ Confirmar albaran ({aiLines[0].length} lineas — {fmt(totalCalc)})
+            </button>
+            <button onClick={cancelReview} style={{ padding: "14px 20px", borderRadius: 12, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+          </div>
         </div>
       )}
     </div>
