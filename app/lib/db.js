@@ -88,7 +88,7 @@ export async function loadAllData() {
       });
     }
     // Stock por local
-    var { data: stockLocal } = await supabase.from('stock_local').select('*');
+    try { var { data: stockLocal } = await supabase.from('stock_local').select('*'); } catch(e) { var stockLocal = null; }
     if (stockLocal && stockLocal.length > 0) {
       result.stockData = {};
       for (var sli = 0; sli < stockLocal.length; sli++) {
@@ -104,8 +104,8 @@ export async function loadAllData() {
       }
     }
     // Gamification
-    var { data: gamPoints } = await supabase.from('gamification_points').select('*');
-    var { data: gamHistory } = await supabase.from('gamification_history').select('*').order('created_at', { ascending: false });
+    try { var { data: gamPoints } = await supabase.from('gamification_points').select('*'); } catch(e) { var gamPoints = null; }
+    try { var { data: gamHistory } = await supabase.from('gamification_history').select('*').order('created_at', { ascending: false }); } catch(e) { var gamHistory = null; }
     if (gamPoints && gamPoints.length > 0) {
       result.gamification = {
         points: gamPoints.map(function(p) { return { userId: p.user_id, name: p.user_name, dorados: p.dorados || 0, totalPoints: p.total_points || 0 }; }),
@@ -113,17 +113,17 @@ export async function loadAllData() {
       };
     }
     // Week tasks
-    var { data: wTasks } = await supabase.from('week_tasks').select('*');
+    try { var { data: wTasks } = await supabase.from('week_tasks').select('*'); } catch(e) { var wTasks = null; }
     if (wTasks && wTasks.length > 0) {
       result.weekTasks = wTasks.map(function(t) { return { id: t.id, title: t.title, assignedTo: t.assigned_to || "", status: t.status || "pendiente", priority: t.priority || "media", due: t.due_date || "", category: t.category || "general", notes: t.notes || "" }; });
     }
     // Price history
-    var { data: pHistory } = await supabase.from('price_history').select('*').order('recorded_at', { ascending: false }).limit(200);
+    try { var { data: pHistory } = await supabase.from('price_history').select('*').order('recorded_at', { ascending: false }).limit(200); } catch(e) { var pHistory = null; }
     if (pHistory && pHistory.length > 0) {
       result.priceHistory = pHistory.map(function(p) { return { id: p.id, ingredientId: p.ingredient_id, ingredientName: p.ingredient_name, oldPrice: parseFloat(p.old_price) || 0, newPrice: parseFloat(p.new_price) || 0, changePct: parseFloat(p.change_pct) || 0, source: p.source || "albaran", albaranId: p.albaran_id || "", proveedor: p.proveedor || "", local: p.local_name || "", date: p.recorded_at }; });
     }
     // Prep steps
-    var { data: pSteps } = await supabase.from('prep_steps').select('*').order('step_order', { ascending: true });
+    try { var { data: pSteps } = await supabase.from('prep_steps').select('*').order('step_order', { ascending: true }); } catch(e) { var pSteps = null; }
     if (pSteps && pSteps.length > 0) {
       result.prepSteps = {};
       for (var psi = 0; psi < pSteps.length; psi++) {
@@ -133,7 +133,7 @@ export async function loadAllData() {
       }
     }
     // App users
-    var { data: appUsers } = await supabase.from('app_users').select('*').eq('active', true);
+    try { var { data: appUsers } = await supabase.from('app_users').select('*').eq('active', true); } catch(e) { var appUsers = null; }
     if (appUsers && appUsers.length > 0) {
       result.appUsers = appUsers.map(function(u) { return { id: u.id, email: u.email || "", name: u.name, role: u.role, local: u.local_name || "", pin: u.pin || "", phone: u.phone || "", avatar: u.avatar_url || "" }; });
     }
