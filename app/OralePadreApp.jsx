@@ -338,6 +338,7 @@ export default function App() {
   var prepStepsState = useState(JSON.parse(JSON.stringify(PREP_STEPS)));
   var openArea = useState(null);
   var isMobile = useState(typeof window !== "undefined" ? window.innerWidth < 860 : true);
+  var darkMode = useState(false);
   var sidebarOpen = useState(true);
   var dbLoaded = useState(false);
   var activeBottomTab = useState(null);
@@ -658,7 +659,7 @@ export default function App() {
       { k: "dashboard", l: "Inicio", icon: "📊", group: null },
       { k: "_cocina", l: "Cocina", icon: "🧬", group: "cocina" },
       { k: "_negocio", l: "Negocio", icon: "💰", group: "negocio" },
-      { k: "_mkt", l: "MKT", icon: "📸", group: "mkt" },
+      { k: "_ventas", l: "Ventas", icon: "💵", group: "ventas" },
       { k: "_mas", l: "Mas", icon: "☰", group: "mas" },
     ];
   } else if (role === "encargado") {
@@ -691,7 +692,8 @@ export default function App() {
     negocio: nav.filter(function(n) { return n.group === "analisis" || n.group === "comercial"; }),
     ops: nav.filter(function(n) { return n.group === "ops"; }),
     mkt: nav.filter(function(n) { return n.group === "mkt"; }),
-    mas: nav.filter(function(n) { return n.group === "ops" || n.group === "rrhh"; }),
+    ventas: nav.filter(function(n) { return n.group === "ventas"; }),
+    mas: nav.filter(function(n) { return n.group === "ops" || n.group === "rrhh" || n.group === "mkt" || n.group === "comercial"; }),
   };
 
   // Sidebar groups for desktop (socio)
@@ -743,10 +745,18 @@ export default function App() {
            n.k.toLowerCase().indexOf(searchQuery[0].toLowerCase()) >= 0;
   }) : nav;
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData };
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData, dk: dk, dkCard: dkCard, dkBorder: dkBorder, dkText: dkText, dkTextSoft: dkTextSoft };
+
+  var dk = darkMode[0];
+  var dkBg = dk ? "#111" : "#f6f4f0";
+  var dkCard = dk ? "#1a1a1a" : "#fff";
+  var dkBorder = dk ? "#333" : "#eee";
+  var dkText = dk ? "#e5e5e5" : "#333";
+  var dkTextSoft = dk ? "#999" : "#888";
+  var dkTextMuted = dk ? "#666" : "#aaa";
 
   return (
-    <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: dkBg, color: dkText, minHeight: "100vh", overflowX: "hidden" }}>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       {/* Header */}
       <div style={{ background: "#1a1a1a", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
@@ -783,6 +793,7 @@ export default function App() {
           <div className="op-header-text"><div style={{ fontSize: 12, fontWeight: 600, color: "#eee" }}>{usr[0].name}</div><div style={{ fontSize: 10, color: "#888" }}>{usr[0].role}{usr[0].local ? " - " + usr[0].local : ""}</div></div>
         </div>
         <button onClick={function() { usr[1](null); pg[1]("dashboard"); }} style={{ background: "#333", color: "#aaa", border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, flexShrink: 0 }}>Salir</button>
+        <button onClick={function() { darkMode[1](!darkMode[0]); }} style={{ background: darkMode[0] ? "#B45309" : "#333", color: darkMode[0] ? "#fff" : "#888", border: "none", borderRadius: 8, padding: "5px 10px", fontSize: 13, cursor: "pointer", flexShrink: 0 }} title="Modo noche">{darkMode[0] ? "☀️" : "🌙"}</button>
       </div>
       {/* === GLOBAL STYLES === */}
       <style dangerouslySetInnerHTML={{ __html: [
@@ -792,6 +803,10 @@ export default function App() {
         "*{box-sizing:border-box}",
         "table{table-layout:auto;word-break:break-word}",
         "@media(max-width:600px){table{font-size:12px !important} table th,table td{padding:8px 6px !important}}",
+        dk ? ".op-dark input,.op-dark select,.op-dark textarea{background:#222 !important;color:#e5e5e5 !important;border-color:#444 !important}" : "",
+        dk ? ".op-dark table{color:#ccc}" : "",
+        dk ? ".op-dark table thead tr{background:#222 !important}" : "",
+        dk ? ".op-dark table tbody tr{border-color:#333 !important}" : "",
         ".op-sidebar{width:220px;background:#111;overflow-y:auto;flex-shrink:0;border-right:1px solid #222;position:sticky;top:0;height:calc(100vh - 48px)}",
         ".op-sidebar-group-label{font-size:10px;font-weight:700;color:#555;letter-spacing:1px;padding:12px 16px 4px;text-transform:uppercase}",
         ".op-sidebar-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:#888;cursor:pointer;font-weight:500;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;transition:all 0.15s}",
@@ -847,7 +862,7 @@ export default function App() {
       )}
 
       {/* === LAYOUT: SIDEBAR (desktop all roles) + CONTENT + BOTTOM BAR (mobile) === */}
-      <div style={{ display: "flex", minHeight: "calc(100vh - 48px)" }}>
+      <div className={dk ? "op-dark" : ""} style={{ display: "flex", minHeight: "calc(100vh - 48px)" }}>
 
         {/* SIDEBAR — Desktop all roles */}
         {!isMobile[0] && (
@@ -931,7 +946,7 @@ export default function App() {
           )}
 
           {/* PAGE CONTENT */}
-          <div style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden" }}>
+          <div style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden", background: dkBg }}>
             {pg[0] === "dashboard" && <DashView {...PP} />}
             {pg[0] === "panel" && <EncargadoPanel {...PP} />}
             {pg[0] === "suppliers" && <SupView {...PP} />}
@@ -1044,6 +1059,90 @@ function LoginForm(props) {
 }
 
 /* ====== NOVEDADES BLOCK (shared across dashboards) ====== */
+/* ====== WEATHER WIDGET ====== */
+function WeatherWidget(props) {
+  var weather = useState(null);
+  var expanded = useState(false);
+  var loading = useState(true);
+
+  useEffect(function() {
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=37.39&longitude=-5.99&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&current_weather=true&timezone=Europe/Madrid&forecast_days=7")
+      .then(function(r) { return r.json(); })
+      .then(function(data) { weather[1](data); loading[1](false); })
+      .catch(function() { loading[1](false); });
+  }, []);
+
+  if (loading[0]) return <div style={{ background: props.dk ? "#1a1a1a" : "#fff", borderRadius: 14, padding: "14px 20px", border: "1px solid " + (props.dk ? "#333" : "#eee"), marginBottom: 16, fontSize: 12, color: "#888" }}>Cargando tiempo...</div>;
+  if (!weather[0] || !weather[0].current_weather) return null;
+
+  var cw = weather[0].current_weather;
+  var daily = weather[0].daily || {};
+  var wcLabels = { 0: "Despejado", 1: "Mayormente despejado", 2: "Parcialmente nublado", 3: "Nublado", 45: "Niebla", 48: "Niebla helada", 51: "Llovizna ligera", 53: "Llovizna", 55: "Llovizna intensa", 61: "Lluvia ligera", 63: "Lluvia", 65: "Lluvia intensa", 71: "Nieve ligera", 73: "Nieve", 75: "Nieve intensa", 80: "Chubascos", 81: "Chubascos moderados", 82: "Chubascos fuertes", 95: "Tormenta" };
+  var wcIcons = { 0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️", 45: "🌫️", 48: "🌫️", 51: "🌦️", 53: "🌧️", 55: "🌧️", 61: "🌧️", 63: "🌧️", 65: "🌧️", 71: "🌨️", 73: "🌨️", 75: "🌨️", 80: "🌦️", 81: "🌧️", 82: "🌧️", 95: "⛈️" };
+  var DIAS = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+
+  function getBusinessImpact(code, temp, rain) {
+    var tips = [];
+    if (temp > 35) tips.push("🔥 Calor extremo: prepara mas bebidas frias y helados. El delivery sube.");
+    else if (temp > 30) tips.push("☀️ Dia caluroso: bebidas frias y ensaladas tendran mas demanda.");
+    if (rain > 5) tips.push("🌧️ Lluvia: el delivery dispara. Prepara mas stock para Uber/Glovo.");
+    if (rain > 15) tips.push("⛈️ Lluvia fuerte: sala bajara mucho. Centra esfuerzos en delivery.");
+    if (code >= 61 && code <= 65) tips.push("☔ Con lluvia, los tiempos de entrega suben. Ajusta expectativas.");
+    if (rain === 0 && temp >= 20 && temp <= 28) tips.push("✅ Tiempo perfecto para terraza. Maximiza sala.");
+    if (temp < 15) tips.push("🥶 Frio: platos calientes como bowls y burritos seran mas demandados.");
+    var dia = new Date().getDay();
+    if (dia === 5 || dia === 6) tips.push("🎉 Fin de semana: mas volumen en sala, prepara equipo reforzado.");
+    if (tips.length === 0) tips.push("👍 Tiempo normal. Sin impacto especial previsto.");
+    return tips;
+  }
+
+  var tips = getBusinessImpact(cw.weathercode, cw.temperature, (daily.precipitation_sum || [])[0] || 0);
+
+  return (
+    <div style={{ background: props.dk ? "#1a1a1a" : "#fff", borderRadius: 14, border: "1px solid " + (props.dk ? "#333" : "#eee"), marginBottom: 16, overflow: "hidden" }}>
+      <div onClick={function() { expanded[1](!expanded[0]); }} style={{ padding: "14px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={{ fontSize: 28 }}>{wcIcons[cw.weathercode] || "🌤️"}</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 14, fontWeight: 700 }}>{cw.temperature}°C — {wcLabels[cw.weathercode] || "Variable"}</div>
+          <div style={{ fontSize: 11, color: props.dk ? "#888" : "#aaa" }}>Sevilla hoy | {tips[0]}</div>
+        </div>
+        <div style={{ fontSize: 12, color: "#aaa", transform: expanded[0] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▶</div>
+      </div>
+      {expanded[0] && (
+        <div style={{ padding: "0 20px 16px" }}>
+          {/* 7 day forecast */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 14, overflowX: "auto", paddingBottom: 4 }}>
+            {(daily.time || []).map(function(date, idx) {
+              var d = new Date(date);
+              var tMax = (daily.temperature_2m_max || [])[idx];
+              var tMin = (daily.temperature_2m_min || [])[idx];
+              var rain = (daily.precipitation_sum || [])[idx] || 0;
+              var wc = (daily.weathercode || [])[idx] || 0;
+              var isToday = idx === 0;
+              return (
+                <div key={idx} style={{ minWidth: 70, textAlign: "center", padding: "10px 8px", borderRadius: 10, background: isToday ? (props.dk ? "#B4530920" : "#FFF7ED") : (props.dk ? "#222" : "#f8f8f8"), flexShrink: 0 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: isToday ? "#B45309" : (props.dk ? "#888" : "#aaa") }}>{isToday ? "HOY" : DIAS[d.getDay()]}</div>
+                  <div style={{ fontSize: 20, margin: "4px 0" }}>{wcIcons[wc] || "🌤️"}</div>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>{Math.round(tMax)}°</div>
+                  <div style={{ fontSize: 10, color: "#888" }}>{Math.round(tMin)}°</div>
+                  {rain > 0 && <div style={{ fontSize: 9, color: "#60A5FA", marginTop: 2 }}>💧{rain.toFixed(1)}</div>}
+                </div>
+              );
+            })}
+          </div>
+          {/* Business impact */}
+          <div style={{ borderTop: "1px solid " + (props.dk ? "#333" : "#f0f0f0"), paddingTop: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#B45309" }}>📋 Impacto en el negocio</div>
+            {tips.map(function(tip, idx) {
+              return <div key={idx} style={{ fontSize: 12, color: props.dk ? "#ccc" : "#555", marginBottom: 4, lineHeight: 1.5 }}>{tip}</div>;
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function NovedadesBlock(props) {
   var role = props.role || "socio";
   var items = [];
@@ -1261,6 +1360,8 @@ function DashView(props) {
         </div>
         <ChannelToggle value={chS[0]} onChange={chS[1]} />
       </div>
+
+      <WeatherWidget dk={props.dk} />
 
       <NovedadesBlock role="socio" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
@@ -1815,6 +1916,8 @@ function EncargadoPanel(props) {
         <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Panel de Control</div>
         <div style={{ fontSize: 13, color: "#888" }}>{props.user.local || "Todos los locales"} - Resumen operativo</div>
       </div>
+
+      <WeatherWidget dk={props.dk} />
 
       <NovedadesBlock role="encargado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
@@ -4891,6 +4994,8 @@ function FichasEmpView(props) {
           <div style={{ fontSize: 10, opacity: 0.6, fontWeight: 600, marginTop: 2 }}>— {fraseEmp.autor}</div>
         </div>
       </div>
+
+      <WeatherWidget dk={props.dk} />
 
       <NovedadesBlock role="empleado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
@@ -9691,33 +9796,31 @@ function AlbaranesView(props) {
       totalLineas: aiLines[0].length
     };
 
-    // Update ingredient prices
-    var updatedIngs = (props.ingredients || []).slice();
+    // Compare albaran prices with current ingredient prices (DO NOT update prices automatically)
+    var priceWarnings = [];
     for (var i = 0; i < aiLines[0].length; i++) {
       var line = aiLines[0][i];
       if (!line.ingredienteId) continue;
-      // Calculate real unit price: total / quantity (safeguard against AI returning total instead of unit price)
-      var realUnitPrice = line.precioUnit || 0;
+      var albaranUnitPrice = line.precioUnit || 0;
       if (line.cantidad > 0 && line.totalLinea > 0) {
         var calcUnitPrice = line.totalLinea / line.cantidad;
-        // If precioUnit is suspiciously close to totalLinea, use calculated price
-        if (Math.abs(realUnitPrice - line.totalLinea) < 0.01 || realUnitPrice > calcUnitPrice * 3) {
-          realUnitPrice = calcUnitPrice;
+        if (Math.abs(albaranUnitPrice - line.totalLinea) < 0.01 || albaranUnitPrice > calcUnitPrice * 3) {
+          albaranUnitPrice = calcUnitPrice;
         }
       }
-      for (var j = 0; j < updatedIngs.length; j++) {
-        if (updatedIngs[j].id === line.ingredienteId) {
-          var oldPrice = updatedIngs[j].costPerUnit;
-          updatedIngs[j] = Object.assign({}, updatedIngs[j], {
-            costPerUnit: realUnitPrice,
-            lastAlbaranPrice: oldPrice,
-            lastAlbaranDate: albaran.fecha
-          });
+      for (var j = 0; j < (props.ingredients || []).length; j++) {
+        if (props.ingredients[j].id === line.ingredienteId) {
+          var currentPrice = props.ingredients[j].costPerUnit || 0;
+          var diff = currentPrice > 0 ? ((albaranUnitPrice - currentPrice) / currentPrice * 100) : 0;
+          if (Math.abs(diff) > 5) {
+            priceWarnings.push({ name: props.ingredients[j].name, current: currentPrice, albaran: albaranUnitPrice, diff: diff, unit: props.ingredients[j].unit });
+          }
           break;
         }
       }
     }
-    props.setIng(updatedIngs);
+    // Store warnings in albaran record
+    albaran.priceWarnings = priceWarnings;
 
     // Update stock for this local
     var newStock = Object.assign({}, stock);
@@ -9750,8 +9853,7 @@ function AlbaranesView(props) {
     fechaDetected[1]("");
     totalDetected[1](0);
     mainTab[1]("historial");
-    // Save ingredients with updated prices - pass new data directly
-    if (props.saveIngProd) props.saveIngProd(updatedIngs, props.products);
+    // Note: prices are NOT updated automatically. Check priceWarnings in albaran historial.
   }
 
   function cancelReview() {
