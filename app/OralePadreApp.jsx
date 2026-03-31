@@ -338,7 +338,6 @@ export default function App() {
   var prepStepsState = useState(JSON.parse(JSON.stringify(PREP_STEPS)));
   var openArea = useState(null);
   var isMobile = useState(typeof window !== "undefined" ? window.innerWidth < 860 : true);
-  var darkMode = useState(false);
   var sidebarOpen = useState(true);
   var dbLoaded = useState(false);
   var activeBottomTab = useState(null);
@@ -717,17 +716,18 @@ export default function App() {
 
   function handleBottomTabClick(tab) {
     if (tab.k.charAt(0) === "_") {
-      // Group tab - toggle sub-menu
+      if (tab.group === "mas") {
+        activeBottomTab[1](activeBottomTab[0] === "mas" ? null : "mas");
+        return;
+      }
       if (activeBottomTab[0] === tab.group) {
         activeBottomTab[1](null);
       } else {
         activeBottomTab[1](tab.group);
-        // Navigate to first item in group
         var items = tabSubMenus[tab.group];
         if (items && items.length > 0) navigateTo(items[0].k);
       }
     } else {
-      // Direct page tab
       activeBottomTab[1](null);
       navigateTo(tab.k);
     }
@@ -745,18 +745,10 @@ export default function App() {
            n.k.toLowerCase().indexOf(searchQuery[0].toLowerCase()) >= 0;
   }) : nav;
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData, dk: dk, dkCard: dkCard, dkBorder: dkBorder, dkText: dkText, dkTextSoft: dkTextSoft };
-
-  var dk = darkMode[0];
-  var dkBg = dk ? "#111" : "#f6f4f0";
-  var dkCard = dk ? "#1a1a1a" : "#fff";
-  var dkBorder = dk ? "#333" : "#eee";
-  var dkText = dk ? "#e5e5e5" : "#333";
-  var dkTextSoft = dk ? "#999" : "#888";
-  var dkTextMuted = dk ? "#666" : "#aaa";
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData };
 
   return (
-    <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: dkBg, color: dkText, minHeight: "100vh", overflowX: "hidden" }}>
+    <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       {/* Header */}
       <div style={{ background: "#1a1a1a", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
@@ -793,7 +785,6 @@ export default function App() {
           <div className="op-header-text"><div style={{ fontSize: 12, fontWeight: 600, color: "#eee" }}>{usr[0].name}</div><div style={{ fontSize: 10, color: "#888" }}>{usr[0].role}{usr[0].local ? " - " + usr[0].local : ""}</div></div>
         </div>
         <button onClick={function() { usr[1](null); pg[1]("dashboard"); }} style={{ background: "#333", color: "#aaa", border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, flexShrink: 0 }}>Salir</button>
-        <button onClick={function() { darkMode[1](!darkMode[0]); }} style={{ background: darkMode[0] ? "#B45309" : "#333", color: darkMode[0] ? "#fff" : "#888", border: "none", borderRadius: 8, padding: "5px 10px", fontSize: 13, cursor: "pointer", flexShrink: 0 }} title="Modo noche">{darkMode[0] ? "☀️" : "🌙"}</button>
       </div>
       {/* === GLOBAL STYLES === */}
       <style dangerouslySetInnerHTML={{ __html: [
@@ -803,10 +794,6 @@ export default function App() {
         "*{box-sizing:border-box}",
         "table{table-layout:auto;word-break:break-word}",
         "@media(max-width:600px){table{font-size:12px !important} table th,table td{padding:8px 6px !important}}",
-        dk ? ".op-dark input,.op-dark select,.op-dark textarea{background:#222 !important;color:#e5e5e5 !important;border-color:#444 !important}" : "",
-        dk ? ".op-dark table{color:#ccc}" : "",
-        dk ? ".op-dark table thead tr{background:#222 !important}" : "",
-        dk ? ".op-dark table tbody tr{border-color:#333 !important}" : "",
         ".op-sidebar{width:220px;background:#111;overflow-y:auto;flex-shrink:0;border-right:1px solid #222;position:sticky;top:0;height:calc(100vh - 48px)}",
         ".op-sidebar-group-label{font-size:10px;font-weight:700;color:#555;letter-spacing:1px;padding:12px 16px 4px;text-transform:uppercase}",
         ".op-sidebar-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:#888;cursor:pointer;font-weight:500;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;transition:all 0.15s}",
@@ -862,7 +849,7 @@ export default function App() {
       )}
 
       {/* === LAYOUT: SIDEBAR (desktop all roles) + CONTENT + BOTTOM BAR (mobile) === */}
-      <div className={dk ? "op-dark" : ""} style={{ display: "flex", minHeight: "calc(100vh - 48px)" }}>
+      <div style={{ display: "flex", minHeight: "calc(100vh - 48px)" }}>
 
         {/* SIDEBAR — Desktop all roles */}
         {!isMobile[0] && (
@@ -926,7 +913,7 @@ export default function App() {
         <div style={{ flex: 1, minWidth: 0 }}>
 
           {/* CONTEXTUAL SUB-MENU — Mobile only, when a group tab is active */}
-          {isMobile[0] && activeBottomTab[0] && tabSubMenus[activeBottomTab[0]] && (
+          {isMobile[0] && activeBottomTab[0] && activeBottomTab[0] !== "mas" && tabSubMenus[activeBottomTab[0]] && (
             <div className="op-contextual-sub">
               {tabSubMenus[activeBottomTab[0]].map(function(n) {
                 var active = pg[0] === n.k;
@@ -945,8 +932,37 @@ export default function App() {
             </div>
           )}
 
+          {/* FULL-SCREEN "Más" OVERLAY */}
+          {isMobile[0] && activeBottomTab[0] === "mas" && (
+            <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 68, background: "#111", zIndex: 99, overflowY: "auto", padding: "20px 16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <div style={{ fontSize: 18, fontWeight: 800, color: "#fff" }}>Todas las areas</div>
+                <button onClick={function() { activeBottomTab[1](null); }} style={{ background: "#333", color: "#aaa", border: "none", borderRadius: 8, padding: "6px 14px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Cerrar</button>
+              </div>
+              {areaConfig.filter(function(a) { return a.k !== "inicio"; }).map(function(area) {
+                var areaItems = nav.filter(function(n) { return n.group === area.k; });
+                if (areaItems.length === 0) return null;
+                return (
+                  <div key={area.k} style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 8, textTransform: "uppercase" }}>{area.icon} {area.l}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {areaItems.map(function(n) {
+                        var isActive = pg[0] === n.k;
+                        return (
+                          <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "14px 12px", borderRadius: 12, border: isActive ? "2px solid #B45309" : "1px solid #333", background: isActive ? "#B4530915" : "#1a1a1a", color: isActive ? "#B45309" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+                            {n.l}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {/* PAGE CONTENT */}
-          <div style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden", background: dkBg }}>
+          <div style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden" }}>
             {pg[0] === "dashboard" && <DashView {...PP} />}
             {pg[0] === "panel" && <EncargadoPanel {...PP} />}
             {pg[0] === "suppliers" && <SupView {...PP} />}
@@ -1072,7 +1088,7 @@ function WeatherWidget(props) {
       .catch(function() { loading[1](false); });
   }, []);
 
-  if (loading[0]) return <div style={{ background: props.dk ? "#1a1a1a" : "#fff", borderRadius: 14, padding: "14px 20px", border: "1px solid " + (props.dk ? "#333" : "#eee"), marginBottom: 16, fontSize: 12, color: "#888" }}>Cargando tiempo...</div>;
+  if (loading[0]) return <div style={{ background: "#fff", borderRadius: 14, padding: "14px 20px", border: "1px solid " + ("#eee"), marginBottom: 16, fontSize: 12, color: "#888" }}>Cargando tiempo...</div>;
   if (!weather[0] || !weather[0].current_weather) return null;
 
   var cw = weather[0].current_weather;
@@ -1099,12 +1115,12 @@ function WeatherWidget(props) {
   var tips = getBusinessImpact(cw.weathercode, cw.temperature, (daily.precipitation_sum || [])[0] || 0);
 
   return (
-    <div style={{ background: props.dk ? "#1a1a1a" : "#fff", borderRadius: 14, border: "1px solid " + (props.dk ? "#333" : "#eee"), marginBottom: 16, overflow: "hidden" }}>
+    <div style={{ background: "#fff", borderRadius: 14, border: "1px solid " + ("#eee"), marginBottom: 16, overflow: "hidden" }}>
       <div onClick={function() { expanded[1](!expanded[0]); }} style={{ padding: "14px 20px", cursor: "pointer", display: "flex", alignItems: "center", gap: 12 }}>
         <span style={{ fontSize: 28 }}>{wcIcons[cw.weathercode] || "🌤️"}</span>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700 }}>{cw.temperature}°C — {wcLabels[cw.weathercode] || "Variable"}</div>
-          <div style={{ fontSize: 11, color: props.dk ? "#888" : "#aaa" }}>Sevilla hoy | {tips[0]}</div>
+          <div style={{ fontSize: 11, color: "#aaa" }}>Sevilla hoy | {tips[0]}</div>
         </div>
         <div style={{ fontSize: 12, color: "#aaa", transform: expanded[0] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▶</div>
       </div>
@@ -1120,8 +1136,8 @@ function WeatherWidget(props) {
               var wc = (daily.weathercode || [])[idx] || 0;
               var isToday = idx === 0;
               return (
-                <div key={idx} style={{ minWidth: 70, textAlign: "center", padding: "10px 8px", borderRadius: 10, background: isToday ? (props.dk ? "#B4530920" : "#FFF7ED") : (props.dk ? "#222" : "#f8f8f8"), flexShrink: 0 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: isToday ? "#B45309" : (props.dk ? "#888" : "#aaa") }}>{isToday ? "HOY" : DIAS[d.getDay()]}</div>
+                <div key={idx} style={{ minWidth: 70, textAlign: "center", padding: "10px 8px", borderRadius: 10, background: isToday ? ("#FFF7ED") : ("#f8f8f8"), flexShrink: 0 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: isToday ? "#B45309" : ("#aaa") }}>{isToday ? "HOY" : DIAS[d.getDay()]}</div>
                   <div style={{ fontSize: 20, margin: "4px 0" }}>{wcIcons[wc] || "🌤️"}</div>
                   <div style={{ fontSize: 12, fontWeight: 700 }}>{Math.round(tMax)}°</div>
                   <div style={{ fontSize: 10, color: "#888" }}>{Math.round(tMin)}°</div>
@@ -1131,10 +1147,10 @@ function WeatherWidget(props) {
             })}
           </div>
           {/* Business impact */}
-          <div style={{ borderTop: "1px solid " + (props.dk ? "#333" : "#f0f0f0"), paddingTop: 12 }}>
+          <div style={{ borderTop: "1px solid " + ("#f0f0f0"), paddingTop: 12 }}>
             <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#B45309" }}>📋 Impacto en el negocio</div>
             {tips.map(function(tip, idx) {
-              return <div key={idx} style={{ fontSize: 12, color: props.dk ? "#ccc" : "#555", marginBottom: 4, lineHeight: 1.5 }}>{tip}</div>;
+              return <div key={idx} style={{ fontSize: 12, color: "#555", marginBottom: 4, lineHeight: 1.5 }}>{tip}</div>;
             })}
           </div>
         </div>
@@ -1361,7 +1377,7 @@ function DashView(props) {
         <ChannelToggle value={chS[0]} onChange={chS[1]} />
       </div>
 
-      <WeatherWidget dk={props.dk} />
+      <WeatherWidget />
 
       <NovedadesBlock role="socio" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
@@ -1917,7 +1933,7 @@ function EncargadoPanel(props) {
         <div style={{ fontSize: 13, color: "#888" }}>{props.user.local || "Todos los locales"} - Resumen operativo</div>
       </div>
 
-      <WeatherWidget dk={props.dk} />
+      <WeatherWidget />
 
       <NovedadesBlock role="encargado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
@@ -1975,7 +1991,7 @@ function EncargadoPanel(props) {
                         <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 3 }}>{p.products}</div>
                         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                           <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (platCol[p.plataforma] || "#888") + "15", color: platCol[p.plataforma] }}>{p.plataforma}</span>
-                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (usrCol[p.usuarios] || "#888") + "15", color: usrCol[p.usuarios] }}>{p.usuarios}</span>
+                          <span style={{ padding: "2px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700, whiteSpace: "nowrap", background: (usrCol[p.usuarios] || "#888") + "15", color: usrCol[p.usuarios] }}>{p.usuarios}</span>
                         </div>
                       </div>
                     </div>
@@ -2124,7 +2140,7 @@ function EncargadoPanel(props) {
                 <div key={p.id} style={{ padding: "10px 12px", marginBottom: 6, borderRadius: 10, background: "#f8fdf8", display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   <span style={{ fontSize: 16, fontWeight: 800, color: platColors[p.plataforma] || "#888" }}>{p.promo}%</span>
                   <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 10, fontWeight: 700, background: (platColors[p.plataforma] || "#888") + "15", color: platColors[p.plataforma] }}>{p.plataforma}</span>
-                  <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
+                  <span style={{ padding: "2px 8px", borderRadius: 5, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap", background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
                   <span style={{ flex: 1, fontSize: 12, fontWeight: 600 }}>{p.products}</span>
                 </div>
               );
@@ -3568,7 +3584,7 @@ function PromoView(props) {
                           <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (platColors[p.plataforma] || "#888") + "15", color: platColors[p.plataforma] }}>{p.plataforma}</span>
                         </td>
                         <td style={{ padding: "10px 8px", textAlign: "center" }}>
-                          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
+                          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap", background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] }}>{p.usuarios}</span>
                         </td>
                         {DIAS.map(function(d) {
                           var active = (p.dias || []).indexOf(d) >= 0;
@@ -4995,7 +5011,7 @@ function FichasEmpView(props) {
         </div>
       </div>
 
-      <WeatherWidget dk={props.dk} />
+      <WeatherWidget />
 
       <NovedadesBlock role="empleado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
@@ -5044,7 +5060,7 @@ function FichasEmpView(props) {
                     <div style={{ fontSize: 13, fontWeight: 600 }}>{p.products}</div>
                     <div style={{ display: "flex", gap: 4, marginTop: 2 }}>
                       <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (platCol[p.plataforma] || "#888") + "15", color: platCol[p.plataforma] }}>{p.plataforma}</span>
-                      <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, background: (usrCol[p.usuarios] || "#888") + "15", color: usrCol[p.usuarios] }}>{p.usuarios}</span>
+                      <span style={{ padding: "1px 6px", borderRadius: 4, fontSize: 9, fontWeight: 700, whiteSpace: "nowrap", background: (usrCol[p.usuarios] || "#888") + "15", color: usrCol[p.usuarios] }}>{p.usuarios}</span>
                     </div>
                   </div>
                 </div>
@@ -8263,7 +8279,7 @@ function PromosHoyView(props) {
       <div key={p.id + "_" + idx} style={{ ...crd, padding: 14, marginBottom: 8, borderLeft: "4px solid " + (platColors[p.plataforma] || "#888") }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
           <span style={{ fontSize: 22, fontWeight: 800, color: platColors[p.plataforma] || "#888" }}>{p.promo}%</span>
-          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] || "#888" }}>{p.usuarios}</span>
+          <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, whiteSpace: "nowrap", background: (usrColors[p.usuarios] || "#888") + "15", color: usrColors[p.usuarios] || "#888" }}>{p.usuarios}</span>
           <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (platColors[p.plataforma] || "#888") + "15", color: platColors[p.plataforma] || "#888" }}>{p.plataforma}</span>
           <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 600, background: "#f5f5f5", color: "#666" }}>{p.local}</span>
         </div>
@@ -8642,7 +8658,91 @@ function RRHHView(props) {
                 {LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}
               </select>
               <input type="date" value={filterDate[0]} onChange={function(e) { filterDate[1](e.target.value); }} style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit" }} />
+              <div style={{ flex: 1 }} />
+              <button onClick={function() {
+                var csvRows = ["Fecha,Hora,Empleado,Rol,Tipo,Local,Zona Valida,Distancia(m)"];
+                for (var ci2 = 0; ci2 < records.length; ci2++) {
+                  var r2 = records[ci2];
+                  var fecha = r2.created_at ? r2.created_at.slice(0, 10) : "";
+                  var hora = r2.created_at ? new Date(r2.created_at).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "";
+                  csvRows.push([fecha, hora, r2.user_name || "", r2.user_role || "", r2.type || "", r2.local_name || "", r2.is_valid ? "Si" : "No", r2.distance_meters || ""].join(","));
+                }
+                var blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement("a"); a.href = url; a.download = "fichajes_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click();
+                URL.revokeObjectURL(url);
+              }} style={{ padding: "8px 16px", borderRadius: 8, background: "#047857", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>📥 Exportar CSV</button>
             </div>
+
+            {/* Weekly hours summary */}
+            {(function() {
+              var now = new Date();
+              var dayOfWeek = now.getDay();
+              var mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+              var monday = new Date(now.getTime() - mondayOffset * 86400000);
+              var mondayStr = monday.toISOString().slice(0, 10);
+              var sundayStr = new Date(monday.getTime() + 6 * 86400000).toISOString().slice(0, 10);
+
+              var weekRecords = records.filter(function(r) {
+                var d = r.created_at ? r.created_at.slice(0, 10) : "";
+                return d >= mondayStr && d <= sundayStr && (filterLocal[0] === "Todos" || r.local_name === filterLocal[0]);
+              });
+
+              var empHours = {};
+              for (var wi = 0; wi < weekRecords.length; wi++) {
+                var wr = weekRecords[wi];
+                if (!empHours[wr.user_name]) empHours[wr.user_name] = { entradas: [], salidas: [], totalMin: 0, anomalias: [] };
+                if (wr.type === "entrada") empHours[wr.user_name].entradas.push(wr.created_at);
+                else empHours[wr.user_name].salidas.push(wr.created_at);
+                if (!wr.is_valid) empHours[wr.user_name].anomalias.push("Fichaje fuera de zona (" + (wr.distance_meters || "?") + "m) el " + (wr.created_at || "").slice(0, 10));
+              }
+
+              var empList = [];
+              for (var ek in empHours) {
+                var emp = empHours[ek];
+                emp.entradas.sort(); emp.salidas.sort();
+                var totalMin = 0;
+                var pairs = Math.min(emp.entradas.length, emp.salidas.length);
+                for (var pi = 0; pi < pairs; pi++) {
+                  var entMs = new Date(emp.entradas[pi]).getTime();
+                  var salMs = new Date(emp.salidas[pi]).getTime();
+                  if (salMs > entMs) totalMin += (salMs - entMs) / 60000;
+                }
+                if (emp.entradas.length !== emp.salidas.length) {
+                  emp.anomalias.push("Fichajes desparejados: " + emp.entradas.length + " entradas, " + emp.salidas.length + " salidas");
+                }
+                emp.totalMin = totalMin;
+                var h = Math.floor(totalMin / 60);
+                var m = Math.round(totalMin % 60);
+                empList.push({ name: ek, hours: h, mins: m, totalMin: totalMin, anomalias: emp.anomalias, pairs: pairs });
+              }
+              empList.sort(function(a, b) { return b.totalMin - a.totalMin; });
+
+              return (
+                <div style={{ ...crd, marginBottom: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700 }}>⏱️ Horas esta semana <span style={{ fontSize: 11, color: "#aaa", fontWeight: 400 }}>({mondayStr} — {sundayStr})</span></div>
+                  </div>
+                  {empList.length === 0 && <div style={{ textAlign: "center", color: "#ccc", padding: 16, fontSize: 13 }}>Sin fichajes esta semana</div>}
+                  {empList.map(function(e) {
+                    var hasAnomaly = e.anomalias.length > 0;
+                    return (
+                      <div key={e.name} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 16, background: hasAnomaly ? "#FEF3C7" : "#F0FDF4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{hasAnomaly ? "⚠️" : "✅"}</div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 13, fontWeight: 600 }}>{e.name}</div>
+                          {hasAnomaly && e.anomalias.map(function(a, ai) { return <div key={ai} style={{ fontSize: 10, color: "#D97706" }}>{a}</div>; })}
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                          <div style={{ fontSize: 16, fontWeight: 800, color: e.totalMin > 0 ? "#047857" : "#ccc" }}>{e.hours}h {e.mins}m</div>
+                          <div style={{ fontSize: 10, color: "#aaa" }}>{e.pairs} turnos</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
 
             {/* Records table */}
             <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
@@ -9184,16 +9284,17 @@ function MiPerfilView(props) {
     if (sorted[i].name === userName) { myData = sorted[i]; myRank = i + 1; break; }
   }
   if (!myData) myData = { name: userName, role: props.user ? props.user.role : "", dorados: 0, actions: [] };
+  if (!myData.actions) myData.actions = [];
 
   var medals = ["🥇", "🥈", "🥉"];
   var medal = myRank > 0 && myRank <= 3 ? medals[myRank - 1] : "";
-  var actionLabels = data.config;
+  var actionLabels = data.config || {};
 
   return (
     <div>
       {/* Hero banner */}
       <div style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 14, padding: "24px", color: "#fff", marginBottom: 24, display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-        <div style={{ width: 60, height: 60, borderRadius: 30, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800 }}>{myData.name[0]}</div>
+        <div style={{ width: 60, height: 60, borderRadius: 30, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800 }}>{(myData.name || "?")[0]}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 22, fontWeight: 800 }}>{myData.name}</div>
           <div style={{ fontSize: 13, opacity: 0.8 }}>{myData.role}{myData.local ? " - " + myData.local : ""}</div>
@@ -9910,7 +10011,7 @@ function AlbaranesView(props) {
       {mainTab[0] === "escanear" && view[0] === "list" && (
         <div>
           <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "24px 20px", borderRadius: 14, border: "2px dashed #B45309", background: "#FFF7ED", cursor: "pointer", marginBottom: 20 }}>
-            <input type="file" accept="image/*,application/pdf" capture="environment" onChange={handleFile} style={{ display: "none" }} />
+            <input type="file" accept="image/*,application/pdf" onChange={handleFile} style={{ display: "none" }} />
             <span style={{ fontSize: 28 }}>📸</span>
             <div>
               <div style={{ fontSize: 15, fontWeight: 700, color: "#B45309" }}>Subir albaran</div>
