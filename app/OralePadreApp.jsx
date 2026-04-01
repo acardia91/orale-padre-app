@@ -297,6 +297,8 @@ export default function App() {
   var stockMins = useState({});
   var cierresCaja = useState([]);
   var fraudeData = useState([]);
+  var cateringLeads = useState([]);
+  var cateringPresupuestos = useState([]);
   var promosData = useState([
     { id: uid(), promo: 20, products: "Quesadilla butter, combo guadalupe y tacos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" },
     { id: uid(), promo: 10, products: "Combos", usuarios: "TODOS", local: "Los Remedios", dias: ["jueves","viernes"], plataforma: "Glovo", estado: "activa" },
@@ -562,7 +564,7 @@ export default function App() {
                 <div style={{ fontSize: 13, color: "#555", fontWeight: 400 }}>Introduce tus credenciales</div>
               </div>
 
-              <LoginForm onLogin={function(role, local, name) { usr[1]({ role: role, local: local, name: name }); }} />
+              <LoginForm onLogin={function(role, local, name, catering) { usr[1]({ role: role, local: local, name: name, catering: catering || false }); }} />
             </div>
             
             <div style={{ marginTop: 24, textAlign: "center", fontSize: 11, color: "#333" }}>
@@ -619,8 +621,12 @@ export default function App() {
     { k: "fichaje", l: "Fichaje", roles: ["encargado","empleado"], group: "inicio" },
     { k: "checklist", l: "Checklist", roles: ["encargado"], group: "ops" },
     { k: "mi-perfil", l: "Mi Perfil", roles: ["encargado","empleado"], group: "inicio" },
+    { k: "catering-dash", l: "Dashboard", roles: ["socio","encargado"], group: "catering" },
+    { k: "catering-leads", l: "Leads", roles: ["socio","encargado"], group: "catering" },
+    { k: "catering-presupuestos", l: "Presupuestos", roles: ["socio","encargado"], group: "catering" },
   ];
-  var nav = allNav.filter(function(n) { return n.roles.indexOf(role) >= 0; });
+  var hasCatering = role === "socio" || (usr[0] && usr[0].catering);
+  var nav = allNav.filter(function(n) { return n.roles.indexOf(role) >= 0 && (n.group !== "catering" || hasCatering); });
 
   var areaConfig = [
     { k: "inicio", l: "Inicio", icon: "📊" },
@@ -631,6 +637,7 @@ export default function App() {
     { k: "mkt", l: "Marketing", icon: "📸" },
     { k: "rrhh", l: "RRHH", icon: "👥" },
     { k: "ventas", l: "Ventas", icon: "💵" },
+    { k: "catering", l: "Catering", icon: "🌯" },
   ];
 
   // Default page per role
@@ -745,7 +752,7 @@ export default function App() {
            n.k.toLowerCase().indexOf(searchQuery[0].toLowerCase()) >= 0;
   }) : nav;
 
-  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData };
+  var PP = { suppliers: sup[0], ingredients: ing[0], recipes: rec[0], products: prod[0], getPC: getPC, user: usr[0], stockAlerts: stockAlerts, incidents: incidents, priceHistory: priceHistory, ideasState: ideasState, weekTasks: weekTasks, savedCombos: savedCombos, promosData: promosData, mktData: mktData, prepSteps: prepStepsState, opsData: opsData, setSup: sup[1], setIng: ing[1], setRec: rec[1], setProd: prod[1], team: team, isSocio: role === "socio", isMobile: isMobile[0], resetAll: resetAll, setPage: navigateTo, gamification: gamification, clockRecords: clockRecords, checklistRecords: checklistRecords, albaranesData: albaranesData, stockData: stockData, stockMins: stockMins, saveIngProd: saveIngProd, cierresCaja: cierresCaja, fraudeData: fraudeData, cateringLeads: cateringLeads, cateringPresupuestos: cateringPresupuestos };
 
   return (
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
@@ -990,6 +997,7 @@ export default function App() {
             {(pg[0] === "rrhh" || pg[0] === "rrhh-dorados" || pg[0] === "rrhh-fichajes") && <RRHHView {...PP} currentTab={pg[0]} />}
             {pg[0] === "mi-perfil" && <MiPerfilView {...PP} />}
             {(pg[0] === "ventas-cierre" || pg[0] === "ventas-fraude" || pg[0] === "ventas-volcado") && <VentasView {...PP} currentTab={pg[0]} />}
+            {(pg[0] === "catering-dash" || pg[0] === "catering-leads" || pg[0] === "catering-presupuestos") && <CateringView {...PP} currentTab={pg[0]} />}
             {pg[0] === "fichaje" && <FichajeView {...PP} />}
             {pg[0] === "checklist" && <ChecklistView {...PP} />}
             {pg[0] === "albaranes" && <AlbaranesView {...PP} />}
@@ -1035,6 +1043,7 @@ export default function App() {
 var USERS = [
   { user: "ale", pass: "orale2026", name: "Alejandro", role: "socio", local: null },
   { user: "carlos", pass: "carlos2026", name: "Carlos", role: "encargado", local: "San Luis" },
+  { user: "jesus", pass: "jesus2026", name: "Jesus", role: "encargado", local: "San Luis", catering: true },
   { user: "pedro", pass: "pedro2026", name: "Pedro", role: "empleado", local: "San Luis" },
   { user: "maria", pass: "maria2026", name: "Maria", role: "community", local: null },
 ];
@@ -1045,7 +1054,7 @@ function LoginForm(props) {
   function doLogin() {
     var found = null;
     for (var i = 0; i < USERS.length; i++) { if (USERS[i].user === u[0].trim().toLowerCase() && USERS[i].pass === p[0]) { found = USERS[i]; break; } }
-    if (found) { err[1](""); props.onLogin(found.role, found.local, found.name); }
+    if (found) { err[1](""); props.onLogin(found.role, found.local, found.name, found.catering || false); }
     else { err[1]("Usuario o contrasena incorrectos"); shake[1](true); setTimeout(function() { shake[1](false); }, 500); }
   }
   return (
@@ -1065,7 +1074,7 @@ function LoginForm(props) {
         <div style={{ fontWeight: 700, marginBottom: 8, color: "#555", fontSize: 10, letterSpacing: 1.5 }}>ACCESO RAPIDO</div>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
           <div className="login-quick" onClick={function() { u[1]("ale"); p[1]("orale2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(123,29,58,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(123,29,58,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A" }}>Socio</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Alejandro</div></div>
-          <div className="login-quick" onClick={function() { u[1]("maria"); p[1]("maria2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(225,29,72,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(225,29,72,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#E11D48" }}>Community</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Maria</div></div>
+          <div className="login-quick" onClick={function() { u[1]("jesus"); p[1]("jesus2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(180,83,9,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(180,83,9,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>Catering</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Jesus</div></div>
           <div className="login-quick" onClick={function() { u[1]("carlos"); p[1]("carlos2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(4,120,87,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(4,120,87,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#047857" }}>Encargado</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Carlos</div></div>
           <div className="login-quick" onClick={function() { u[1]("pedro"); p[1]("pedro2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(30,64,175,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(30,64,175,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>Empleado</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Pedro</div></div>
         </div>
@@ -1815,6 +1824,42 @@ function DashView(props) {
         } catch(e) { return null; }
       })()}
 
+      {/* === CATERING BLOCK (socio) === */}
+      {(function() {
+        var allLeads = props.cateringLeads ? props.cateringLeads[0] : [];
+        var allPresu = props.cateringPresupuestos ? props.cateringPresupuestos[0] : [];
+        var todayStr = new Date().toISOString().slice(0, 10);
+        var monthStr = new Date().toISOString().slice(0, 7);
+        var sinResponder = allLeads.filter(function(l) { return l.estado === "Nuevo"; }).length;
+        var cerradosMes = allLeads.filter(function(l) { return l.estado === "Cerrado"; }).length;
+        var totalActivos = allLeads.filter(function(l) { return l.estado !== "Perdido" && l.estado !== "Cerrado"; }).length;
+        var facturacion = 0;
+        for (var fi2 = 0; fi2 < allPresu.length; fi2++) {
+          var pr2 = allPresu[fi2];
+          if (pr2.leadId && pr2.createdAt && pr2.createdAt.slice(0, 7) === monthStr) {
+            for (var li2 = 0; li2 < allLeads.length; li2++) { if (allLeads[li2].id === pr2.leadId && allLeads[li2].estado === "Cerrado") { facturacion += pr2.total || 0; break; } }
+          }
+        }
+
+        return (
+          <div onClick={function() { props.setPage("catering-dash"); }} style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", marginBottom: 20, cursor: "pointer" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <span style={{ fontSize: 20 }}>🌯</span>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Catering</div>
+              <div style={{ marginLeft: "auto" }}>
+                {sinResponder > 0 && <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#DC262615", color: "#DC2626" }}>⚠️ {sinResponder} sin responder</span>}
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 10 }}>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#1E40AF" }}>{totalActivos}</div><div style={{ fontSize: 10, color: "#888" }}>Leads activos</div></div>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#D97706" }}>{allLeads.filter(function(l) { return l.estado === "Presupuestado" || l.estado === "Negociacion"; }).length}</div><div style={{ fontSize: 10, color: "#888" }}>En negociacion</div></div>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#047857" }}>{cerradosMes}</div><div style={{ fontSize: 10, color: "#888" }}>Cerrados mes</div></div>
+              <div style={{ textAlign: "center" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#047857" }}>{facturacion > 0 ? facturacion.toFixed(0) + "€" : "—"}</div><div style={{ fontSize: 10, color: "#888" }}>Facturacion</div></div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Live Alerts from team - filtered by local */}
       {(props.stockAlerts[0].length > 0 || props.incidents[0].filter(function(x){return x.status==="abierta";}).length > 0) && (
         <div style={{ marginTop: 20 }}>
@@ -1936,6 +1981,53 @@ function EncargadoPanel(props) {
       <WeatherWidget />
 
       <NovedadesBlock role="encargado" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
+
+      {/* Catering block - solo si usuario tiene catering */}
+      {props.user && props.user.catering && (function() {
+        var allLeads = props.cateringLeads ? props.cateringLeads[0] : [];
+        var todayStr = new Date().toISOString().slice(0, 10);
+        var sinResponder = allLeads.filter(function(l) { return l.estado === "Nuevo"; }).length;
+        var accionesHoy = allLeads.filter(function(l) { return l.fechaAccion === todayStr && l.estado !== "Cerrado" && l.estado !== "Perdido"; });
+        var eventosProximos = allLeads.filter(function(l) { return l.fechaEvento && l.fechaEvento >= todayStr && l.estado !== "Perdido"; }).length;
+        var enNegociacion = allLeads.filter(function(l) { return l.estado === "Presupuestado" || l.estado === "Negociacion"; }).length;
+
+        return (
+          <div onClick={function() { props.setPage("catering-dash"); }} style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 14, padding: "20px", color: "#fff", marginBottom: 20, cursor: "pointer" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <span style={{ fontSize: 24 }}>🌯</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 800 }}>Catering — Tu zona</div>
+                <div style={{ fontSize: 11, opacity: 0.7 }}>Toca para gestionar leads y presupuestos</div>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8 }}>
+              <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 8, background: "rgba(255,255,255,0.1)" }}>
+                <div style={{ fontSize: 18, fontWeight: 800 }}>{sinResponder}</div>
+                <div style={{ fontSize: 9, opacity: 0.7 }}>{sinResponder > 0 ? "⚠️ SIN RESP." : "OK"}</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 8, background: "rgba(255,255,255,0.1)" }}>
+                <div style={{ fontSize: 18, fontWeight: 800 }}>{accionesHoy.length}</div>
+                <div style={{ fontSize: 9, opacity: 0.7 }}>ACCIONES HOY</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 8, background: "rgba(255,255,255,0.1)" }}>
+                <div style={{ fontSize: 18, fontWeight: 800 }}>{enNegociacion}</div>
+                <div style={{ fontSize: 9, opacity: 0.7 }}>NEGOCIANDO</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "8px 4px", borderRadius: 8, background: "rgba(255,255,255,0.1)" }}>
+                <div style={{ fontSize: 18, fontWeight: 800 }}>{eventosProximos}</div>
+                <div style={{ fontSize: 9, opacity: 0.7 }}>EVENTOS</div>
+              </div>
+            </div>
+            {accionesHoy.length > 0 && (
+              <div style={{ marginTop: 10, borderTop: "1px solid rgba(255,255,255,0.15)", paddingTop: 8 }}>
+                {accionesHoy.slice(0, 3).map(function(l) {
+                  return <div key={l.id} style={{ fontSize: 11, opacity: 0.9, marginBottom: 2 }}>→ {l.proximaAccion}: {l.nombre} ({l.personas || "?"} pers.)</div>;
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Quick KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, marginBottom: 24 }}>
@@ -8785,6 +8877,415 @@ function RRHHView(props) {
 }
 
 /* ====== MI PERFIL (Empleado/Encargado) ====== */
+/* ====== CATERING: DASHBOARD + LEADS CRM + PRESUPUESTOS ====== */
+function CateringView(props) {
+  var tabMap = { "catering-dash": "dashboard", "catering-leads": "leads", "catering-presupuestos": "presupuestos" };
+  var tab = useState(tabMap[props.currentTab] || "dashboard");
+  var leads = props.cateringLeads;
+  var presupuestos = props.cateringPresupuestos;
+  var isSocio = props.isSocio;
+  var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
+
+  // Lead form
+  var showAddLead = useState(false);
+  var leadForm = useState({ nombre: "", telefono: "", email: "", empresa: "", canal: "Instagram", tipoEvento: "Corporativo", fechaEvento: "", personas: "", modalidad: "En Accion", proximaAccion: "Llamar", fechaAccion: new Date().toISOString().slice(0, 10), notas: "" });
+  var editLeadId = useState(null);
+  var selectedLead = useState(null);
+
+  // Presupuesto form
+  var presuForm = useState({ tipo: "En Accion", personas: 50, producto: "Completo", extras: [], transporte: false, leadId: "" });
+  var showPresu = useState(false);
+
+  // Pipeline stages
+  var STAGES = ["Nuevo", "Contactado", "Presupuestado", "Negociacion", "Cerrado", "Perdido"];
+  var STAGE_COLORS = { Nuevo: "#1E40AF", Contactado: "#7C3AED", Presupuestado: "#D97706", Negociacion: "#B45309", Cerrado: "#047857", Perdido: "#DC2626" };
+  var CANALES = ["Instagram", "Bodas.net", "Google", "Recomendacion", "Email", "Telefono", "Calle"];
+  var TIPOS_EVENTO = ["Corporativo", "Boda", "Cumpleanos", "Comunion", "Feria", "Festival", "Privado", "Otro"];
+  var MODALIDADES = ["En Accion", "Grill & Go", "Experience"];
+
+  // Pricing logic
+  var PRECIOS = {
+    "En Accion": { Completo: 14.5, Mitades: 10.5, Pack: 8.5 },
+    "Grill & Go": { Completo: 12, Mitades: 9, Pack: 7 },
+    "Experience": { Completo: 22, Mitades: 16, Pack: 12 },
+  };
+  var EXTRAS_CATALOG = [
+    { id: "nachos", name: "Nachos Station", price: 2.5 },
+    { id: "guac", name: "Guacamole Live", price: 1.5 },
+    { id: "bebidas", name: "Pack Bebidas", price: 3 },
+    { id: "postres", name: "Postres", price: 2 },
+  ];
+  var TRANSPORTE_PRICE = 50;
+
+  function saveLead() {
+    var f = leadForm[0];
+    if (!f.nombre) return;
+    if (editLeadId[0]) {
+      leads[1](leads[0].map(function(l) { return l.id === editLeadId[0] ? Object.assign({}, l, f) : l; }));
+      editLeadId[1](null);
+    } else {
+      leads[1](leads[0].concat([Object.assign({ id: uid(), estado: "Nuevo", createdAt: new Date().toISOString(), timeline: [{ type: "creado", date: new Date().toISOString(), text: "Lead creado" }] }, f)]));
+    }
+    leadForm[1]({ nombre: "", telefono: "", email: "", empresa: "", canal: "Instagram", tipoEvento: "Corporativo", fechaEvento: "", personas: "", modalidad: "En Accion", proximaAccion: "Llamar", fechaAccion: new Date().toISOString().slice(0, 10), notas: "" });
+    showAddLead[1](false);
+  }
+
+  function moveLead(leadId, newStage) {
+    leads[1](leads[0].map(function(l) {
+      if (l.id !== leadId) return l;
+      var tl = (l.timeline || []).concat([{ type: "movido", date: new Date().toISOString(), text: "Movido a " + newStage }]);
+      return Object.assign({}, l, { estado: newStage, timeline: tl });
+    }));
+  }
+
+  function calcPresupuesto() {
+    var f = presuForm[0];
+    var base = PRECIOS[f.tipo] ? (PRECIOS[f.tipo][f.producto] || 0) : 0;
+    var extrasTotal = 0;
+    for (var ei = 0; ei < (f.extras || []).length; ei++) {
+      for (var ec = 0; ec < EXTRAS_CATALOG.length; ec++) {
+        if (EXTRAS_CATALOG[ec].id === f.extras[ei]) extrasTotal += EXTRAS_CATALOG[ec].price;
+      }
+    }
+    var subtotal = (base + extrasTotal) * (f.personas || 0);
+    if (f.transporte) subtotal += TRANSPORTE_PRICE;
+    var iva = subtotal * 0.10;
+    var total = subtotal + iva;
+    var costEstimate = subtotal * 0.35;
+    return { base: base, extras: extrasTotal, subtotal: subtotal, iva: iva, total: total, margin: subtotal - costEstimate, marginPct: subtotal > 0 ? ((subtotal - costEstimate) / subtotal * 100) : 0 };
+  }
+
+  function savePresupuesto() {
+    var calc = calcPresupuesto();
+    var f = presuForm[0];
+    var entry = Object.assign({ id: uid(), createdAt: new Date().toISOString() }, f, calc);
+    presupuestos[1](presupuestos[0].concat([entry]));
+    if (f.leadId) {
+      leads[1](leads[0].map(function(l) {
+        if (l.id !== f.leadId) return l;
+        var tl = (l.timeline || []).concat([{ type: "presupuesto", date: new Date().toISOString(), text: "Presupuesto: " + calc.total.toFixed(0) + "€ (" + f.tipo + ", " + f.personas + " pers.)" }]);
+        return Object.assign({}, l, { estado: l.estado === "Nuevo" || l.estado === "Contactado" ? "Presupuestado" : l.estado, timeline: tl });
+      }));
+    }
+    showPresu[1](false);
+  }
+
+  var tabs = [{ k: "dashboard", l: "Dashboard", e: "📊" }, { k: "leads", l: "Leads", e: "📋" }, { k: "presupuestos", l: "Presupuestos", e: "📄" }];
+  var inp = { width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" };
+  var sel = Object.assign({}, inp, { background: "#fff" });
+
+  return (
+    <div>
+      <div style={{ marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 24 }}>🌯</span>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>Catering</div>
+            <div style={{ fontSize: 13, color: "#888" }}>Leads, presupuestos y gestion de eventos</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
+        {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
+      </div>
+
+      {/* === DASHBOARD === */}
+      {tab[0] === "dashboard" && (function() {
+        var allLeads = leads[0];
+        var now = new Date();
+        var todayStr = now.toISOString().slice(0, 10);
+        var weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+        var monthStr = now.toISOString().slice(0, 7);
+
+        var nuevosHoy = allLeads.filter(function(l) { return l.createdAt && l.createdAt.slice(0, 10) === todayStr; }).length;
+        var nuevosSemana = allLeads.filter(function(l) { return l.createdAt && l.createdAt.slice(0, 10) >= weekAgo; }).length;
+        var sinResponder = allLeads.filter(function(l) { return l.estado === "Nuevo"; }).length;
+        var presupuestados = allLeads.filter(function(l) { return l.estado === "Presupuestado" || l.estado === "Negociacion"; }).length;
+        var cerradosMes = allLeads.filter(function(l) { return l.estado === "Cerrado"; }).length;
+        var totalLeads = allLeads.filter(function(l) { return l.estado !== "Perdido"; }).length;
+        var conversion = totalLeads > 0 ? (cerradosMes / totalLeads * 100) : 0;
+
+        var facturacionMes = 0;
+        for (var fi = 0; fi < presupuestos[0].length; fi++) {
+          var pr = presupuestos[0][fi];
+          if (pr.createdAt && pr.createdAt.slice(0, 7) === monthStr && pr.leadId) {
+            var leadOk = false;
+            for (var li = 0; li < allLeads.length; li++) { if (allLeads[li].id === pr.leadId && allLeads[li].estado === "Cerrado") { leadOk = true; break; } }
+            if (leadOk) facturacionMes += pr.total || 0;
+          }
+        }
+
+        var accionesHoy = allLeads.filter(function(l) { return l.fechaAccion === todayStr && l.estado !== "Cerrado" && l.estado !== "Perdido"; });
+        var eventosProximos = allLeads.filter(function(l) { return l.fechaEvento && l.fechaEvento >= todayStr && l.estado !== "Perdido"; }).sort(function(a, b) { return a.fechaEvento.localeCompare(b.fechaEvento); });
+
+        return (
+          <div>
+            {/* KPIs */}
+            <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+              <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: "4px solid #1E40AF" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>LEADS NUEVOS</div><div style={{ fontSize: 24, fontWeight: 800, color: "#1E40AF" }}>{nuevosSemana}</div><div style={{ fontSize: 10, color: "#aaa" }}>{nuevosHoy} hoy</div></div>
+              <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: sinResponder > 0 ? "4px solid #DC2626" : "4px solid #047857" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>SIN RESPONDER</div><div style={{ fontSize: 24, fontWeight: 800, color: sinResponder > 0 ? "#DC2626" : "#047857" }}>{sinResponder}</div><div style={{ fontSize: 10, color: sinResponder > 0 ? "#DC2626" : "#aaa" }}>{sinResponder > 0 ? "⚠️ Requiere atencion" : "Todo al dia"}</div></div>
+              <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: "4px solid #D97706" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>PRESUPUESTADOS</div><div style={{ fontSize: 24, fontWeight: 800, color: "#D97706" }}>{presupuestados}</div><div style={{ fontSize: 10, color: "#aaa" }}>en negociacion</div></div>
+              {isSocio ? (
+                <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: "4px solid #047857" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>CERRADOS / CONVERSION</div><div style={{ fontSize: 24, fontWeight: 800, color: "#047857" }}>{cerradosMes}</div><div style={{ fontSize: 10, color: "#aaa" }}>{conversion.toFixed(0)}% conversion</div></div>
+              ) : (
+                <div style={{ ...crd, padding: 16, textAlign: "center", borderTop: "4px solid #047857" }}><div style={{ fontSize: 10, fontWeight: 600, color: "#888" }}>CERRADOS</div><div style={{ fontSize: 24, fontWeight: 800, color: "#047857" }}>{cerradosMes}</div></div>
+              )}
+            </div>
+
+            {isSocio && facturacionMes > 0 && (
+              <div style={{ background: "linear-gradient(135deg, #111 0%, #1a2a1a 100%)", borderRadius: 14, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 4 }}>FACTURACION CATERING MES</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: "#4ADE80" }}>{facturacionMes.toFixed(0)}€</div>
+              </div>
+            )}
+
+            {/* Acciones hoy + Eventos proximos */}
+            <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+              <div style={{ ...crd }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📋 Acciones para hoy ({accionesHoy.length})</div>
+                {accionesHoy.length === 0 && <div style={{ color: "#ccc", fontSize: 13, textAlign: "center", padding: 16 }}>Sin acciones pendientes hoy</div>}
+                {accionesHoy.map(function(l) {
+                  return (
+                    <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 16, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{l.proximaAccion === "Llamar" ? "📞" : l.proximaAccion === "Enviar presupuesto" ? "📄" : "💬"}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600 }}>{l.nombre}</div>
+                        <div style={{ fontSize: 11, color: "#888" }}>{l.proximaAccion} — {l.tipoEvento} ({l.personas || "?"} pers.)</div>
+                      </div>
+                      <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: STAGE_COLORS[l.estado] + "15", color: STAGE_COLORS[l.estado] }}>{l.estado}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{ ...crd }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📅 Proximos eventos</div>
+                {eventosProximos.length === 0 && <div style={{ color: "#ccc", fontSize: 13, textAlign: "center", padding: 16 }}>Sin eventos proximos</div>}
+                {eventosProximos.slice(0, 5).map(function(l) {
+                  return (
+                    <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
+                      <div style={{ textAlign: "center", flexShrink: 0, width: 44 }}>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: "#B45309" }}>{l.fechaEvento ? new Date(l.fechaEvento).getDate() : "?"}</div>
+                        <div style={{ fontSize: 9, color: "#888" }}>{l.fechaEvento ? ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][new Date(l.fechaEvento).getMonth()] : ""}</div>
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600 }}>{l.nombre}</div>
+                        <div style={{ fontSize: 11, color: "#888" }}>{l.modalidad} — {l.personas || "?"} pers. — {l.tipoEvento}</div>
+                      </div>
+                      <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: STAGE_COLORS[l.estado] + "15", color: STAGE_COLORS[l.estado] }}>{l.estado}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Pipeline resumen */}
+            <div style={{ ...crd }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>🔄 Pipeline</div>
+              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
+                {STAGES.map(function(st) {
+                  var count = allLeads.filter(function(l) { return l.estado === st; }).length;
+                  return (
+                    <div key={st} onClick={function() { tab[1]("leads"); }} style={{ flex: 1, minWidth: 80, textAlign: "center", padding: "14px 8px", borderRadius: 10, background: STAGE_COLORS[st] + "08", border: "1px solid " + STAGE_COLORS[st] + "30", cursor: "pointer", flexShrink: 0 }}>
+                      <div style={{ fontSize: 22, fontWeight: 800, color: STAGE_COLORS[st] }}>{count}</div>
+                      <div style={{ fontSize: 10, fontWeight: 600, color: STAGE_COLORS[st] }}>{st}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* === LEADS CRM === */}
+      {tab[0] === "leads" && (
+        <div>
+          <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
+            <button onClick={function() { showAddLead[1](!showAddLead[0]); editLeadId[1](null); leadForm[1]({ nombre: "", telefono: "", email: "", empresa: "", canal: "Instagram", tipoEvento: "Corporativo", fechaEvento: "", personas: "", modalidad: "En Accion", proximaAccion: "Llamar", fechaAccion: new Date().toISOString().slice(0, 10), notas: "" }); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddLead[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddLead[0] ? "Cancelar" : "+ Nuevo Lead"}</button>
+          </div>
+
+          {/* Add/Edit lead form */}
+          {showAddLead[0] && (
+            <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{editLeadId[0] ? "Editar Lead" : "Nuevo Lead"}</div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOMBRE *</div><input value={leadForm[0].nombre} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { nombre: e.target.value })); }} placeholder="Nombre del contacto / empresa" style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TELEFONO</div><input value={leadForm[0].telefono} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { telefono: e.target.value })); }} placeholder="600 123 456" style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>EMAIL</div><input value={leadForm[0].email} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { email: e.target.value })); }} placeholder="contacto@email.com" style={inp} /></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>CANAL</div><select value={leadForm[0].canal} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { canal: e.target.value })); }} style={sel}>{CANALES.map(function(c) { return <option key={c} value={c}>{c}</option>; })}</select></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TIPO EVENTO</div><select value={leadForm[0].tipoEvento} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { tipoEvento: e.target.value })); }} style={sel}>{TIPOS_EVENTO.map(function(t) { return <option key={t} value={t}>{t}</option>; })}</select></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>FECHA EVENTO</div><input type="date" value={leadForm[0].fechaEvento} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { fechaEvento: e.target.value })); }} style={inp} /></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>Nº PERSONAS</div><input type="number" value={leadForm[0].personas} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { personas: e.target.value })); }} placeholder="50" style={inp} /></div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>MODALIDAD</div><select value={leadForm[0].modalidad} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { modalidad: e.target.value })); }} style={sel}>{MODALIDADES.map(function(m) { return <option key={m} value={m}>{m}</option>; })}</select></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PROXIMA ACCION</div><select value={leadForm[0].proximaAccion} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { proximaAccion: e.target.value })); }} style={sel}><option value="Llamar">Llamar</option><option value="Enviar presupuesto">Enviar presupuesto</option><option value="Follow-up">Follow-up</option><option value="WhatsApp">WhatsApp</option></select></div>
+                <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>FECHA ACCION</div><input type="date" value={leadForm[0].fechaAccion} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { fechaAccion: e.target.value })); }} style={inp} /></div>
+              </div>
+              <div style={{ marginBottom: 10 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOTAS</div><input value={leadForm[0].notas} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { notas: e.target.value })); }} placeholder="Notas sobre el lead..." style={inp} /></div>
+              <button onClick={saveLead} style={{ padding: "10px 24px", borderRadius: 10, background: "#B45309", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{editLeadId[0] ? "Guardar cambios" : "Crear Lead"}</button>
+            </div>
+          )}
+
+          {/* Pipeline view */}
+          <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, minHeight: 300 }}>
+            {STAGES.map(function(stage) {
+              var stageLeads = leads[0].filter(function(l) { return l.estado === stage; });
+              return (
+                <div key={stage} style={{ minWidth: props.isMobile ? 260 : 220, flex: 1, background: "#f8f8f8", borderRadius: 14, padding: "12px 10px", flexShrink: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, padding: "0 4px" }}>
+                    <div style={{ width: 10, height: 10, borderRadius: 5, background: STAGE_COLORS[stage] }} />
+                    <span style={{ fontSize: 12, fontWeight: 700, color: STAGE_COLORS[stage] }}>{stage}</span>
+                    <span style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, color: "#aaa" }}>{stageLeads.length}</span>
+                  </div>
+                  {stageLeads.map(function(lead) {
+                    return (
+                      <div key={lead.id} style={{ background: "#fff", borderRadius: 10, padding: "12px", marginBottom: 8, border: "1px solid #eee", cursor: "pointer" }} onClick={function() { selectedLead[1](selectedLead[0] === lead.id ? null : lead.id); }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{lead.nombre}</div>
+                        <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>{lead.modalidad} — {lead.personas || "?"} pers.</div>
+                        <div style={{ fontSize: 10, color: "#aaa" }}>{lead.tipoEvento}{lead.fechaEvento ? " — " + lead.fechaEvento : ""}</div>
+                        {lead.proximaAccion && <div style={{ fontSize: 10, color: "#B45309", fontWeight: 600, marginTop: 4 }}>→ {lead.proximaAccion}{lead.fechaAccion ? " (" + lead.fechaAccion + ")" : ""}</div>}
+
+                        {selectedLead[0] === lead.id && (
+                          <div style={{ marginTop: 10, borderTop: "1px solid #f0f0f0", paddingTop: 10 }}>
+                            {lead.telefono && <div style={{ fontSize: 11, marginBottom: 4 }}>📞 {lead.telefono}</div>}
+                            {lead.email && <div style={{ fontSize: 11, marginBottom: 4 }}>📧 {lead.email}</div>}
+                            {lead.notas && <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>{lead.notas}</div>}
+                            <div style={{ fontSize: 10, fontWeight: 600, color: "#888", marginBottom: 4 }}>MOVER A:</div>
+                            <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 8 }}>
+                              {STAGES.filter(function(s) { return s !== stage; }).map(function(s) {
+                                return <button key={s} onClick={function(e) { e.stopPropagation(); moveLead(lead.id, s); }} style={{ padding: "3px 8px", borderRadius: 6, border: "1px solid " + STAGE_COLORS[s], background: "transparent", color: STAGE_COLORS[s], fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{s}</button>;
+                              })}
+                            </div>
+                            <div style={{ display: "flex", gap: 6 }}>
+                              <button onClick={function(e) { e.stopPropagation(); presuForm[1](Object.assign({}, presuForm[0], { leadId: lead.id, personas: parseInt(lead.personas) || 50, tipo: lead.modalidad || "En Accion" })); showPresu[1](true); tab[1]("presupuestos"); }} style={{ padding: "4px 10px", borderRadius: 6, background: "#B45309", color: "#fff", border: "none", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Presupuesto</button>
+                              <button onClick={function(e) { e.stopPropagation(); editLeadId[1](lead.id); leadForm[1]({ nombre: lead.nombre, telefono: lead.telefono || "", email: lead.email || "", empresa: lead.empresa || "", canal: lead.canal || "Instagram", tipoEvento: lead.tipoEvento || "Corporativo", fechaEvento: lead.fechaEvento || "", personas: lead.personas || "", modalidad: lead.modalidad || "En Accion", proximaAccion: lead.proximaAccion || "Llamar", fechaAccion: lead.fechaAccion || "", notas: lead.notas || "" }); showAddLead[1](true); }} style={{ padding: "4px 10px", borderRadius: 6, background: "#f5f5f5", color: "#888", border: "none", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✏️ Editar</button>
+                            </div>
+                            {/* Timeline */}
+                            {(lead.timeline || []).length > 0 && (
+                              <div style={{ marginTop: 8 }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, color: "#888", marginBottom: 4 }}>HISTORIAL</div>
+                                {(lead.timeline || []).slice(0, 5).map(function(ev, idx) {
+                                  return <div key={idx} style={{ fontSize: 10, color: "#aaa", marginBottom: 2 }}>{ev.date ? ev.date.slice(0, 10) : ""} — {ev.text}</div>;
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                  {stageLeads.length === 0 && <div style={{ textAlign: "center", color: "#ccc", fontSize: 11, padding: 16 }}>Vacio</div>}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* === PRESUPUESTOS === */}
+      {tab[0] === "presupuestos" && (
+        <div>
+          <button onClick={function() { showPresu[1](!showPresu[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showPresu[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>{showPresu[0] ? "Cancelar" : "+ Nuevo Presupuesto"}</button>
+
+          {showPresu[0] && (function() {
+            var calc = calcPresupuesto();
+            return (
+              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Generador de Presupuesto</div>
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TIPO CATERING</div><select value={presuForm[0].tipo} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { tipo: e.target.value })); }} style={sel}>{MODALIDADES.map(function(m) { return <option key={m} value={m}>{m}</option>; })}</select></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>Nº PERSONAS</div><input type="number" value={presuForm[0].personas} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { personas: parseInt(e.target.value) || 0 })); }} style={inp} /></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PRODUCTO</div><select value={presuForm[0].producto} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { producto: e.target.value })); }} style={sel}><option value="Completo">Completo</option><option value="Mitades">Mitades</option><option value="Pack">Pack</option></select></div>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 6 }}>EXTRAS</div>
+                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                    {EXTRAS_CATALOG.map(function(ex) {
+                      var isOn = (presuForm[0].extras || []).indexOf(ex.id) >= 0;
+                      return <button key={ex.id} onClick={function() {
+                        var ext = (presuForm[0].extras || []).slice();
+                        var idx = ext.indexOf(ex.id);
+                        if (idx >= 0) ext.splice(idx, 1); else ext.push(ex.id);
+                        presuForm[1](Object.assign({}, presuForm[0], { extras: ext }));
+                      }} style={{ padding: "6px 14px", borderRadius: 8, border: isOn ? "2px solid #B45309" : "1px solid #e5e5e5", background: isOn ? "#B4530908" : "#fff", color: isOn ? "#B45309" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{ex.name} (+{ex.price}€/pers)</button>;
+                    })}
+                  </div>
+                </div>
+                <div style={{ marginBottom: 16 }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+                    <input type="checkbox" checked={presuForm[0].transporte} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { transporte: e.target.checked })); }} />
+                    <span style={{ fontSize: 13, fontWeight: 600 }}>Transporte extra (+{TRANSPORTE_PRICE}€)</span>
+                  </label>
+                </div>
+                {/* Lead vinculado */}
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>VINCULAR A LEAD</div>
+                  <select value={presuForm[0].leadId} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { leadId: e.target.value })); }} style={sel}>
+                    <option value="">Sin vincular</option>
+                    {leads[0].filter(function(l) { return l.estado !== "Perdido"; }).map(function(l) { return <option key={l.id} value={l.id}>{l.nombre} — {l.tipoEvento}</option>; })}
+                  </select>
+                </div>
+
+                {/* Result */}
+                <div style={{ background: "#111", borderRadius: 12, padding: "20px", color: "#fff", marginBottom: 12 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: isSocio ? "1fr 1fr 1fr 1fr" : "1fr 1fr 1fr", gap: 16, textAlign: "center" }}>
+                    <div><div style={{ fontSize: 10, color: "#888" }}>SUBTOTAL</div><div style={{ fontSize: 20, fontWeight: 800 }}>{calc.subtotal.toFixed(0)}€</div></div>
+                    <div><div style={{ fontSize: 10, color: "#888" }}>IVA (10%)</div><div style={{ fontSize: 20, fontWeight: 800 }}>{calc.iva.toFixed(0)}€</div></div>
+                    <div><div style={{ fontSize: 10, color: "#888" }}>TOTAL</div><div style={{ fontSize: 24, fontWeight: 800, color: "#4ADE80" }}>{calc.total.toFixed(0)}€</div></div>
+                    {isSocio && <div><div style={{ fontSize: 10, color: "#888" }}>MARGEN EST.</div><div style={{ fontSize: 20, fontWeight: 800, color: "#FBBF24" }}>{calc.marginPct.toFixed(0)}%</div></div>}
+                  </div>
+                  <div style={{ textAlign: "center", marginTop: 8, fontSize: 11, color: "#888" }}>
+                    {calc.base.toFixed(2)}€/pers base + {(calc.extras || 0).toFixed(2)}€/pers extras × {presuForm[0].personas} personas{presuForm[0].transporte ? " + " + TRANSPORTE_PRICE + "€ transporte" : ""}
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={savePresupuesto} style={{ padding: "10px 24px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>💾 Guardar</button>
+                  <button onClick={function() { var txt = "Presupuesto Orale Padre Catering\n" + presuForm[0].tipo + " - " + presuForm[0].producto + "\n" + presuForm[0].personas + " personas\nTotal: " + calc.total.toFixed(2) + "€ (IVA incl.)"; window.open("https://wa.me/?text=" + encodeURIComponent(txt)); }} style={{ padding: "10px 24px", borderRadius: 10, background: "#25D366", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>💬 WhatsApp</button>
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Historial presupuestos */}
+          <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
+            <div style={{ padding: "14px 20px", borderBottom: "1px solid #eee", fontSize: 14, fontWeight: 700 }}>Presupuestos generados ({presupuestos[0].length})</div>
+            {presupuestos[0].length === 0 && <div style={{ padding: 30, textAlign: "center", color: "#ccc" }}>Aun no hay presupuestos</div>}
+            <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 500 }}>
+              {presupuestos[0].length > 0 && <thead><tr style={{ borderBottom: "2px solid #eee" }}>
+                <th style={{ padding: "10px 12px", textAlign: "left", color: "#888", fontWeight: 600 }}>FECHA</th>
+                <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>TIPO</th>
+                <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>PERS.</th>
+                <th style={{ padding: "10px 8px", textAlign: "right", color: "#888", fontWeight: 600 }}>TOTAL</th>
+                <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}>LEAD</th>
+              </tr></thead>}
+              <tbody>
+                {presupuestos[0].slice().sort(function(a, b) { return (b.createdAt || "").localeCompare(a.createdAt || ""); }).map(function(p) {
+                  var leadName = "";
+                  if (p.leadId) { for (var li2 = 0; li2 < leads[0].length; li2++) { if (leads[0][li2].id === p.leadId) { leadName = leads[0][li2].nombre; break; } } }
+                  return (
+                    <tr key={p.id} style={{ borderBottom: "1px solid #f5f5f5" }}>
+                      <td style={{ padding: "10px 12px" }}>{p.createdAt ? p.createdAt.slice(0, 10) : ""}</td>
+                      <td style={{ padding: "10px 8px", fontWeight: 600 }}>{p.tipo} — {p.producto}</td>
+                      <td style={{ padding: "10px 8px", textAlign: "right" }}>{p.personas}</td>
+                      <td style={{ padding: "10px 8px", textAlign: "right", fontWeight: 800, color: "#047857" }}>{(p.total || 0).toFixed(0)}€</td>
+                      <td style={{ padding: "10px 8px", color: "#888" }}>{leadName || "—"}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ====== VENTAS: CIERRE CAJA + FRAUDE + VOLCADO ====== */
 function VentasView(props) {
   var tabMap = { "ventas-cierre": "cierre", "ventas-fraude": "fraude", "ventas-volcado": "dashboard" };
