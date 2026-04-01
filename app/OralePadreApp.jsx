@@ -634,6 +634,7 @@ export default function App() {
     { k: "checklist", l: "Checklist", roles: ["encargado"], group: "ops" },
     { k: "mi-perfil", l: "Mi Perfil", roles: ["encargado","empleado"], group: "inicio" },
     { k: "catering-dash", l: "Dashboard", roles: ["socio","encargado"], group: "catering" },
+    { k: "catering-packs", l: "Packs Grupos", roles: ["socio","encargado"], group: "catering" },
     { k: "catering-leads", l: "Leads", roles: ["socio","encargado"], group: "catering" },
     { k: "catering-presupuestos", l: "Presupuestos", roles: ["socio","encargado"], group: "catering" },
   ];
@@ -1011,7 +1012,7 @@ export default function App() {
             {(pg[0] === "rrhh" || pg[0] === "rrhh-dorados" || pg[0] === "rrhh-fichajes") && <RRHHView {...PP} currentTab={pg[0]} />}
             {pg[0] === "mi-perfil" && <MiPerfilView {...PP} />}
             {(pg[0] === "ventas-cierre" || pg[0] === "ventas-fraude" || pg[0] === "ventas-volcado") && <VentasView {...PP} currentTab={pg[0]} />}
-            {(pg[0] === "catering-dash" || pg[0] === "catering-leads" || pg[0] === "catering-presupuestos") && <CateringView {...PP} currentTab={pg[0]} />}
+            {(pg[0] === "catering-dash" || pg[0] === "catering-leads" || pg[0] === "catering-presupuestos" || pg[0] === "catering-packs") && <CateringView {...PP} currentTab={pg[0]} />}
             {pg[0] === "fichaje" && <FichajeView {...PP} />}
             {pg[0] === "checklist" && <ChecklistView {...PP} />}
             {pg[0] === "albaranes" && <AlbaranesView {...PP} />}
@@ -9136,7 +9137,7 @@ function RRHHView(props) {
 /* ====== MI PERFIL (Empleado/Encargado) ====== */
 /* ====== CATERING: DASHBOARD + LEADS CRM + PRESUPUESTOS ====== */
 function CateringView(props) {
-  var tabMap = { "catering-dash": "dashboard", "catering-leads": "leads", "catering-presupuestos": "presupuestos" };
+  var tabMap = { "catering-dash": "dashboard", "catering-leads": "leads", "catering-presupuestos": "presupuestos", "catering-packs": "packs" };
   var tab = useState(tabMap[props.currentTab] || "dashboard");
   var leads = props.cateringLeads;
   var presupuestos = props.cateringPresupuestos;
@@ -9227,7 +9228,7 @@ function CateringView(props) {
     showPresu[1](false);
   }
 
-  var tabs = [{ k: "dashboard", l: "Dashboard", e: "📊" }, { k: "leads", l: "Leads", e: "📋" }, { k: "presupuestos", l: "Presupuestos", e: "📄" }];
+  var tabs = [{ k: "dashboard", l: "Dashboard", e: "📊" }, { k: "packs", l: "Packs Grupos", e: "🌯" }, { k: "leads", l: "Leads", e: "📋" }, { k: "presupuestos", l: "Presupuestos", e: "📄" }];
   var inp = { width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" };
   var sel = Object.assign({}, inp, { background: "#fff" });
 
@@ -9353,6 +9354,120 @@ function CateringView(props) {
           </div>
         );
       })()}
+
+      {/* === PACKS GRUPOS === */}
+      {tab[0] === "packs" && (
+        <div>
+          {/* Pricing cards */}
+          <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+            <div style={{ background: "linear-gradient(135deg, #047857 0%, #065F46 100%)", borderRadius: 14, padding: "20px", color: "#fff", textAlign: "center" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.7, letterSpacing: 1, marginBottom: 6 }}>PACK COMPLETO A+B+C</div>
+              <div style={{ fontSize: 32, fontWeight: 800 }}>17,90€</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>Burrito/Desnudo + Tacos + Postre</div>
+            </div>
+            <div style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 14, padding: "20px", color: "#fff", textAlign: "center" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.7, letterSpacing: 1, marginBottom: 6 }}>PACK A+B</div>
+              <div style={{ fontSize: 32, fontWeight: 800 }}>15,90€</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>Burrito/Desnudo + Tacos</div>
+            </div>
+            <div style={{ background: "linear-gradient(135deg, #1E40AF 0%, #1E3A8A 100%)", borderRadius: 14, padding: "20px", color: "#fff", textAlign: "center" }}>
+              <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.7, letterSpacing: 1, marginBottom: 6 }}>SOLO BURRITO/DESNUDO</div>
+              <div style={{ fontSize: 32, fontWeight: 800 }}>9,90€</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>1 Burrito o 1 Desnudo</div>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+            {/* OPCION A - Burritos */}
+            <div style={{ ...crd, borderTop: "4px solid #B45309" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#B45309", marginBottom: 12 }}>🌯 OPCION A — BURRITOS</div>
+              {["Lady Cochinita", "Dona Dolores", "Black Chancho", "Pollo Pastor", "Don Hampi", "Don Juarez", "Pollo Padre", "Tacos Chancho"].map(function(b) {
+                return <div key={b} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 4px", borderBottom: "1px solid #f8f8f8" }}>
+                  <span style={{ color: "#B45309", fontSize: 12 }}>▸</span>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{b}</span>
+                </div>;
+              })}
+            </div>
+
+            {/* OPCION A - Desnudos */}
+            <div style={{ ...crd, borderTop: "4px solid #D97706" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#D97706", marginBottom: 12 }}>🥗 OPCION A — DESNUDOS</div>
+              {["Desnudo Juarez", "Desnudo Cochinita", "Desnudo Black Chancho", "Desnudo Dolores"].map(function(d) {
+                return <div key={d} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 4px", borderBottom: "1px solid #f8f8f8" }}>
+                  <span style={{ color: "#D97706", fontSize: 12 }}>▸</span>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{d}</span>
+                </div>;
+              })}
+              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#FFF7ED" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginBottom: 6 }}>DETALLE DESNUDO POLLO PASTOR</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Pollo pastor, arroz con cilantro y lima, salsa verde, guacamole casero, pico de gallo casero, frijoles</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginTop: 8, marginBottom: 6 }}>DETALLE DESNUDO COCHINITA</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Cochinita pibil, arroz, salsa chipotle, lechuga fresca, cebolla encurtida, pico de gallo casero, nata agria</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+            {/* OPCION B - Tacos */}
+            <div style={{ ...crd, borderTop: "4px solid #3B82F6" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#1E40AF", marginBottom: 12 }}>🌮 OPCION B — TACOS</div>
+              {["Taco Pollo Pastor", "Taco Lady Cochinita", "Tacos Chancho"].map(function(t) {
+                return <div key={t} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 4px", borderBottom: "1px solid #f8f8f8" }}>
+                  <span style={{ color: "#1E40AF", fontSize: 12 }}>▸</span>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{t}</span>
+                </div>;
+              })}
+              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#EFF6FF" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#1E40AF", marginBottom: 6 }}>DETALLE TACOS</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>2 Tacos Pulled Pork BBQ / 2 Tacos Cochinita con guacamole, pico de gallo, 4 quesos (opcional)</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6, marginTop: 4 }}>2 Tacos Carrillada iberica al estilo Orale con cebolla morada, cilantro, 4 quesos, salsa mayo-lima</div>
+              </div>
+            </div>
+
+            {/* OPCION C - Postres */}
+            <div style={{ ...crd, borderTop: "4px solid #7C3AED" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#7C3AED", marginBottom: 12 }}>🍮 OPCION C — POSTRES</div>
+              {["Filipinos Blancos", "Dulce de Leche", "Kinder Bueno", "Galleta Lotus"].map(function(p) {
+                return <div key={p} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 4px", borderBottom: "1px solid #f8f8f8" }}>
+                  <span style={{ color: "#7C3AED", fontSize: 12 }}>▸</span>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{p}</span>
+                </div>;
+              })}
+              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#F5F3FF" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginBottom: 6 }}>FORMATOS</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>C1 — Tarro de Lotus / Filipino Dulce de Leche</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>C2 — Tarro de fruta cortada de temporada</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Burrito detail */}
+          <div style={{ ...crd, marginBottom: 20 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>📋 Detalle Burritos Experience</div>
+            <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
+              <div style={{ padding: "12px", borderRadius: 8, background: "#FFF7ED" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>BURRITO POLLO PASTOR</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.8 }}>Pollo pastor, arroz con cilantro y lima, salsa verde, guacamole casero, pico de gallo casero, frijoles, nata agria, 4 quesos (opcional), tortilla de harina de trigo</div>
+              </div>
+              <div style={{ padding: "12px", borderRadius: 8, background: "#FFF7ED" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>BURRITO COCHINITA</div>
+                <div style={{ fontSize: 11, color: "#666", lineHeight: 1.8 }}>Cochinita pibil, arroz, salsa chipotle, lechuga fresca, cebolla encurtida, pico de gallo casero, nata agria, tortilla de harina de trigo</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div style={{ ...crd, borderLeft: "4px solid #B45309" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>📌 Condiciones</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Precio incluye entrega</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Minimo 25 packs</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Se pueden elaborar propuestas sin gluten y veganas</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Se pueden modificar ingredientes bajo peticion</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* === LEADS CRM === */}
       {tab[0] === "leads" && (
