@@ -157,6 +157,12 @@ export async function loadAllData() {
         comunicados: (comunicados || []).map(function(c) { return { id: c.id, title: c.title, content: c.content, author: c.author || "", date: "", readBy: readMap[c.id] || [] }; }),
       };
     }
+    // Valoraciones
+    try { var { data: valRows } = await supabase.from('valoraciones').select('*').eq('id', 'main').single(); } catch(e) { var valRows = null; }
+    if (valRows) {
+      if (!result.opsData) result.opsData = {};
+      result.opsData.valoraciones = { locales: valRows.locales || {}, resenas: valRows.resenas || [] };
+    }
     // Catering leads
     try { var { data: catLeads } = await supabase.from('catering_leads').select('*').order('created_at', { ascending: false }); } catch(e) { var catLeads = null; }
     if (catLeads && catLeads.length > 0) {
@@ -214,6 +220,44 @@ export async function saveProducts(products) {
       await supabase.rpc('save_price', { pid: p.id, sala: sala, uber: uber, glovo: glovo, sales: sales });
     }
   } catch (err) { console.error("Save products error:", err); }
+}
+export async function saveOpsData(ops) {
+  try {
+    // Protocolos
+    await supabase.from('protocolos').delete().neq('id', '');
+    if (ops.protocolos && ops.protocolos.length > 0) {
+      await supabase.from('protocolos').insert(ops.protocolos.map(function(p) { return { id: p.id, title: p.title, priority: p.priority, category: p.category, content: p.content, active: p.active !== false }; }));
+    }
+    // Alertas producto
+    await supabase.from('alertas_producto').delete().neq('id', '');
+    if (ops.alertasProducto && ops.alertasProducto.length > 0) {
+      await supabase.from('alertas_producto').insert(ops.alertasProducto.map(function(a) { return { id: a.id, product: a.product, level: a.level, local_name: a.local || "Todos", notes: a.notes, actions: a.actions }; }));
+    }
+    // Plan accion
+    await supabase.from('plan_accion').delete().neq('id', '');
+    if (ops.planAccion && ops.planAccion.length > 0) {
+      await supabase.from('plan_accion').insert(ops.planAccion.map(function(p) { return { id: p.id, action: p.action, responsible: p.responsible, deadline: p.deadline, status: p.status, priority: p.priority }; }));
+    }
+    // Comunicados
+    await supabase.from('comunicados').delete().neq('id', '');
+    if (ops.comunicados && ops.comunicados.length > 0) {
+      await supabase.from('comunicados').insert(ops.comunicados.map(function(c) { return { id: c.id, title: c.title, content: c.content, author: c.author }; }));
+    }
+    // Comunicados read
+    await supabase.from('comunicados_read').delete().neq('comunicado_id', '');
+    var readRows = [];
+    for (var ci = 0; ci < (ops.comunicados || []).length; ci++) {
+      var com = ops.comunicados[ci];
+      for (var ri = 0; ri < (com.readBy || []).length; ri++) {
+        readRows.push({ comunicado_id: com.id, user_name: com.readBy[ri] });
+      }
+    }
+    if (readRows.length > 0) { await supabase.from('comunicados_read').insert(readRows); }
+    // Valoraciones
+    if (ops.valoraciones) {
+      await supabase.from('valoraciones').upsert({ id: 'main', locales: ops.valoraciones.locales || {}, resenas: ops.valoraciones.resenas || [], updated_at: new Date().toISOString() });
+    }
+  } catch (err) { console.error("Save ops error:", err); }
 }
 export async function saveMktData(mkt) {
   try {
