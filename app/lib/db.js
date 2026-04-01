@@ -157,6 +157,16 @@ export async function loadAllData() {
         comunicados: (comunicados || []).map(function(c) { return { id: c.id, title: c.title, content: c.content, author: c.author || "", date: "", readBy: readMap[c.id] || [] }; }),
       };
     }
+    // Catering leads
+    try { var { data: catLeads } = await supabase.from('catering_leads').select('*').order('created_at', { ascending: false }); } catch(e) { var catLeads = null; }
+    if (catLeads && catLeads.length > 0) {
+      result.cateringLeads = catLeads.map(function(l) { return { id: l.id, nombre: l.nombre, telefono: l.telefono || "", email: l.email || "", empresa: l.empresa || "", canal: l.canal || "Instagram", tipoEvento: l.tipo_evento || "Corporativo", fechaEvento: l.fecha_evento || "", personas: l.personas || "", modalidad: l.modalidad || "En Accion", proximaAccion: l.proxima_accion || "Llamar", fechaAccion: l.fecha_accion || "", notas: l.notas || "", estado: l.estado || "Nuevo", createdAt: l.created_at || "", timeline: l.timeline || [] }; });
+    }
+    // Catering presupuestos
+    try { var { data: catPresu } = await supabase.from('catering_presupuestos').select('*').order('created_at', { ascending: false }); } catch(e) { var catPresu = null; }
+    if (catPresu && catPresu.length > 0) {
+      result.cateringPresupuestos = catPresu.map(function(p) { return { id: p.id, leadId: p.lead_id || "", tipo: p.tipo || "En Accion", producto: p.producto || "Completo", personas: p.personas || 50, extras: p.extras || [], transporte: p.transporte || false, precioPP: parseFloat(p.precio_pp) || 0, total: parseFloat(p.total) || 0, notas: p.notas || "", estado: p.estado || "borrador", createdAt: p.created_at || "", leadNombre: p.lead_nombre || "" }; });
+    }
     return result;
   } catch (err) { console.error("Error loading from Supabase:", err); return null; }
 }
@@ -358,6 +368,26 @@ export async function saveStockMins(mins) {
     }
     if (rows.length > 0) await supabase.from('stock_minimums').insert(rows);
   } catch (err) { console.error("Save stock mins error:", err); }
+}
+export async function saveCateringLeads(leads) {
+  try {
+    await supabase.from('catering_leads').delete().neq('id', '');
+    if (leads && leads.length > 0) {
+      await supabase.from('catering_leads').insert(leads.map(function(l) {
+        return { id: l.id, nombre: l.nombre, telefono: l.telefono || "", email: l.email || "", empresa: l.empresa || "", canal: l.canal || "Instagram", tipo_evento: l.tipoEvento || "Corporativo", fecha_evento: l.fechaEvento || "", personas: l.personas || "", modalidad: l.modalidad || "En Accion", proxima_accion: l.proximaAccion || "Llamar", fecha_accion: l.fechaAccion || "", notas: l.notas || "", estado: l.estado || "Nuevo", created_at: l.createdAt || "", timeline: l.timeline || [] };
+      }));
+    }
+  } catch (err) { console.error("Save catering leads error:", err); }
+}
+export async function saveCateringPresupuestos(presus) {
+  try {
+    await supabase.from('catering_presupuestos').delete().neq('id', '');
+    if (presus && presus.length > 0) {
+      await supabase.from('catering_presupuestos').insert(presus.map(function(p) {
+        return { id: p.id, lead_id: p.leadId || "", tipo: p.tipo || "En Accion", producto: p.producto || "Completo", personas: p.personas || 50, extras: p.extras || [], transporte: p.transporte || false, precio_pp: p.precioPP || 0, total: p.total || 0, notas: p.notas || "", estado: p.estado || "borrador", created_at: p.createdAt || "", lead_nombre: p.leadNombre || "" };
+      }));
+    }
+  } catch (err) { console.error("Save catering presupuestos error:", err); }
 }
 export async function createProduct(recipe, items, product, prices) {
   try {
