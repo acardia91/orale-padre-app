@@ -165,7 +165,17 @@ export async function loadAllData() {
     // Catering presupuestos
     try { var { data: catPresu } = await supabase.from('catering_presupuestos').select('*').order('created_at', { ascending: false }); } catch(e) { var catPresu = null; }
     if (catPresu && catPresu.length > 0) {
-      result.cateringPresupuestos = catPresu.map(function(p) { return { id: p.id, leadId: p.lead_id || "", tipo: p.tipo || "En Accion", producto: p.producto || "Completo", personas: p.personas || 50, extras: p.extras || [], transporte: p.transporte || false, precioPP: parseFloat(p.precio_pp) || 0, total: parseFloat(p.total) || 0, notas: p.notas || "", estado: p.estado || "borrador", createdAt: p.created_at || "", leadNombre: p.lead_nombre || "" }; });
+      result.cateringPresupuestos = catPresu.map(function(p) { return { id: p.id, leadId: p.lead_id || "", tipo: p.tipo || "En Accion", producto: p.producto || "Completo", personas: p.personas || 50, extras: p.extras || [], transporte: p.transporte || false, precioPP: parseFloat(p.precio_pp) || 0, total: parseFloat(p.total) || 0, notas: p.notas || "", estado: p.estado || "borrador", createdAt: p.created_at || "", leadNombre: p.lead_nombre || "", clienteNombre: p.cliente_nombre || "", clienteEmail: p.cliente_email || "", clienteTel: p.cliente_tel || "", eventoFecha: p.evento_fecha || "", eventoDesc: p.evento_desc || "" }; });
+    }
+    // Cierres de caja
+    try { var { data: cierresData } = await supabase.from('cierres_caja').select('*').order('fecha', { ascending: false }); } catch(e) { var cierresData = null; }
+    if (cierresData && cierresData.length > 0) {
+      result.cierresCaja = cierresData.map(function(c) { return { id: c.id, local: c.local_name, fecha: c.fecha, encargado: c.encargado || "", efectivo: parseFloat(c.efectivo) || 0, tarjeta: parseFloat(c.tarjeta) || 0, uberEats: parseFloat(c.uber_eats) || 0, glovo: parseFloat(c.glovo) || 0, canalPropio: parseFloat(c.canal_propio) || 0, total: parseFloat(c.total) || 0, observaciones: c.observaciones || "", createdAt: c.created_at || "" }; });
+    }
+    // Fraude registros
+    try { var { data: fraudeRecs } = await supabase.from('fraude_registros').select('*').order('fecha', { ascending: false }); } catch(e) { var fraudeRecs = null; }
+    if (fraudeRecs && fraudeRecs.length > 0) {
+      result.fraudeData = fraudeRecs.map(function(f) { return { id: f.id, tipo: f.tipo, empleado: f.empleado || "", producto: f.producto || "", ticket: f.ticket || "", local: f.local_name || "", fecha: f.fecha || "", hora: f.hora || "", importe: parseFloat(f.importe) || 0, notas: f.notas || "", createdAt: f.created_at || "" }; });
     }
     return result;
   } catch (err) { console.error("Error loading from Supabase:", err); return null; }
@@ -384,10 +394,30 @@ export async function saveCateringPresupuestos(presus) {
     await supabase.from('catering_presupuestos').delete().neq('id', '');
     if (presus && presus.length > 0) {
       await supabase.from('catering_presupuestos').insert(presus.map(function(p) {
-        return { id: p.id, lead_id: p.leadId || "", tipo: p.tipo || "En Accion", producto: p.producto || "Completo", personas: p.personas || 50, extras: p.extras || [], transporte: p.transporte || false, precio_pp: p.precioPP || 0, total: p.total || 0, notas: p.notas || "", estado: p.estado || "borrador", created_at: p.createdAt || "", lead_nombre: p.leadNombre || "" };
+        return { id: p.id, lead_id: p.leadId || "", tipo: p.tipo || "En Accion", producto: p.producto || "Completo", personas: p.personas || 50, extras: p.extras || [], transporte: p.transporte || false, precio_pp: p.precioPP || 0, total: p.total || 0, notas: p.notas || "", estado: p.estado || "borrador", created_at: p.createdAt || "", lead_nombre: p.leadNombre || "", cliente_nombre: p.clienteNombre || "", cliente_email: p.clienteEmail || "", cliente_tel: p.clienteTel || "", evento_fecha: p.eventoFecha || "", evento_desc: p.eventoDesc || "" };
       }));
     }
   } catch (err) { console.error("Save catering presupuestos error:", err); }
+}
+export async function saveCierresCaja(cierres) {
+  try {
+    await supabase.from('cierres_caja').delete().neq('id', '');
+    if (cierres && cierres.length > 0) {
+      await supabase.from('cierres_caja').insert(cierres.map(function(c) {
+        return { id: c.id, local_name: c.local, fecha: c.fecha, encargado: c.encargado || "", efectivo: c.efectivo || 0, tarjeta: c.tarjeta || 0, uber_eats: c.uberEats || 0, glovo: c.glovo || 0, canal_propio: c.canalPropio || 0, total: c.total || 0, observaciones: c.observaciones || "", created_at: c.createdAt || "" };
+      }));
+    }
+  } catch (err) { console.error("Save cierres error:", err); }
+}
+export async function saveFraudeData(fraude) {
+  try {
+    await supabase.from('fraude_registros').delete().neq('id', '');
+    if (fraude && fraude.length > 0) {
+      await supabase.from('fraude_registros').insert(fraude.map(function(f) {
+        return { id: f.id, tipo: f.tipo, empleado: f.empleado || "", producto: f.producto || "", ticket: f.ticket || "", local_name: f.local || "", fecha: f.fecha || "", hora: f.hora || "", importe: f.importe || 0, notas: f.notas || "", created_at: f.createdAt || "" };
+      }));
+    }
+  } catch (err) { console.error("Save fraude error:", err); }
 }
 export async function createProduct(recipe, items, product, prices) {
   try {
