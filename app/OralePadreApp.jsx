@@ -376,6 +376,14 @@ export default function App() {
       { id: "com1", title: "Nuevos protocolos de delivery activos", content: "A partir de hoy son obligatorios el checklist de cierre de bolsa y el protocolo de alergias de 3 niveles. Ningun pedido sale sin completar los 12 pasos. Sin excepciones.", author: "Ale", date: "25/03/2026", readBy: [] },
       { id: "com2", title: "Productos a vigilar esta semana", content: "Atencion especial a: Bacon Cheese (revisar ingredientes cada turno), Burro Lady Cochinita (desmenuzar siempre), Nachos delivery (toppings separados). Cualquier duda, preguntad al encargado.", author: "Ale", date: "25/03/2026", readBy: [] },
     ],
+    valoraciones: {
+      locales: {
+        "San Luis": { google: { nota: 4.3, total: 287, recientes: [] }, uber: { nota: 4.1, total: 512, recientes: [] }, glovo: { nota: 3.9, total: 198, recientes: [] } },
+        "Los Remedios": { google: { nota: 4.5, total: 156, recientes: [] }, uber: { nota: 4.3, total: 340, recientes: [] }, glovo: { nota: 4.2, total: 120, recientes: [] } },
+        "Sevilla Este": { google: { nota: 4.0, total: 89, recientes: [] }, uber: { nota: 3.8, total: 220, recientes: [] }, glovo: { nota: 3.7, total: 95, recientes: [] } },
+      },
+      resenas: [],
+    },
   });
 
   var saveTimerRef = useRef(null);
@@ -1486,12 +1494,26 @@ function DashView(props) {
       {/* === HEALTH SCORE === */}
       {(function() {
         var totalProducts = wp.length;
-        var fcScore = totalProducts > 0 ? Math.round((okCount / totalProducts) * 40) : 0;
-        var stockScore = props.stockAlerts[0].length === 0 ? 20 : props.stockAlerts[0].length <= 2 ? 12 : 5;
-        var incScore = props.incidents[0].filter(function(x){return x.status==="abierta";}).length === 0 ? 20 : props.incidents[0].filter(function(x){return x.status==="abierta";}).length <= 2 ? 12 : 5;
+        var fcScore = totalProducts > 0 ? Math.round((okCount / totalProducts) * 30) : 0;
+        var stockScore = props.stockAlerts[0].length === 0 ? 15 : props.stockAlerts[0].length <= 2 ? 9 : 4;
+        var incScore = props.incidents[0].filter(function(x){return x.status==="abierta";}).length === 0 ? 15 : props.incidents[0].filter(function(x){return x.status==="abierta";}).length <= 2 ? 9 : 4;
         var priceScore = wrongPrice === 0 ? 10 : wrongPrice <= 2 ? 6 : 2;
         var dangerScore = dangerCount === 0 ? 10 : dangerCount <= 2 ? 5 : 0;
-        var healthScore = Math.min(100, fcScore + stockScore + incScore + priceScore + dangerScore);
+        // Valoraciones score (0-20)
+        var valData = props.opsData ? props.opsData[0].valoraciones : null;
+        var valAvg = 0; var valCt = 0;
+        if (valData && valData.locales) {
+          for (var vl in valData.locales) {
+            var vld = valData.locales[vl];
+            if (vld.google && vld.google.nota > 0) { valAvg += vld.google.nota; valCt++; }
+            if (vld.uber && vld.uber.nota > 0) { valAvg += vld.uber.nota; valCt++; }
+            if (vld.glovo && vld.glovo.nota > 0) { valAvg += vld.glovo.nota; valCt++; }
+          }
+        }
+        valAvg = valCt > 0 ? valAvg / valCt : 0;
+        var valScore = valAvg >= 4.5 ? 20 : valAvg >= 4.0 ? 15 : valAvg >= 3.5 ? 10 : valAvg > 0 ? 5 : 0;
+        var valLabel = valAvg > 0 ? valAvg.toFixed(1) + " media" : "sin datos";
+        var healthScore = Math.min(100, fcScore + stockScore + incScore + priceScore + dangerScore + valScore);
         var hsColor = healthScore >= 80 ? "#047857" : healthScore >= 60 ? "#D97706" : "#DC2626";
         var hsLabel = healthScore >= 80 ? "Excelente" : healthScore >= 60 ? "Aceptable" : "Necesita atencion";
         return (
@@ -1510,9 +1532,10 @@ function DashView(props) {
               <div style={{ flex: 1, minWidth: 200 }}>
                 <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Salud del Negocio: <span style={{ color: hsColor }}>{hsLabel}</span></div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 8 }}>
-                  <div style={{ fontSize: 11, color: "#aaa" }}>Food Cost <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{fcScore}/40</span></div>
-                  <div style={{ fontSize: 11, color: "#aaa" }}>Stock <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{stockScore}/20</span></div>
-                  <div style={{ fontSize: 11, color: "#aaa" }}>Incidencias <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{incScore}/20</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Food Cost <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{fcScore}/30</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Valoraciones <span style={{ float: "right", color: valScore >= 15 ? "#4ADE80" : valScore >= 10 ? "#FBBF24" : "#EF4444", fontWeight: 700 }}>{valScore}/20</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Incidencias <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{incScore}/15</span></div>
+                  <div style={{ fontSize: 11, color: "#aaa" }}>Stock <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{stockScore}/15</span></div>
                   <div style={{ fontSize: 11, color: "#aaa" }}>Precios <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{priceScore}/10</span></div>
                   <div style={{ fontSize: 11, color: "#aaa" }}>Zona roja <span style={{ float: "right", color: "#fff", fontWeight: 700 }}>{dangerScore}/10</span></div>
                 </div>
@@ -1760,6 +1783,48 @@ function DashView(props) {
           );
         })()}
       </div>
+
+      {/* === VALORACIONES RESUMEN === */}
+      {(function() {
+        try {
+        var valD = props.opsData ? props.opsData[0].valoraciones : null;
+        if (!valD || !valD.locales) return null;
+        var platLabels2 = { google: "Google", uber: "Uber Eats", glovo: "Glovo" };
+        var platColors2 = { google: "#4285F4", uber: "#047857", glovo: "#D97706" };
+        var locCards = [];
+        for (var vli = 0; vli < LOCALS.length; vli++) {
+          var loc3 = LOCALS[vli];
+          var vl2 = valD.locales[loc3] || {};
+          var locAvg = 0; var locCt = 0;
+          if (vl2.google && vl2.google.nota > 0) { locAvg += vl2.google.nota; locCt++; }
+          if (vl2.uber && vl2.uber.nota > 0) { locAvg += vl2.uber.nota; locCt++; }
+          if (vl2.glovo && vl2.glovo.nota > 0) { locAvg += vl2.glovo.nota; locCt++; }
+          locAvg = locCt > 0 ? locAvg / locCt : 0;
+          locCards.push({ local: loc3, avg: locAvg, g: vl2.google ? vl2.google.nota : 0, u: vl2.uber ? vl2.uber.nota : 0, gl: vl2.glovo ? vl2.glovo.nota : 0 });
+        }
+        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#B45309" : "#DC2626"; };
+        return (
+          <div onClick={function(){props.setPage("operaciones");}} style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", marginBottom: 20, cursor: "pointer" }}>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>⭐ Valoraciones</div>
+            <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "repeat(3, 1fr)", gap: 12 }}>
+              {locCards.map(function(lc) {
+                return (
+                  <div key={lc.local} style={{ padding: "12px", borderRadius: 10, background: "#f8f8f8", textAlign: "center" }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>{lc.local}</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: noteC(lc.avg), marginBottom: 4 }}>{lc.avg > 0 ? lc.avg.toFixed(1) : "—"}</div>
+                    <div style={{ display: "flex", justifyContent: "center", gap: 8, fontSize: 10 }}>
+                      <span style={{ color: platColors2.google }}>G:{lc.g > 0 ? lc.g.toFixed(1) : "—"}</span>
+                      <span style={{ color: platColors2.uber }}>U:{lc.u > 0 ? lc.u.toFixed(1) : "—"}</span>
+                      <span style={{ color: platColors2.glovo }}>Gl:{lc.gl > 0 ? lc.gl.toFixed(1) : "—"}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+        } catch(e) { return null; }
+      })()}
 
       {/* === EQUIPO === */}
       {(function() {
@@ -7231,12 +7296,18 @@ function OpsView(props) {
   var protoForm = useState({ title: "", category: "delivery", priority: "alta", content: "" });
   var showFormA = useState(false);
   var alertForm = useState({ product: "", level: "vigilar", local: "Todos", notes: "", actions: "" });
+  var showAddResena = useState(false);
+  var resenaForm = useState({ local: "San Luis", plataforma: "google", nota: "5", texto: "", producto: "", fecha: new Date().toISOString().slice(0, 10), respuesta: "" });
+  var valLocal = useState("Todos");
+  var editNotas = useState(null);
+  var editNotaVal = useState({ google: 0, uber: 0, glovo: 0, gTotal: 0, uTotal: 0, glTotal: 0 });
 
   var tabs = [
     { k: "comunicados", l: "Comunicados", badge: d.comunicados.filter(function(c) { return (c.readBy || []).indexOf(userName) < 0; }).length },
     { k: "protocolos", l: "Protocolos", badge: 0 },
     { k: "alertas", l: "Alertas Producto", badge: d.alertasProducto.length },
     { k: "plan", l: "Plan de Accion", badge: d.planAccion.filter(function(a) { return a.status === "pendiente"; }).length },
+    { k: "valoraciones", l: "Valoraciones", badge: 0 },
   ];
 
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
@@ -7470,6 +7541,173 @@ function OpsView(props) {
           })}
         </div>
       )}
+
+      {/* VALORACIONES */}
+      {tab[0] === "valoraciones" && (function() {
+        var val = d.valoraciones || { locales: {}, resenas: [] };
+        var resenas = val.resenas || [];
+        var platIcons = { google: "🔵", uber: "🟢", glovo: "🟡" };
+        var platLabels = { google: "Google", uber: "Uber Eats", glovo: "Glovo" };
+        var platColors = { google: "#4285F4", uber: "#047857", glovo: "#D97706" };
+
+        var allLocs = LOCALS;
+        var globalG = 0; var globalU = 0; var globalGl = 0;
+        var gCount = 0; var uCount = 0; var glCount = 0;
+        for (var vi = 0; vi < allLocs.length; vi++) {
+          var lv = val.locales[allLocs[vi]];
+          if (lv) {
+            if (lv.google && lv.google.nota > 0) { globalG += lv.google.nota; gCount++; }
+            if (lv.uber && lv.uber.nota > 0) { globalU += lv.uber.nota; uCount++; }
+            if (lv.glovo && lv.glovo.nota > 0) { globalGl += lv.glovo.nota; glCount++; }
+          }
+        }
+        var avgG = gCount > 0 ? globalG / gCount : 0;
+        var avgU = uCount > 0 ? globalU / uCount : 0;
+        var avgGl = glCount > 0 ? globalGl / glCount : 0;
+        var avgAll = 0; var avgCt = 0;
+        if (avgG > 0) { avgAll += avgG; avgCt++; }
+        if (avgU > 0) { avgAll += avgU; avgCt++; }
+        if (avgGl > 0) { avgAll += avgGl; avgCt++; }
+        avgAll = avgCt > 0 ? avgAll / avgCt : 0;
+        var avgColor = avgAll >= 4.5 ? "#047857" : avgAll >= 4.0 ? "#D97706" : "#DC2626";
+
+        function stars(n) { var s = ""; for (var si = 1; si <= 5; si++) s += si <= Math.round(n) ? "★" : "☆"; return s; }
+        function noteColor(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#B45309" : "#DC2626"; }
+
+        var filteredResenas = resenas.filter(function(r) { return valLocal[0] === "Todos" || r.local === valLocal[0]; });
+        filteredResenas.sort(function(a, b) { return b.fecha.localeCompare(a.fecha); });
+
+        var pos = 0; var neg = 0; var neu = 0;
+        for (var ri = 0; ri < filteredResenas.length; ri++) {
+          if (filteredResenas[ri].nota >= 4) pos++;
+          else if (filteredResenas[ri].nota <= 2) neg++;
+          else neu++;
+        }
+
+        function saveResena() {
+          var f = resenaForm[0];
+          if (!f.texto) return;
+          var newResena = Object.assign({ id: uid() }, f, { nota: parseInt(f.nota) || 5 });
+          var newVal = Object.assign({}, val, { resenas: (val.resenas || []).concat([newResena]) });
+          updateOps("valoraciones", newVal);
+          resenaForm[1]({ local: f.local, plataforma: f.plataforma, nota: "5", texto: "", producto: "", fecha: new Date().toISOString().slice(0, 10), respuesta: "" });
+          showAddResena[1](false);
+        }
+
+        function updateLocalNotas(loc, plat, nota, total) {
+          var newVal = JSON.parse(JSON.stringify(val));
+          if (!newVal.locales[loc]) newVal.locales[loc] = {};
+          if (!newVal.locales[loc][plat]) newVal.locales[loc][plat] = { nota: 0, total: 0, recientes: [] };
+          newVal.locales[loc][plat].nota = parseFloat(nota) || 0;
+          if (total !== undefined) newVal.locales[loc][plat].total = parseInt(total) || 0;
+          updateOps("valoraciones", newVal);
+        }
+
+        return (
+          <div>
+            {/* Global KPIs */}
+            <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+              <div style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff" }}>
+                <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>NOTA MEDIA GLOBAL</div>
+                <div style={{ fontSize: 32, fontWeight: 800, color: avgColor }}>{avgAll > 0 ? avgAll.toFixed(1) : "—"}</div>
+                <div style={{ fontSize: 12, marginTop: 4, color: avgColor }}>{avgAll > 0 ? stars(avgAll) : ""}</div>
+              </div>
+              {[{k:"google",c:"#4285F4",avg:avgG},{k:"uber",c:"#047857",avg:avgU},{k:"glovo",c:"#D97706",avg:avgGl}].map(function(p) {
+                return <div key={p.k} style={{ ...crd, padding: "18px 16px", textAlign: "center", borderTop: "4px solid " + p.c }}>
+                  <div style={{ fontSize: 10, fontWeight: 600, color: "#888", marginBottom: 6 }}>{platLabels[p.k].toUpperCase()}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: noteColor(p.avg) }}>{p.avg > 0 ? p.avg.toFixed(1) : "—"}</div>
+                  <div style={{ fontSize: 11, color: p.avg > 0 ? noteColor(p.avg) : "#aaa" }}>{p.avg > 0 ? stars(p.avg) : "Sin datos"}</div>
+                </div>;
+              })}
+            </div>
+
+            {/* Per local */}
+            <div style={{ ...crd, marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div style={{ fontSize: 14, fontWeight: 700 }}>📍 Notas por Local y Plataforma</div>
+                {isSocio && <button onClick={function() { editNotas[1](editNotas[0] ? null : "editing"); }} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #e5e5e5", background: editNotas[0] ? "#B45309" : "#fff", color: editNotas[0] ? "#fff" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{editNotas[0] ? "Cerrar edicion" : "Editar notas"}</button>}
+              </div>
+              {allLocs.map(function(loc) {
+                var lv2 = val.locales[loc] || {};
+                return (
+                  <div key={loc} style={{ padding: "14px 0", borderBottom: "1px solid #f5f5f5" }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>{loc}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+                      {["google", "uber", "glovo"].map(function(p) {
+                        var pdata = lv2[p] || { nota: 0, total: 0 };
+                        return (
+                          <div key={p} style={{ textAlign: "center", padding: "10px 8px", borderRadius: 10, background: pdata.nota > 0 ? platColors[p] + "08" : "#f8f8f8" }}>
+                            <div style={{ fontSize: 10, fontWeight: 600, color: platColors[p], marginBottom: 4 }}>{platIcons[p]} {platLabels[p]}</div>
+                            {editNotas[0] ? (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center" }}>
+                                <input type="number" step="0.1" min="0" max="5" defaultValue={pdata.nota || ""} onBlur={function(evt) { var v = parseFloat(evt.target.value); if (v >= 0 && v <= 5) updateLocalNotas(loc, p, v, undefined); }} style={{ width: 60, padding: "4px 6px", borderRadius: 6, border: "1px solid #ddd", fontSize: 14, textAlign: "center", fontWeight: 700, fontFamily: "inherit" }} />
+                                <input type="number" defaultValue={pdata.total || ""} onBlur={function(evt) { updateLocalNotas(loc, p, pdata.nota, parseInt(evt.target.value)); }} placeholder="total" style={{ width: 60, padding: "3px 6px", borderRadius: 6, border: "1px solid #ddd", fontSize: 10, textAlign: "center", fontFamily: "inherit" }} />
+                              </div>
+                            ) : (
+                              <div>
+                                <div style={{ fontSize: 20, fontWeight: 800, color: noteColor(pdata.nota) }}>{pdata.nota > 0 ? pdata.nota.toFixed(1) : "—"}</div>
+                                <div style={{ fontSize: 10, color: "#aaa" }}>{pdata.total > 0 ? pdata.total + " resenas" : ""}</div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Resenas header */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+              <div style={{ fontSize: 14, fontWeight: 700 }}>Resenas</div>
+              <select value={valLocal[0]} onChange={function(e) { valLocal[1](e.target.value); }} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit", background: "#fff" }}>
+                <option value="Todos">Todos</option>
+                {LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}
+              </select>
+              {filteredResenas.length > 0 && <div style={{ display: "flex", gap: 8, fontSize: 11 }}><span style={{ color: "#047857", fontWeight: 600 }}>+ {pos}</span><span style={{ color: "#888" }}>~ {neu}</span><span style={{ color: "#DC2626", fontWeight: 600 }}>- {neg}</span></div>}
+              <div style={{ flex: 1 }} />
+              {isSocio && <button onClick={function() { showAddResena[1](!showAddResena[0]); }} style={{ padding: "6px 14px", borderRadius: 8, background: showAddResena[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>{showAddResena[0] ? "Cancelar" : "+ Resena"}</button>}
+            </div>
+
+            {showAddResena[0] && (
+              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+                <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Registrar resena</div>
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>LOCAL</div><select value={resenaForm[0].local} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { local: e.target.value })); }} style={Object.assign({}, inp, { background: "#fff" })}>{LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}</select></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PLATAFORMA</div><select value={resenaForm[0].plataforma} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { plataforma: e.target.value })); }} style={Object.assign({}, inp, { background: "#fff" })}><option value="google">Google</option><option value="uber">Uber Eats</option><option value="glovo">Glovo</option></select></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOTA</div><select value={resenaForm[0].nota} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { nota: e.target.value })); }} style={Object.assign({}, inp, { background: "#fff" })}><option value="5">5 estrellas</option><option value="4">4 estrellas</option><option value="3">3 estrellas</option><option value="2">2 estrellas</option><option value="1">1 estrella</option></select></div>
+                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>FECHA</div><input type="date" value={resenaForm[0].fecha} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { fecha: e.target.value })); }} style={inp} /></div>
+                </div>
+                <div style={{ marginBottom: 10 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PRODUCTO</div><input value={resenaForm[0].producto} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { producto: e.target.value })); }} placeholder="Producto mencionado..." style={inp} /></div>
+                <div style={{ marginBottom: 10 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TEXTO</div><textarea value={resenaForm[0].texto} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { texto: e.target.value })); }} rows={3} placeholder="Texto de la resena..." style={Object.assign({}, inp, { resize: "vertical" })} /></div>
+                <div style={{ marginBottom: 10 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>RESPUESTA (opcional)</div><input value={resenaForm[0].respuesta} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { respuesta: e.target.value })); }} placeholder="Tu respuesta..." style={inp} /></div>
+                <button onClick={saveResena} style={btn}>Guardar</button>
+              </div>
+            )}
+
+            {filteredResenas.length === 0 && !showAddResena[0] && (
+              <div style={{ ...crd, textAlign: "center", padding: 40 }}><div style={{ fontSize: 36, marginBottom: 12 }}>⭐</div><div style={{ fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Sin resenas registradas</div><div style={{ fontSize: 12, color: "#888" }}>Anade resenas de Google, Uber y Glovo para hacer seguimiento.</div></div>
+            )}
+            {filteredResenas.map(function(r) {
+              var nc = noteColor(r.nota);
+              return (
+                <div key={r.id} style={{ ...crd, marginBottom: 8, borderLeft: "4px solid " + (platColors[r.plataforma] || "#888"), padding: "14px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                    <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: (platColors[r.plataforma] || "#888") + "15", color: platColors[r.plataforma] || "#888" }}>{platIcons[r.plataforma]} {platLabels[r.plataforma]}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: nc }}>{stars(r.nota)}</span>
+                    <span style={{ fontSize: 11, color: "#aaa" }}>{r.local}</span>
+                    <span style={{ fontSize: 11, color: "#ccc", marginLeft: "auto" }}>{r.fecha}</span>
+                  </div>
+                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{r.texto}</div>
+                  {r.producto && <div style={{ fontSize: 11, color: "#B45309", fontWeight: 600, marginTop: 4 }}>Producto: {r.producto}</div>}
+                  {r.respuesta && <div style={{ fontSize: 11, color: "#047857", marginTop: 4, padding: "6px 10px", background: "#F0FDF4", borderRadius: 6 }}>↩ {r.respuesta}</div>}
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
     </div>
   );
 }
