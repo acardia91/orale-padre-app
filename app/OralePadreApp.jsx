@@ -789,15 +789,17 @@ export default function App() {
         </button>
         {/* Alubias Doradas badge */}
         {role !== "socio" && (function() {
+          try {
           var myDorados = 0;
-          var gPts = gamification[0].points;
-          for (var gi = 0; gi < gPts.length; gi++) { if (gPts[gi].name === (usr[0] ? usr[0].name : "")) { myDorados = gPts[gi].dorados; break; } }
+          var gPts = gamification[0] && Array.isArray(gamification[0].points) ? gamification[0].points : [];
+          for (var gi = 0; gi < gPts.length; gi++) { if (gPts[gi] && gPts[gi].name === (usr[0] ? usr[0].name : "")) { myDorados = gPts[gi].dorados || 0; break; } }
           return (
             <div onClick={function() { pg[1]("mi-perfil"); }} style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, background: "#B4530920", cursor: "pointer", flexShrink: 0 }}>
               <span style={{ fontSize: 13 }}>🫘</span>
               <span style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>{myDorados}</span>
             </div>
           );
+          } catch(e) { return null; }
         })()}
         <div className="op-header-info">
           <div style={{ width: 28, height: 28, borderRadius: 14, background: isEmp ? "#1E40AF" : role === "encargado" ? "#047857" : role === "community" ? "#E11D48" : "#B45309", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>{(usr[0].name || "U")[0].toUpperCase()}</div>
@@ -1497,6 +1499,7 @@ function DashView(props) {
 
       {/* === HEALTH SCORE === */}
       {(function() {
+        try {
         var totalProducts = wp.length;
         var fcScore = totalProducts > 0 ? Math.round((okCount / totalProducts) * 30) : 0;
         var stockScore = props.stockAlerts[0].length === 0 ? 15 : props.stockAlerts[0].length <= 2 ? 9 : 4;
@@ -1547,10 +1550,12 @@ function DashView(props) {
             </div>
           </div>
         );
+        } catch(e) { return null; }
       })()}
 
       {/* === FC MAP BY CATEGORY === */}
       {(function() {
+        try {
         var catData = [];
         for (var ci3 = 0; ci3 < PROD_CATS.length; ci3++) {
           var cat = PROD_CATS[ci3];
@@ -1590,12 +1595,14 @@ function DashView(props) {
             </div>
           </div>
         );
+        } catch(e) { return null; }
       })()}
 
       {/* === CRITICAL INGREDIENTS + SUPPLIER DEPENDENCY === */}
       <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
         {/* Top ingredients by cost impact */}
         {(function() {
+          try {
           var ingImpact = {};
           for (var ip = 0; ip < props.products.length; ip++) {
             var pr = props.products[ip];
@@ -1642,10 +1649,12 @@ function DashView(props) {
               })}
             </div>
           );
+          } catch(e) { return null; }
         })()}
 
         {/* Supplier dependency */}
         {(function() {
+          try {
           var supCost = {};
           for (var ip2 = 0; ip2 < props.ingredients.length; ip2++) {
             var ing2 = props.ingredients[ip2];
@@ -1698,6 +1707,7 @@ function DashView(props) {
               )}
             </div>
           );
+          } catch(e) { return null; }
         })()}
       </div>
 
@@ -1705,6 +1715,7 @@ function DashView(props) {
       <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
         {/* Stock value per local */}
         {(function() {
+          try {
           var sData = props.stockData ? props.stockData[0] || {} : {};
           var locals = LOCALS;
           var localValues = [];
@@ -1748,10 +1759,12 @@ function DashView(props) {
               {totalValue === 0 && <div style={{ marginTop: 8, fontSize: 11, color: "#aaa" }}>Registra stock en la seccion Stock para ver el valor.</div>}
             </div>
           );
+          } catch(e) { return null; }
         })()}
 
         {/* Promos activas hoy */}
         {(function() {
+          try {
           var dias = ["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
           var hoyDia = dias[new Date().getDay()];
           var promosHoy = props.promosData ? props.promosData[0].filter(function(p) { return p.estado === "activa" && (p.dias || []).indexOf(hoyDia) >= 0; }) : [];
@@ -1785,6 +1798,7 @@ function DashView(props) {
               <button onClick={function(){props.setPage("promos");}} style={{ marginTop: 8, padding: "8px 16px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", width: "100%" }}>Ver todas las promos →</button>
             </div>
           );
+          } catch(e) { return null; }
         })()}
       </div>
 
@@ -8712,9 +8726,10 @@ function RRHHView(props) {
   function updateGam(newData) { gam[1](newData); }
 
   // Sort leaderboard
-  var leaderboard = (data.points || []).slice().sort(function(a, b) { return b.dorados - a.dorados; });
+  var safePoints = data.points && Array.isArray(data.points) ? data.points : [];
+  var leaderboard = safePoints.slice().sort(function(a, b) { return (b.dorados || 0) - (a.dorados || 0); });
   var totalDorados = 0;
-  for (var ti = 0; ti < (data.points || []).length; ti++) totalDorados += (data.points || [])[ti].dorados;
+  for (var ti = 0; ti < safePoints.length; ti++) totalDorados += (safePoints[ti].dorados || 0);
 
   var actionLabels = data.config;
   var roleColors = { encargado: "#047857", empleado: "#1E40AF", community: "#E11D48" };
@@ -10019,14 +10034,15 @@ function MiPerfilView(props) {
   var userName = props.user ? props.user.name : "";
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
 
-  // Find my data
+  // Find my data (safe)
   var myData = null;
   var myRank = 0;
-  var sorted = (data.points || []).slice().sort(function(a, b) { return b.dorados - a.dorados; });
+  var pts = data.points && Array.isArray(data.points) ? data.points : [];
+  var sorted = pts.slice().sort(function(a, b) { return (b.dorados || 0) - (a.dorados || 0); });
   for (var i = 0; i < sorted.length; i++) {
-    if (sorted[i].name === userName) { myData = sorted[i]; myRank = i + 1; break; }
+    if (sorted[i] && sorted[i].name === userName) { myData = sorted[i]; myRank = i + 1; break; }
   }
-  if (!myData) myData = { name: userName, role: props.user ? props.user.role : "", dorados: 0, actions: [] };
+  if (!myData) myData = { name: userName, role: props.user ? props.user.role : "", local: props.user ? props.user.local : "", dorados: 0, actions: [] };
   if (!myData.actions) myData.actions = [];
 
   var medals = ["🥇", "🥈", "🥉"];
@@ -10864,18 +10880,27 @@ function AlbaranesView(props) {
                 {aiLines[0].map(function(line) {
                   var bgColor = line.lineError ? "#FEF2F2" : line.duda ? "#FFFBEB" : line.ingredienteId ? "#F0FDF4" : "#fff";
                   var priceAlert = null;
+                  var linkedIng = null;
                   if (line.ingredienteId) {
                     for (var pi = 0; pi < props.ingredients.length; pi++) {
                       if (props.ingredients[pi].id === line.ingredienteId) {
-                        var oldP = props.ingredients[pi].price;
-                        if (oldP > 0 && line.precioUnit > 0) {
-                          var diff = ((line.precioUnit - oldP) / oldP) * 100;
-                          if (Math.abs(diff) > 5) priceAlert = { diff: diff, old: oldP };
+                        linkedIng = props.ingredients[pi];
+                        var oldP = linkedIng.costPerUnit || 0;
+                        var albaranPricePerUnit = line.precioUnit || 0;
+                        // If line has conversion (e.g. box → kg), calculate real price
+                        if (line.contenidoPorUnidad && line.contenidoPorUnidad > 0) {
+                          albaranPricePerUnit = line.precioUnit / line.contenidoPorUnidad;
+                        }
+                        if (oldP > 0 && albaranPricePerUnit > 0) {
+                          var diff = ((albaranPricePerUnit - oldP) / oldP) * 100;
+                          if (Math.abs(diff) > 5) priceAlert = { diff: diff, old: oldP, newPrice: albaranPricePerUnit };
                         }
                         break;
                       }
                     }
                   }
+                  // Check unit mismatch
+                  var unitMismatch = linkedIng && line.unidad !== linkedIng.unit;
                   return (
                     <tr key={line.id} style={{ borderBottom: "1px solid #f5f5f5", background: bgColor }}>
                       <td style={{ padding: "8px 6px" }}>
@@ -10898,12 +10923,39 @@ function AlbaranesView(props) {
                       <td style={{ padding: "8px 6px" }}>
                         <select value={line.ingredienteId} onChange={function(e) { linkIngredient(line.id, e.target.value); }} style={{ width: "100%", border: "1px solid " + (line.ingredienteId ? "#047857" : "#e5e5e5"), borderRadius: 6, padding: "4px 6px", fontSize: 11, fontFamily: "inherit", background: line.ingredienteId ? "#F0FDF4" : "#fff" }}>
                           <option value="">— Sin vincular —</option>
-                          {props.ingredients.map(function(ing) { return <option key={ing.id} value={ing.id}>{ing.name} ({ing.unit})</option>; })}
+                          {props.ingredients.map(function(ing) { return <option key={ing.id} value={ing.id}>{ing.name} ({ing.costPerUnit ? ing.costPerUnit.toFixed(2) + "€/" : ""}{ing.unit})</option>; })}
                         </select>
+                        {/* Unit mismatch warning + conversion */}
+                        {unitMismatch && (
+                          <div style={{ marginTop: 4, padding: "6px 8px", borderRadius: 6, background: "#FEF3C7", border: "1px solid #FDE68A" }}>
+                            <div style={{ fontSize: 10, color: "#92400E", fontWeight: 600, marginBottom: 4 }}>⚠️ Albaran en "{line.unidad}" pero ingrediente en "{linkedIng.unit}"</div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11 }}>
+                              <span style={{ color: "#888" }}>1 {line.unidad} =</span>
+                              <input type="number" step="0.1" value={line.contenidoPorUnidad || ""} onChange={function(e) { updateLine(line.id, "contenidoPorUnidad", parseFloat(e.target.value) || 0); }} placeholder="?" style={{ width: 50, padding: "3px 4px", border: "1px solid #ddd", borderRadius: 4, fontSize: 12, textAlign: "center", fontFamily: "inherit" }} />
+                              <span style={{ color: "#888" }}>{linkedIng.unit}</span>
+                              {line.contenidoPorUnidad > 0 && (
+                                <span style={{ color: "#047857", fontWeight: 700, marginLeft: 4 }}>→ {(line.precioUnit / line.contenidoPorUnidad).toFixed(2)}€/{linkedIng.unit}</span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {/* Price comparison */}
+                        {linkedIng && !unitMismatch && (
+                          <div style={{ fontSize: 10, color: "#888", marginTop: 2 }}>Precio actual: {(linkedIng.costPerUnit || 0).toFixed(2)}€/{linkedIng.unit}</div>
+                        )}
                         {priceAlert && (
-                          <div style={{ fontSize: 10, marginTop: 2, color: priceAlert.diff > 0 ? "#DC2626" : "#047857", fontWeight: 600 }}>
-                            {priceAlert.diff > 0 ? "📈 Subida" : "📉 Bajada"} {priceAlert.diff > 0 ? "+" : ""}{priceAlert.diff.toFixed(1)}% vs ultimo ({fmt(priceAlert.old)})
-                            {Math.abs(priceAlert.diff) > 15 && <span style={{ color: "#DC2626" }}> — REVISAR CON PROVEEDOR</span>}
+                          <div style={{ marginTop: 4, padding: "6px 8px", borderRadius: 6, background: Math.abs(priceAlert.diff) > 30 ? "#FEE2E2" : Math.abs(priceAlert.diff) > 15 ? "#FEF3C7" : "#F0FDF4", border: "1px solid " + (Math.abs(priceAlert.diff) > 30 ? "#FECACA" : Math.abs(priceAlert.diff) > 15 ? "#FDE68A" : "#BBF7D0") }}>
+                            <div style={{ fontSize: 10, fontWeight: 600, color: priceAlert.diff > 0 ? "#DC2626" : "#047857" }}>
+                              {priceAlert.diff > 0 ? "📈" : "📉"} {priceAlert.diff > 0 ? "+" : ""}{priceAlert.diff.toFixed(1)}% — Antes: {priceAlert.old.toFixed(2)}€ → Albaran: {priceAlert.newPrice.toFixed(2)}€
+                              {Math.abs(priceAlert.diff) > 30 && <span> — ⚠️ DIFERENCIA MUY ALTA</span>}
+                            </div>
+                            <button onClick={function() {
+                              var newIng = props.ingredients.map(function(x) { return x.id === line.ingredienteId ? Object.assign({}, x, { costPerUnit: priceAlert.newPrice, lastAlbaranPrice: priceAlert.old, lastAlbaranDate: fechaDetected[0] }) : x; });
+                              props.setIng(newIng);
+                              if (props.saveIngProd) props.saveIngProd(newIng, props.products);
+                            }} style={{ marginTop: 4, padding: "3px 10px", borderRadius: 4, border: "none", background: "#B45309", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                              Actualizar precio a {priceAlert.newPrice.toFixed(2)}€/{linkedIng ? linkedIng.unit : ""}
+                            </button>
                           </div>
                         )}
                       </td>
@@ -10929,10 +10981,11 @@ function AlbaranesView(props) {
           {/* Confirm */}
           <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
             <button onClick={confirmAlbaran} style={{ flex: 1, padding: "14px 20px", borderRadius: 12, border: "none", background: "#047857", color: "#fff", fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
-              ✅ Confirmar ({aiLines[0].length} lineas — {fmt(totalCalc)}) → Actualizar stock {local[0]}
+              ✅ Confirmar ({aiLines[0].length} lineas — {fmt(totalCalc)}) → Solo actualiza stock de {local[0]}
             </button>
             <button onClick={cancelReview} style={{ padding: "14px 20px", borderRadius: 12, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
           </div>
+          <div style={{ fontSize: 11, color: "#888", marginTop: 8, textAlign: "center" }}>Los precios de ingredientes NO se actualizan automaticamente. Usa el boton "Actualizar precio" en cada linea si el precio cambio realmente.</div>
         </div>
       )}
 
