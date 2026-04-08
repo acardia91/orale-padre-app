@@ -230,6 +230,246 @@ function ChannelToggle(props) {
   );
 }
 
+/* ====== CHEF CONSULTANT ====== */
+function ChefConsultant(props) {
+  var open = useState(false);
+  var section = props.section;
+  var data = props.data || {};
+  var chatMsgs = useState([]);
+  var chatInput = useState("");
+  var chatLoading = useState(false);
+  var showPractices = useState(false);
+
+  function buildContext() {
+    var ctx = "Seccion: " + section + "\n";
+    if (data.avgFC !== undefined) ctx += "FC medio: " + data.avgFC.toFixed(1) + "%\n";
+    if (data.dangerCount > 0) ctx += "Productos con FC > 35%: " + data.dangerCount + "\n";
+    if (data.topIngredients) ctx += "Ingredientes mas costosos: " + data.topIngredients + "\n";
+    if (data.alertCount !== undefined) ctx += "Alertas stock activas: " + data.alertCount + "\n";
+    if (data.belowMin !== undefined) ctx += "Ingredientes bajo minimo: " + data.belowMin + "\n";
+    if (data.openInc !== undefined) ctx += "Incidencias abiertas: " + data.openInc + "\n";
+    if (data.unreadComs !== undefined) ctx += "Comunicados sin leer: " + data.unreadComs + "\n";
+    if (data.avgNota !== undefined && data.avgNota > 0) ctx += "Nota media valoraciones: " + data.avgNota.toFixed(1) + "\n";
+    if (data.cierresCount !== undefined) ctx += "Cierres de caja este mes: " + data.cierresCount + "\n";
+    if (data.fraudeRatio !== undefined) ctx += "Ratio fraude: " + data.fraudeRatio.toFixed(2) + "%\n";
+    if (data.sinResponder !== undefined) ctx += "Leads sin responder: " + data.sinResponder + "\n";
+    if (data.conversion !== undefined) ctx += "Conversion leads: " + data.conversion.toFixed(0) + "%\n";
+    return ctx;
+  }
+
+  function sendChat() {
+    var q = chatInput[0].trim();
+    if (!q || chatLoading[0]) return;
+    chatMsgs[1](chatMsgs[0].concat([{ role: "user", text: q }]));
+    chatInput[1]("");
+    chatLoading[1](true);
+    fetch("/api/chef-consult", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ section: section, question: q, context: buildContext() }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        chatLoading[1](false);
+        if (d.response) chatMsgs[1](function(prev) { return prev.concat([{ role: "ai", text: d.response }]); });
+        else chatMsgs[1](function(prev) { return prev.concat([{ role: "ai", text: "Error: " + (d.error || "No se pudo conectar") }]); });
+      })
+      .catch(function() {
+        chatLoading[1](false);
+        chatMsgs[1](function(prev) { return prev.concat([{ role: "ai", text: "Chat disponible solo en produccion (app.oralepadre.com)" }]); });
+      });
+  }
+
+  var content = { practices: [], diagnosis: [] };
+
+  if (section === "escandallos" || section === "products") {
+    content.title = "Food Cost y Producto";
+    content.practices = [
+      { t: "FC objetivo: 28-32%", d: "En fast casual mexicano el benchmark es 28-32%. Para delivery puro, apuntar a 25-30% por el impacto de comisiones (24% Uber, 23% Glovo)." },
+      { t: "Revision quincenal", d: "Los precios de materias primas fluctuan. Revisar escandallos cada 2 semanas minimo, especialmente proteinas y lacteos." },
+      { t: "Regla del 80/20", d: "El 20% de tus ingredientes representan el 80% del coste. Identifica los 5-8 ingredientes mas caros y negocia rappels o busca alternativas." },
+      { t: "Estandarizacion", d: "Cada gramo de mas es margen perdido. Usar balanza en todas las preparaciones. Un burrito con 20g extra de proteina x 100 uds/dia = 600€/mes." },
+      { t: "Packaging en FC", d: "El coste de envase (aluminio, recipiente, bolsa) no se suele incluir en el FC pero puede sumar 0.30-0.50€ por pedido delivery." },
+    ];
+    if (data.avgFC !== undefined) {
+      if (data.avgFC > 35) content.diagnosis.push({ level: "critica", text: "FC medio al " + data.avgFC.toFixed(1) + "% — por encima del benchmark. Revisar precios de venta o costes de ingredientes urgentemente." });
+      else if (data.avgFC > 32) content.diagnosis.push({ level: "alta", text: "FC medio al " + data.avgFC.toFixed(1) + "% — en el limite. Hay margen de mejora en estandarizacion y negociacion con proveedores." });
+      else content.diagnosis.push({ level: "ok", text: "FC medio al " + data.avgFC.toFixed(1) + "% — dentro del rango saludable. Mantener control." });
+    }
+    if (data.dangerCount > 0) content.diagnosis.push({ level: "alta", text: data.dangerCount + " productos con FC > 35%. Estos productos estan perdiendo dinero en cada venta. Subir precio o reformular escandallo." });
+    if (data.topIngredients) content.diagnosis.push({ level: "info", text: "Tus ingredientes mas costosos: " + data.topIngredients + ". Centrar negociacion aqui." });
+  }
+
+  else if (section === "stock") {
+    content.title = "Gestion de Stock";
+    content.practices = [
+      { t: "FIFO obligatorio", d: "First In First Out. Lo primero que entra es lo primero que sale. Etiqueta todo con fecha de recepcion. Reduce merma un 15-20%." },
+      { t: "Niveles PAR", d: "Establece para cada ingrediente el nivel minimo (PAR). Cuando baja de ahi, se pide. Evita roturas de stock y compras de emergencia (siempre mas caras)." },
+      { t: "Conteo semanal", d: "Contar stock fisico 1 vez por semana minimo. Comparar con teorico (compras - ventas estimadas). La diferencia es merma o robo." },
+      { t: "3 proveedores por ingrediente critico", d: "Nunca depender de un solo proveedor para proteinas o productos clave. Si falla, no tienes alternativa." },
+      { t: "Recepcion de mercancia", d: "Verificar SIEMPRE peso/cantidad vs albaran al recibir. El 5-10% de los albaranes tienen errores a favor del proveedor." },
+    ];
+    if (data.alertCount > 0) content.diagnosis.push({ level: data.alertCount > 3 ? "critica" : "alta", text: data.alertCount + " alertas de stock activas. Cada ingrediente agotado = producto no vendible = cliente perdido." });
+    if (data.belowMin > 0) content.diagnosis.push({ level: "alta", text: data.belowMin + " ingredientes bajo minimo. Programar pedido esta semana." });
+    if (data.alertCount === 0) content.diagnosis.push({ level: "ok", text: "Stock sin alertas. Buen control." });
+  }
+
+  else if (section === "operaciones") {
+    content.title = "Operaciones y Calidad";
+    content.practices = [
+      { t: "Checklist de cierre de bolsa", d: "El 70% de las valoraciones negativas en delivery son por pedidos incompletos o frios. Un checklist de 12 pasos reduce errores un 80%." },
+      { t: "Protocolo alergias 3 niveles", d: "Rojo (alergia real), Naranja (personalizacion), Verde (estandar). La alergia mal gestionada puede cerrar un negocio." },
+      { t: "Tiempo puerta-rider < 8 min", d: "Si el rider espera mas de 8 minutos, Uber/Glovo penalizan visibilidad. Preparar cuando suena, no antes." },
+      { t: "Comunicacion diaria", d: "5 minutos antes de cada servicio: repaso de incidencias, productos a vigilar, promos activas. Reduce errores un 30%." },
+      { t: "Temperatura es rey", d: "Burrito frio = 1 estrella. Aluminio individual para cada burrito, contenedor cerrado, staging zone caliente." },
+      { t: "Responder TODAS las resenas", d: "Google prioriza restaurantes que responden. Responder negativas en < 24h con solucion concreta. Nunca discutir." },
+    ];
+    if (data.openInc > 0) content.diagnosis.push({ level: "alta", text: data.openInc + " incidencias abiertas. Resolver antes de fin de semana." });
+    if (data.unreadComs > 0) content.diagnosis.push({ level: "media", text: data.unreadComs + " comunicados sin leer por el equipo. Verificar en el briefing diario." });
+  }
+
+  else if (section === "promos") {
+    content.title = "Promociones y Delivery";
+    content.practices = [
+      { t: "Nunca por debajo de margen 0.50€", d: "Una promo que no deja al menos 0.50€ de margen neto por unidad esta perdiendo dinero. Aunque atraiga volumen." },
+      { t: "Descuento maximo seguro", d: "Calcula el descuento maximo que mantiene margen positivo DESPUES de comisiones. Para Uber (24% + 0.82€/promo) suele ser 15-20%." },
+      { t: "Promos horas valle", d: "Martes y miercoles 12-15h son las horas con menos pedidos. Ahi es donde las promos tienen sentido: incrementan volumen sin quitar ventas a precio completo." },
+      { t: "2x1 es peligroso", d: "El 2x1 parece atractivo pero duplica coste de materia prima. Solo funciona si el producto tiene FC < 20%." },
+      { t: "Ads Uber: 5-10€/dia/local", d: "El retorno de ads en Uber es medible. Empezar con 5€/dia, medir pedidos incrementales en 2 semanas, ajustar." },
+      { t: "No promocionar productos con FC alto", d: "Promocionar un burrito con FC del 38% a un 20% de descuento = vender a perdidas. Promover los de FC < 25%." },
+    ];
+    if (data.viableCount !== undefined) content.diagnosis.push({ level: "info", text: data.viableCount + " productos viables para promo al 20% en Uber manteniendo margen positivo." });
+  }
+
+  else if (section === "valoraciones") {
+    content.title = "Valoraciones y Reputacion";
+    content.practices = [
+      { t: "4.5+ es el objetivo", d: "Por debajo de 4.3 en Uber/Glovo pierdes visibilidad en el algoritmo. Por debajo de 4.0 caes a pagina 2+." },
+      { t: "Responder en < 24h", d: "Las resenas negativas sin respuesta alejan mas clientes que la propia resena. Responder siempre con empatia y solucion." },
+      { t: "Pedir resenas positivas", d: "Incluir QR en packaging o nota tipo 'Te gusto? Dejanos tu opinion en Google'. 1 de cada 10 clientes lo hara." },
+      { t: "Analizar patrones", d: "Si 3+ resenas mencionan el mismo problema (frio, incompleto, sabor), es sistematico. Actuar sobre la causa raiz, no sobre cada resena." },
+      { t: "Google My Business activo", d: "Subir fotos semanalmente, responder preguntas, actualizar horarios. Google premia la actividad con mejor posicionamiento." },
+    ];
+    if (data.avgNota > 0 && data.avgNota < 4.0) content.diagnosis.push({ level: "critica", text: "Nota media " + data.avgNota.toFixed(1) + " — por debajo del umbral critico de visibilidad. Prioridad maxima." });
+    else if (data.avgNota >= 4.0 && data.avgNota < 4.5) content.diagnosis.push({ level: "media", text: "Nota media " + data.avgNota.toFixed(1) + " — aceptable pero mejorable. Objetivo: superar 4.5 en 2 meses." });
+    else if (data.avgNota >= 4.5) content.diagnosis.push({ level: "ok", text: "Nota media " + data.avgNota.toFixed(1) + " — excelente. Mantener estandar." });
+  }
+
+  else if (section === "ventas") {
+    content.title = "Ventas y Control";
+    content.practices = [
+      { t: "Cierre de caja diario obligatorio", d: "Sin excepciones. El cierre debe cuadrar al centimo. Diferencias recurrentes > 5€ indican problemas de proceso o fraude." },
+      { t: "Ticket medio como KPI", d: "Medir ticket medio por canal (sala, Uber, Glovo). Si baja, revisar si se estan vendiendo extras/nachos/postres." },
+      { t: "Mix de canales saludable", d: "Depender > 60% de un solo canal (ej. Uber) es un riesgo. Si cambian comisiones o te penalizan, pierdes la mayoria de ingresos." },
+      { t: "Fraude: patron > incidente", d: "Un producto eliminado puede ser un error. 5 productos eliminados por el mismo empleado en una semana es un patron. Actuar sobre patrones." },
+      { t: "Reconciliacion semanal", d: "Comparar ventas Uber/Glovo (desde sus paneles) con lo que entra en cuenta. Las comisiones y ajustes pueden generar diferencias." },
+    ];
+    if (data.fraudeRatio > 1) content.diagnosis.push({ level: "alta", text: "Ratio fraude/ventas al " + data.fraudeRatio.toFixed(2) + "%. Supera el 1% — investigar empleados con mas eliminaciones." });
+    if (data.cierresCount !== undefined) content.diagnosis.push({ level: "info", text: data.cierresCount + " cierres registrados este mes. " + (data.cierresCount < 20 ? "Faltan cierres — debe haber uno por local por dia." : "Buen registro.") });
+  }
+
+  else if (section === "rrhh") {
+    content.title = "Equipo y RRHH";
+    content.practices = [
+      { t: "Formacion en las 2 primeras semanas", d: "Un empleado sin formacion adecuada genera mas incidencias, mas merma y mas rotacion. Invertir en formacion ahorra dinero." },
+      { t: "Briefing pre-servicio de 5 min", d: "Antes de cada servicio: que promos hay, que productos vigilar, que incidencias hubo ayer. Alinea al equipo." },
+      { t: "Gamificacion funciona", d: "Las Alubias Doradas son un buen sistema. Premiar comportamientos positivos (reportar stock, leer comunicados) genera habito." },
+      { t: "Rotacion < 30% anual", d: "La hosteleria tiene rotacion alta (60-80%). Si mantienes < 30% estas haciendo algo bien. Si superas 50%, revisar condiciones y ambiente." },
+      { t: "Fichajes = datos", d: "Los registros de fichaje permiten detectar puntualidad, horas extra no pagadas y turnos infraproductivos." },
+    ];
+  }
+
+  else if (section === "catering") {
+    content.title = "Catering y Eventos";
+    content.practices = [
+      { t: "Conversion lead > 15%", d: "De cada 10 leads que entran, cerrar al menos 1.5-2. Si la conversion es < 10%, revisar velocidad de respuesta y pricing." },
+      { t: "Responder en < 2h", d: "El 50% de los leads de catering eligen al primer proveedor que responde. Respuesta rapida = mas cierres." },
+      { t: "Follow-up a los 3 dias", d: "Si enviaste presupuesto y no hay respuesta, llamar a los 3 dias. El 30% de los cierres vienen del follow-up." },
+      { t: "Margen minimo 40% en catering", d: "El catering debe tener FC < 35% y margen bruto > 40%. Incluir SIEMPRE transporte, montaje y merma en el calculo." },
+      { t: "Fotos del evento = marketing", d: "Cada catering es una oportunidad de contenido. Hacer fotos/video del montaje y servicio para redes." },
+      { t: "Bodas: cerrar 3-6 meses antes", d: "El ciclo de venta de bodas es largo. Los leads de boda que no cierran en 2 semanas hay que mantenerlos calientes con follow-ups mensuales." },
+    ];
+    if (data.sinResponder > 0) content.diagnosis.push({ level: "critica", text: data.sinResponder + " leads sin responder. Cada hora que pasa reduce la probabilidad de cierre un 10%." });
+    if (data.conversion !== undefined) content.diagnosis.push({ level: data.conversion < 10 ? "alta" : "info", text: "Conversion actual: " + data.conversion.toFixed(0) + "%. " + (data.conversion < 10 ? "Muy baja — revisar pricing y velocidad de respuesta." : data.conversion < 20 ? "Aceptable — margen de mejora en follow-up." : "Buena conversion.") });
+  }
+
+  if (!content.title) return null;
+
+  var priColors = { critica: "#DC2626", alta: "#D97706", media: "#1E40AF", ok: "#047857", info: "#888" };
+  var priIcons = { critica: "🔴", alta: "🟠", media: "🔵", ok: "🟢", info: "ℹ️" };
+
+  return (
+    <div style={{ display: "inline-block", position: "relative" }}>
+      <button onClick={function() { open[1](!open[0]); }} style={{ width: 36, height: 36, borderRadius: 18, border: "none", background: open[0] ? "#B45309" : "#FFF7ED", color: open[0] ? "#fff" : "#B45309", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", transition: "all 0.2s" }} title="Mejores practicas">👨‍🍳</button>
+      {open[0] && (
+        <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(420px, 90vw)", background: "#fff", boxShadow: "-4px 0 30px rgba(0,0,0,0.15)", zIndex: 150, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+          <div style={{ padding: "16px 20px", background: "#1a1a1a", color: "#fff", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            <span style={{ fontSize: 22 }}>👨‍🍳</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 15, fontWeight: 700 }}>{content.title}</div>
+              <div style={{ fontSize: 11, color: "#888" }}>Diagnostico, practicas y consulta IA</div>
+            </div>
+            <button onClick={function() { open[1](false); }} style={{ background: "#333", color: "#aaa", border: "none", borderRadius: 8, padding: "6px 14px", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Cerrar</button>
+          </div>
+          <div style={{ padding: "16px 20px", flex: 1 }}>
+            {content.diagnosis.length > 0 && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 10 }}>DIAGNOSTICO CON TUS DATOS</div>
+                {content.diagnosis.map(function(d, idx) {
+                  return (
+                    <div key={idx} style={{ padding: "10px 12px", marginBottom: 6, borderRadius: 8, background: d.level === "critica" ? "#FEF2F2" : d.level === "alta" ? "#FFFBEB" : d.level === "ok" ? "#F0FDF4" : "#f8f8f8", borderLeft: "3px solid " + (priColors[d.level] || "#888") }}>
+                      <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+                        <span style={{ fontSize: 11, flexShrink: 0 }}>{priIcons[d.level]}</span>
+                        <div style={{ fontSize: 12, color: "#333", lineHeight: 1.5 }}>{d.text}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <div onClick={function() { showPractices[1](!showPractices[0]); }} style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>MEJORES PRACTICAS <span style={{ fontSize: 10, color: "#aaa", transform: showPractices[0] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▶</span></div>
+            {showPractices[0] && content.practices.map(function(p, idx) {
+              return (
+                <div key={idx} style={{ marginBottom: 12, padding: "12px 14px", borderRadius: 10, background: "#FAF6F1", border: "1px solid #f0ede8" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#333", marginBottom: 4 }}>{p.t}</div>
+                  <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>{p.d}</div>
+                </div>
+              );
+            })}
+
+            {/* AI CHAT */}
+            <div style={{ marginTop: 16, borderTop: "2px solid #f0ede8", paddingTop: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 10 }}>💬 CONSULTA AL CHEF IA</div>
+              <div style={{ marginBottom: 12 }}>
+                {chatMsgs[0].map(function(m, idx) {
+                  return (
+                    <div key={idx} style={{ marginBottom: 8, display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
+                      <div style={{ maxWidth: "85%", padding: "10px 14px", borderRadius: m.role === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px", background: m.role === "user" ? "#B45309" : "#f5f5f5", color: m.role === "user" ? "#fff" : "#333", fontSize: 12, lineHeight: 1.5 }}>
+                        {m.text}
+                      </div>
+                    </div>
+                  );
+                })}
+                {chatLoading[0] && (
+                  <div style={{ display: "flex", justifyContent: "flex-start", marginBottom: 8 }}>
+                    <div style={{ padding: "10px 14px", borderRadius: "12px 12px 12px 2px", background: "#f5f5f5", fontSize: 12, color: "#888" }}>Analizando datos...</div>
+                  </div>
+                )}
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <input value={chatInput[0]} onChange={function(e) { chatInput[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") sendChat(); }} placeholder="Pregunta sobre esta seccion..." style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none" }} />
+                <button onClick={sendChat} disabled={chatLoading[0] || !chatInput[0].trim()} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: chatLoading[0] ? "#ccc" : "#B45309", color: "#fff", fontWeight: 700, fontSize: 13, cursor: chatLoading[0] ? "default" : "pointer", fontFamily: "inherit" }}>▶</button>
+              </div>
+              <div style={{ fontSize: 10, color: "#bbb", marginTop: 6 }}>La IA analiza los datos de esta seccion para responder</div>
+            </div>
+          </div>
+        </div>
+      )}
+      {open[0] && <div onClick={function() { open[1](false); }} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.3)", zIndex: 149 }} />}
+    </div>
+  );
+}
+
 /* ====== MAIN APP ====== */
 export default function App() {
   var s = SEED;
@@ -980,6 +1220,26 @@ export default function App() {
         {/* MAIN CONTENT AREA */}
         <div style={{ flex: 1, minWidth: 0 }}>
 
+          {/* CONTEXTUAL SUB-MENU — Mobile only, when a group tab is active */}
+          {isMobile[0] && activeBottomTab[0] && activeBottomTab[0] !== "mas" && activeBottomTab[0] !== "ops" && activeBottomTab[0] !== "catering-blocked" && tabSubMenus[activeBottomTab[0]] && (
+            <div className="op-contextual-sub">
+              {tabSubMenus[activeBottomTab[0]].map(function(n) {
+                var active = pg[0] === n.k;
+                var nk = n.k;
+                var badge = 0;
+                if (n.k === "stock") badge = stockAlerts[0].length;
+                if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
+                if (n.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
+                return (
+                  <button key={nk} onClick={function() { navigateTo(nk); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#B45309" : "#ffffff08", color: active ? "#fff" : "#999", fontWeight: active ? 700 : 500, fontSize: 12, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
+                    {n.l}
+                    {badge > 0 && <span style={{ background: active ? "#fff" : "#EF4444", color: active ? "#B45309" : "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px", marginLeft: 2 }}>{badge}</span>}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
           {/* FULL-SCREEN OPS OVERLAY — for encargado/empleado */}
           {isMobile[0] && activeBottomTab[0] === "ops" && (
             <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 68, background: "#111", zIndex: 99, overflowY: "auto", padding: "20px 16px" }}>
@@ -994,7 +1254,7 @@ export default function App() {
                   if (n.k === "stock") badge = stockAlerts[0].length;
                   if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
                   if (n.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
-                  var icons = { albaranes: "📄", turnos: "📅", "promos-hoy": "🏷️", stock: "📦", operaciones: "📢", incidencias: "⚠️", "tareas-id": "🧪", checklist: "✅", gestion: "🔧" };
+                  var icons = { albaranes: "📄", turnos: "📅", "promos-hoy": "🏷️", stock: "📦", operaciones: "📢", incidencias: "⚠️", "tareas-id": "🧪", checklist: "✅", gestion: "🔧", "fichas-emp": "📋" };
                   return (
                     <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "18px 14px", borderRadius: 12, border: isActive ? "2px solid #B45309" : "1px solid #333", background: isActive ? "#B4530915" : "#1a1a1a", color: isActive ? "#B45309" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}>
                       <span style={{ fontSize: 20 }}>{icons[n.k] || "📋"}</span>
@@ -1243,6 +1503,111 @@ function WeatherWidget(props) {
               return <div key={idx} style={{ fontSize: 12, color: "#555", marginBottom: 4, lineHeight: 1.5 }}>{tip}</div>;
             })}
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ====== DAILY TIP ====== */
+function DailyTip(props) {
+  var tip = useState(null);
+  var loading = useState(false);
+  var dismissed = useState(false);
+  var error = useState(null);
+
+  function buildFullContext() {
+    var ctx = "";
+    // Products & FC
+    var fcs = [];
+    for (var i = 0; i < props.products.length; i++) {
+      var p = props.products[i];
+      var cost = props.getPC(p);
+      var pvp = p.prices ? (p.prices.Sala || p.prices["Uber Eats"] || 0) : 0;
+      var fc = pvp > 0 ? (cost / pvp) * 100 : 0;
+      if (fc > 0) fcs.push({ name: p.name, fc: fc.toFixed(1) });
+    }
+    var danger = fcs.filter(function(f) { return parseFloat(f.fc) > 35; });
+    ctx += "Productos: " + props.products.length + " total. FC medio: " + (fcs.length > 0 ? (fcs.reduce(function(s, v) { return s + parseFloat(v.fc); }, 0) / fcs.length).toFixed(1) : "0") + "%. ";
+    if (danger.length > 0) ctx += danger.length + " productos con FC > 35%: " + danger.slice(0, 5).map(function(d) { return d.name + " (" + d.fc + "%)"; }).join(", ") + ". ";
+    // Stock
+    var alerts = props.stockAlerts[0];
+    if (alerts.length > 0) ctx += "Stock: " + alerts.length + " alertas activas. ";
+    // Incidencias
+    var openInc = props.incidents[0].filter(function(x) { return x.status === "abierta"; });
+    if (openInc.length > 0) ctx += "Incidencias: " + openInc.length + " abiertas. ";
+    // Ops
+    var od = props.opsData ? props.opsData[0] : {};
+    var alertProd = (od.alertasProducto || []).length;
+    if (alertProd > 0) ctx += "Alertas producto: " + alertProd + ". ";
+    var planPend = (od.planAccion || []).filter(function(p2) { return p2.status === "pendiente"; }).length;
+    if (planPend > 0) ctx += "Plan accion pendiente: " + planPend + " acciones. ";
+    // Valoraciones
+    var valData = od.valoraciones || {};
+    var locales = valData.locales || {};
+    var LOCS = ["San Luis", "Los Remedios", "Sevilla Este"];
+    for (var li = 0; li < LOCS.length; li++) {
+      var loc = LOCS[li];
+      var lv = locales[loc] || {};
+      var notas = [];
+      if (lv.google && lv.google.nota > 0) notas.push("G:" + lv.google.nota.toFixed(1));
+      if (lv.uber && lv.uber.nota > 0) notas.push("U:" + lv.uber.nota.toFixed(1));
+      if (lv.glovo && lv.glovo.nota > 0) notas.push("Gl:" + lv.glovo.nota.toFixed(1));
+      if (notas.length > 0) ctx += loc + " valoraciones: " + notas.join(", ") + ". ";
+    }
+    // Catering
+    var leads = props.cateringLeads ? props.cateringLeads[0] : [];
+    var sinResp = leads.filter(function(l) { return l.estado === "Nuevo"; }).length;
+    if (sinResp > 0) ctx += "Catering: " + sinResp + " leads sin responder. ";
+    return ctx;
+  }
+
+  function fetchTip() {
+    if (loading[0]) return;
+    loading[1](true);
+    error[1](null);
+    fetch("/api/chef-consult", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isDailyTip: true, context: buildFullContext() }),
+    })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        loading[1](false);
+        if (d.response) tip[1](d.response);
+        else error[1]("No disponible");
+      })
+      .catch(function() {
+        loading[1](false);
+        error[1]("Solo en produccion");
+      });
+  }
+
+  useEffect(function() {
+    if (!tip[0] && !loading[0] && !dismissed[0] && !error[0]) {
+      var timer = setTimeout(fetchTip, 1000);
+      return function() { clearTimeout(timer); };
+    }
+  }, []);
+
+  if (dismissed[0]) return null;
+
+  return (
+    <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a2a1a 100%)", borderRadius: 14, padding: "18px 20px", marginBottom: 20, position: "relative" }}>
+      <button onClick={function() { dismissed[1](true); }} style={{ position: "absolute", top: 10, right: 12, background: "none", border: "none", color: "#555", fontSize: 16, cursor: "pointer", padding: 4 }}>✕</button>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>🤖</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: "#4ADE80", letterSpacing: 1, marginBottom: 6 }}>RECOMENDACION DEL DIA</div>
+          {loading[0] && <div style={{ fontSize: 13, color: "#888", lineHeight: 1.6 }}>Analizando datos de la plataforma...</div>}
+          {error[0] && <div style={{ fontSize: 13, color: "#888", lineHeight: 1.6 }}>{error[0]}</div>}
+          {tip[0] && <div style={{ fontSize: 13, color: "#eee", lineHeight: 1.6 }}>{tip[0]}</div>}
+          {!tip[0] && !loading[0] && !error[0] && <div style={{ fontSize: 13, color: "#888" }}>Cargando...</div>}
+        </div>
+      </div>
+      {tip[0] && (
+        <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+          <button onClick={function() { dismissed[1](true); fetchTip(); dismissed[1](false); }} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #333", background: "transparent", color: "#4ADE80", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>🔄 Otra recomendacion</button>
         </div>
       )}
     </div>
@@ -1619,6 +1984,9 @@ function DashView(props) {
         );
         } catch(e) { return null; }
       })()}
+
+      {/* === DAILY TIP IA === */}
+      <DailyTip products={props.products} getPC={props.getPC} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} cateringLeads={props.cateringLeads} />
 
       {/* === SALUD POR LOCAL === */}
       {(function() {
@@ -2913,6 +3281,8 @@ function SupView(props) {
 }
 function IngView(props) {
   var ss = useState(""); var cs = useState(""); var editing = useState(null); var editVal = useState("");
+  var showAdd = useState(false);
+  var newIng = useState({ name: "", category: "Proteinas", supplierId: "", costPerUnit: 0, unit: "kg" });
   var fl = props.ingredients.filter(function(i) { return i.name.toLowerCase().indexOf(ss[0].toLowerCase()) >= 0 && (!cs[0] || i.category === cs[0]); });
   function sn(id) { for (var i = 0; i < props.suppliers.length; i++) { if (props.suppliers[i].id === id) return props.suppliers[i].name; } return "-"; }
   function saveCost(ingId) {
@@ -2923,16 +3293,45 @@ function IngView(props) {
     editing[1](null);
     if (props.saveIngProd) props.saveIngProd(updatedIng, props.products);
   }
+  function addIngredient() {
+    var n = newIng[0];
+    if (!n.name || !n.costPerUnit) return;
+    var id = "ing_" + Date.now();
+    var entry = { id: id, name: n.name, category: n.category, supplierId: n.supplierId, costPerUnit: parseFloat(n.costPerUnit) || 0, unit: n.unit };
+    var updated = props.ingredients.concat([entry]);
+    props.setIng(updated);
+    if (props.saveIngProd) props.saveIngProd(updated, props.products);
+    newIng[1]({ name: "", category: "Proteinas", supplierId: "", costPerUnit: 0, unit: "kg" });
+    showAdd[1](false);
+  }
+  var UNITS = ["kg", "g", "L", "ml", "ud", "paquete", "bote", "bolsa"];
   return (
     <div>
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
         <input value={ss[0]} onChange={function(e) { ss[1](e.target.value); }} placeholder="Buscar..." style={{ maxWidth: 260, padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }} />
         <select value={cs[0]} onChange={function(e) { cs[1](e.target.value); }} style={{ padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, boxSizing: "border-box", fontFamily: "inherit", background: "#fff" }}>
           <option value="">Todas</option>
           {ING_CATS.map(function(c) { return <option key={c} value={c}>{c}</option>; })}
         </select>
-        {props.isSocio && <span style={{ fontSize: 11, color: "#aaa", alignSelf: "center" }}>Click en precio para editar</span>}
+        {props.isSocio && <button onClick={function() { showAdd[1](!showAdd[0]); }} style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: showAdd[0] ? "#DC2626" : "#047857", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{showAdd[0] ? "Cancelar" : "+ Nuevo Ingrediente"}</button>}
+        {props.isSocio && <span style={{ fontSize: 11, color: "#aaa" }}>Click en precio para editar</span>}
       </div>
+
+      {showAdd[0] && (
+        <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", borderLeft: "4px solid #047857", marginBottom: 16 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Nuevo Ingrediente</div>
+          <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+            <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOMBRE</div><input value={newIng[0].name} onChange={function(e) { newIng[1](Object.assign({}, newIng[0], { name: e.target.value })); }} placeholder="Pollo pastor, Tortilla..." style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" }} /></div>
+            <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>CATEGORIA</div><select value={newIng[0].category} onChange={function(e) { newIng[1](Object.assign({}, newIng[0], { category: e.target.value })); }} style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit", background: "#fff" }}>{ING_CATS.map(function(c) { return <option key={c} value={c}>{c}</option>; })}</select></div>
+            <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PROVEEDOR</div><select value={newIng[0].supplierId} onChange={function(e) { newIng[1](Object.assign({}, newIng[0], { supplierId: e.target.value })); }} style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit", background: "#fff" }}><option value="">Sin proveedor</option>{props.suppliers.map(function(s) { return <option key={s.id} value={s.id}>{s.name}</option>; })}</select></div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+            <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>COSTE</div><input type="number" step="0.01" value={newIng[0].costPerUnit} onChange={function(e) { newIng[1](Object.assign({}, newIng[0], { costPerUnit: e.target.value })); }} style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit" }} /></div>
+            <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>UNIDAD</div><select value={newIng[0].unit} onChange={function(e) { newIng[1](Object.assign({}, newIng[0], { unit: e.target.value })); }} style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, boxSizing: "border-box", fontFamily: "inherit", background: "#fff" }}>{UNITS.map(function(u) { return <option key={u} value={u}>{u}</option>; })}</select></div>
+          </div>
+          <button onClick={addIngredient} style={{ padding: "10px 24px", borderRadius: 10, border: "none", background: "#047857", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Guardar Ingrediente</button>
+        </div>
+      )}
       <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #eee", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
@@ -3002,7 +3401,10 @@ function RecView(props) {
           <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Escandallos</div>
           <div style={{ fontSize: 13, color: "#888" }}>Desglose de costes por producto - precios {chLabel}</div>
         </div>
-        <ChannelToggle value={chS[0]} onChange={chS[1]} />
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <ChefConsultant section="escandallos" data={(function() { var fcs = []; var danger = 0; for (var ci = 0; ci < props.products.length; ci++) { var p = props.products[ci]; var cost = props.getPC(p); var pvp = p.prices ? (p.prices.Sala || p.prices["Uber Eats"] || 0) : 0; var fc = pvp > 0 ? (cost / pvp) * 100 : 0; if (fc > 0) { fcs.push(fc); if (fc > 35) danger++; } } var avg = fcs.length > 0 ? fcs.reduce(function(s,v){return s+v;},0)/fcs.length : 0; var topIngs = props.ingredients.slice().sort(function(a,b){return b.costPerUnit-a.costPerUnit;}).slice(0,5).map(function(i){return i.name;}).join(", "); return { avgFC: avg, dangerCount: danger, topIngredients: topIngs }; })()} />
+          <ChannelToggle value={chS[0]} onChange={chS[1]} />
+        </div>
       </div>
       <input value={ss[0]} onChange={function(e) { ss[1](e.target.value); }} placeholder="Buscar escandallo..." style={{ maxWidth: 320, padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit", marginBottom: 16 }} />
 
@@ -3197,6 +3599,7 @@ function ProdView(props) {
           {PROD_CATS.map(function(c) { return <option key={c} value={c}>{c}</option>; })}
         </select>
         <ChannelToggle value={chS[0]} onChange={chS[1]} />
+        <ChefConsultant section="products" data={(function() { var fcs2 = []; var dg2 = 0; for (var ci2 = 0; ci2 < props.products.length; ci2++) { var p2 = props.products[ci2]; var cost2 = props.getPC(p2); var pvp2 = p2.prices ? (p2.prices.Sala || p2.prices["Uber Eats"] || 0) : 0; var fc2 = pvp2 > 0 ? (cost2 / pvp2) * 100 : 0; if (fc2 > 0) { fcs2.push(fc2); if (fc2 > 35) dg2++; } } return { avgFC: fcs2.length > 0 ? fcs2.reduce(function(s,v){return s+v;},0)/fcs2.length : 0, dangerCount: dg2 }; })()} />
         <div style={{ flex: 1 }} />
         <button onClick={function() { createMode[1](!createMode[0]); createStep[1](1); }} style={{ padding: "10px 18px", borderRadius: 10, border: "2px solid #047857", background: createMode[0] ? "#047857" : "#F0FDF4", color: createMode[0] ? "#fff" : "#047857", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
           {createMode[0] ? "✕ Cancelar" : "+ Nuevo Producto"}
@@ -4640,18 +5043,18 @@ function PricingView(props) {
       <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
         <ChannelToggle value={chS[0]} onChange={chS[1]} />
         <div style={{ flex: 1 }} />
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ textAlign: "center", padding: "8px 16px", borderRadius: 10, background: urgent.length > 0 ? "#FEF2F2" : "#F0FDF4" }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: urgent.length > 0 ? "#DC2626" : "#047857" }}>{urgent.length}</div>
-            <div style={{ fontSize: 10, color: "#888" }}>Urgente</div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: urgent.length > 0 ? "#FEF2F2" : "#F0FDF4" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: urgent.length > 0 ? "#DC2626" : "#047857" }}>{urgent.length}</div>
+            <div style={{ fontSize: 9, color: "#888" }}>Urgente</div>
           </div>
-          <div style={{ textAlign: "center", padding: "8px 16px", borderRadius: 10, background: needsUp.length > 0 ? "#FFFBEB" : "#F0FDF4" }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: needsUp.length > 0 ? "#D97706" : "#047857" }}>{needsUp.length}</div>
-            <div style={{ fontSize: 10, color: "#888" }}>Revisar</div>
+          <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: needsUp.length > 0 ? "#FFFBEB" : "#F0FDF4" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: needsUp.length > 0 ? "#D97706" : "#047857" }}>{needsUp.length}</div>
+            <div style={{ fontSize: 9, color: "#888" }}>Revisar</div>
           </div>
-          <div style={{ textAlign: "center", padding: "8px 16px", borderRadius: 10, background: "#F0FDF4" }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: "#047857" }}>{goodPrice.length}</div>
-            <div style={{ fontSize: 10, color: "#888" }}>OK</div>
+          <div style={{ textAlign: "center", padding: "6px 12px", borderRadius: 10, background: "#F0FDF4" }}>
+            <div style={{ fontSize: 18, fontWeight: 800, color: "#047857" }}>{goodPrice.length}</div>
+            <div style={{ fontSize: 9, color: "#888" }}>OK</div>
           </div>
         </div>
       </div>
@@ -4704,6 +5107,8 @@ function PricingView(props) {
           <div style={{ fontSize: 14, fontWeight: 700 }}>Todos los productos - {isDel ? "Delivery" : "Sala"}</div>
           <div style={{ fontSize: 12, color: "#888" }}>Precio ideal calculado para FC 30% (punto optimo rentabilidad)</div>
         </div>
+        {/* Desktop table */}
+        {!props.isMobile && (
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead><tr style={{ borderBottom: "2px solid #f0f0f0" }}>
@@ -4751,6 +5156,34 @@ function PricingView(props) {
             </tbody>
           </table>
         </div>
+        )}
+        {/* Mobile cards */}
+        {props.isMobile && (
+          <div style={{ padding: "8px" }}>
+            {data.filter(function(p) { return p.pvp > 0; }).sort(function(a, b) { return b.fc - a.fc; }).map(function(p) {
+              var sc = statusColor(p.status);
+              var sb = statusBg(p.status);
+              var needsChange = p.status === "critical" || p.status === "high" || p.status === "watch";
+              return (
+                <div key={p.id} style={{ padding: "12px", marginBottom: 6, borderRadius: 10, background: sb || "#fafaf8", borderLeft: "3px solid " + sc }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 700 }}>{p.name}</div>
+                      <div style={{ fontSize: 10, color: "#aaa" }}>{p.category}</div>
+                    </div>
+                    <span style={{ padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 700, background: sc + "15", color: sc }}>{fPct(p.fc)}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 12, fontSize: 11, color: "#666" }}>
+                    <span>Coste: <strong>{fmt(p.cost)}</strong></span>
+                    <span>PVP: <strong style={{ fontSize: 13 }}>{fmt(p.pvp)}</strong></span>
+                    {needsChange && <span>Ideal: <strong style={{ color: sc, fontSize: 13 }}>{fmt(p.recPrice)}</strong></span>}
+                  </div>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: sc, marginTop: 4 }}>{p.action}{needsChange ? " → +" + (p.recPrice - p.pvp).toFixed(2) + "€" : ""}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
@@ -4767,22 +5200,22 @@ function PricingView(props) {
                     <div style={{ fontSize: 14, fontWeight: 700, color: "#991B1B" }}>{p.name}</div>
                     <div style={{ fontSize: 16, fontWeight: 800, color: "#DC2626" }}>FC {fPct(p.fc)}</div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 6 }}>
-                    <div style={{ padding: "6px 14px", borderRadius: 8, background: "#fff", border: "1px solid #e5e5e5" }}>
-                      <div style={{ fontSize: 10, color: "#888" }}>Actual</div>
-                      <div style={{ fontSize: 16, fontWeight: 700 }}>{fmt(p.pvp)}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                    <div style={{ padding: "6px 12px", borderRadius: 8, background: "#fff", border: "1px solid #e5e5e5" }}>
+                      <div style={{ fontSize: 9, color: "#888" }}>Actual</div>
+                      <div style={{ fontSize: 15, fontWeight: 700 }}>{fmt(p.pvp)}</div>
                     </div>
-                    <div style={{ fontSize: 18, color: "#DC2626" }}>&rarr;</div>
-                    <div style={{ padding: "6px 14px", borderRadius: 8, background: "#DC262610", border: "2px solid #DC2626" }}>
-                      <div style={{ fontSize: 10, color: "#DC2626" }}>Subir a</div>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: "#DC2626" }}>{fmt(p.recPrice)}</div>
+                    <div style={{ fontSize: 16, color: "#DC2626" }}>&rarr;</div>
+                    <div style={{ padding: "6px 12px", borderRadius: 8, background: "#DC262610", border: "2px solid #DC2626" }}>
+                      <div style={{ fontSize: 9, color: "#DC2626" }}>Subir a</div>
+                      <div style={{ fontSize: 15, fontWeight: 800, color: "#DC2626" }}>{fmt(p.recPrice)}</div>
                     </div>
                     <div>
-                      <div style={{ fontSize: 11, color: "#888" }}>Nuevo FC</div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: "#047857" }}>{fPct((p.cost / p.recPrice) * 100)}</div>
+                      <div style={{ fontSize: 10, color: "#888" }}>Nuevo FC</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#047857" }}>{fPct((p.cost / p.recPrice) * 100)}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: 11, color: "#999" }}>Coste MP: {fmt(p.cost)} | Margen actual: {fmt(p.margin)} | Nuevo margen: {fmt(p.recPrice - p.cost)}</div>
+                  <div style={{ fontSize: 11, color: "#999" }}>Coste: {fmt(p.cost)} | Margen: {fmt(p.margin)} → {fmt(p.recPrice - p.cost)}</div>
                 </div>
               );
             })}
@@ -5513,9 +5946,12 @@ function StockView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Stock y Calidad</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Marca ingredientes bajos, agotados, en mal estado o proximos a caducar</div>
+      <div style={{ marginBottom: 24, display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Stock y Calidad</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Marca ingredientes bajos, agotados, en mal estado o proximos a caducar</div>
+        </div>
+        <ChefConsultant section="stock" data={{ alertCount: activeAlerts.length, belowMin: 0 }} />
       </div>
 
       {/* Active alerts summary */}
@@ -7427,9 +7863,12 @@ function OpsView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Operaciones</div>
-        <div style={{ fontSize: 13, color: "#888" }}>{isSocio ? "Publica mejoras, protocolos y comunicados para el equipo" : "Revisa protocolos, alertas y comunicados del equipo de direccion"}</div>
+      <div style={{ marginBottom: 16, display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Operaciones</div>
+          <div style={{ fontSize: 13, color: "#888" }}>{isSocio ? "Publica mejoras, protocolos y comunicados para el equipo" : "Revisa protocolos, alertas y comunicados del equipo de direccion"}</div>
+        </div>
+        <ChefConsultant section="operaciones" data={(function() { var oi = props.incidents[0].filter(function(x){return x.status==="abierta"}).length; var uc = (ops.comunicados||[]).filter(function(c){return !c.readBy || c.readBy.length < 3}).length; return { openInc: oi, unreadComs: uc }; })()} />
       </div>
 
       <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
@@ -8726,9 +9165,12 @@ function PromosHoyView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Promociones{userLocal ? " — " + userLocal : ""}</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Promociones activas en plataformas de delivery</div>
+      <div style={{ marginBottom: 16, display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Promociones{userLocal ? " — " + userLocal : ""}</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Promociones activas en plataformas de delivery</div>
+        </div>
+        <ChefConsultant section="promos" data={{}} />
       </div>
       {/* Hoy banner */}
       <div style={{ ...crd, marginBottom: 16, background: promosHoy.length > 0 ? "linear-gradient(135deg, #047857, #059669)" : "#f5f5f5", color: promosHoy.length > 0 ? "#fff" : "#888", border: "none", padding: "20px 24px" }}>
@@ -8834,9 +9276,12 @@ function RRHHView(props) {
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
-        <div>
-          <div style={{ fontSize: 22, fontWeight: 800 }}>RRHH & Equipo</div>
-          <div style={{ fontSize: 13, color: "#888" }}>Gestion de personal e Alubias Doradas</div>
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <div>
+            <div style={{ fontSize: 22, fontWeight: 800 }}>RRHH & Equipo</div>
+            <div style={{ fontSize: 13, color: "#888" }}>Gestion de personal e Alubias Doradas</div>
+          </div>
+          <ChefConsultant section="rrhh" data={{}} />
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {[{k:"equipo",l:"👥 Equipo"},{k:"dorados",l:"🌟 Alubias Doradas"},{k:"fichajes",l:"⏱️ Fichajes"},{k:"recompensas",l:"🎁 Recompensas"},{k:"config",l:"⚙️ Config"}].map(function(t) {
@@ -9473,7 +9918,7 @@ function CateringView(props) {
   var selectedLead = useState(null);
 
   // Presupuesto form
-  var presuForm = useState({ tipo: "En Accion", personas: 50, producto: "Completo", extras: [], transporte: false, leadId: "", clienteNombre: "", clienteEmail: "", clienteTel: "", eventoFecha: "", eventoDesc: "", validez: "15 dias", notas: "" });
+  var presuForm = useState({ tipo: "En Accion", personas: 50, producto: "Completo", extras: [], transporte: false, leadId: "", clienteNombre: "", clienteEmail: "", clienteTel: "", eventoFecha: "", eventoDesc: "", validez: "15 dias", notas: "", packLines: [{ pack: "A+B+C", qty: 0 }, { pack: "A+B", qty: 0 }, { pack: "Solo A", qty: 0 }] });
   var showPresu = useState(false);
   var pdfPreview = useState(null);
 
@@ -9524,21 +9969,39 @@ function CateringView(props) {
 
   function calcPresupuesto() {
     var f = presuForm[0];
-    var base = PRECIOS[f.tipo] ? (PRECIOS[f.tipo][f.producto] || 0) : 0;
-    var extrasTotal = 0;
-    if (f.tipo !== "Pack Grupos") {
+    var isPack = f.tipo === "Pack Grupos";
+    var subtotal = 0;
+    var totalPersonas = 0;
+    var packLineDetails = [];
+
+    if (isPack) {
+      var lines = f.packLines || [];
+      for (var pi = 0; pi < lines.length; pi++) {
+        var qty = parseInt(lines[pi].qty) || 0;
+        var price = PRECIOS["Pack Grupos"][lines[pi].pack] || 0;
+        if (qty > 0) {
+          subtotal += qty * price;
+          totalPersonas += qty;
+          packLineDetails.push({ pack: lines[pi].pack, qty: qty, price: price, lineTotal: qty * price });
+        }
+      }
+    } else {
+      var base = PRECIOS[f.tipo] ? (PRECIOS[f.tipo][f.producto] || 0) : 0;
+      var extrasTotal = 0;
       for (var ei = 0; ei < (f.extras || []).length; ei++) {
         for (var ec = 0; ec < EXTRAS_CATALOG.length; ec++) {
           if (EXTRAS_CATALOG[ec].id === f.extras[ei]) extrasTotal += EXTRAS_CATALOG[ec].price;
         }
       }
+      subtotal = (base + extrasTotal) * (f.personas || 0);
+      totalPersonas = f.personas || 0;
     }
-    var subtotal = (base + extrasTotal) * (f.personas || 0);
     if (f.transporte) subtotal += TRANSPORTE_PRICE;
     var iva = subtotal * 0.10;
     var total = subtotal + iva;
     var costEstimate = subtotal * 0.35;
-    return { base: base, extras: extrasTotal, subtotal: subtotal, iva: iva, total: total, margin: subtotal - costEstimate, marginPct: subtotal > 0 ? ((subtotal - costEstimate) / subtotal * 100) : 0 };
+    var avgBase = totalPersonas > 0 ? (subtotal - (f.transporte ? TRANSPORTE_PRICE : 0)) / totalPersonas : 0;
+    return { base: avgBase, extras: 0, subtotal: subtotal, iva: iva, total: total, margin: subtotal - costEstimate, marginPct: subtotal > 0 ? ((subtotal - costEstimate) / subtotal * 100) : 0, totalPersonas: totalPersonas, packLineDetails: packLineDetails };
   }
 
   function buildPresupuestoHTML(f, calc, presuNum) {
@@ -9559,7 +10022,33 @@ function CateringView(props) {
       }
     }
     var transporteText = f.transporte ? "<tr><td style='padding:8px 12px;border-bottom:1px solid #eee'>Transporte y desplazamiento</td><td style='padding:8px 12px;border-bottom:1px solid #eee;text-align:right'>1</td><td style='padding:8px 12px;border-bottom:1px solid #eee;text-align:right'>" + TRANSPORTE_PRICE.toFixed(2) + " EUR</td><td style='padding:8px 12px;border-bottom:1px solid #eee;text-align:right;font-weight:700'>" + TRANSPORTE_PRICE.toFixed(2) + " EUR</td></tr>" : "";
-    var packDesc = f.tipo === "Pack Grupos" ? (f.producto === "A+B+C" ? "Burrito/Desnudo + Tacos + Postre" : f.producto === "A+B" ? "Burrito/Desnudo + Tacos" : "Burrito o Desnudo individual") : f.tipo + " — " + f.producto;
+    var packDesc = f.tipo === "Pack Grupos" ? "Packs para grupos" : f.tipo + " — " + f.producto;
+
+    // Build table rows
+    var bodyRows = "";
+    var isPack = f.tipo === "Pack Grupos";
+    if (isPack && calc.packLineDetails && calc.packLineDetails.length > 0) {
+      for (var pli = 0; pli < calc.packLineDetails.length; pli++) {
+        var pl = calc.packLineDetails[pli];
+        var plDesc = pl.pack === "A+B+C" ? "Burrito/Desnudo + Tacos + Postre" : pl.pack === "A+B" ? "Burrito/Desnudo + Tacos" : "Burrito o Desnudo individual";
+        bodyRows += "<tr><td style='padding:8px 10px;border-bottom:1px solid #eee'><strong>Pack " + pl.pack + "</strong><br><span style='font-size:10px;color:#888'>" + plDesc + "</span></td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + pl.qty + " pers.</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + pl.price.toFixed(2) + " EUR</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:700'>" + pl.lineTotal.toFixed(2) + " EUR</td></tr>";
+      }
+    } else if (isPack) {
+      bodyRows = "<tr><td style='padding:8px 10px;border-bottom:1px solid #eee'><strong>Pack Grupos</strong> — " + (f.producto || "") + "</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + (calc.totalPersonas || f.personas || 0) + " pers.</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + calc.base.toFixed(2) + " EUR</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:700'>" + (calc.subtotal - (f.transporte ? TRANSPORTE_PRICE : 0)).toFixed(2) + " EUR</td></tr>";
+    } else {
+      var basePrice = PRECIOS[f.tipo] ? (PRECIOS[f.tipo][f.producto] || 0) : 0;
+      bodyRows = "<tr><td style='padding:8px 10px;border-bottom:1px solid #eee'><strong>" + f.tipo + "</strong> — " + f.producto + "<br><span style='font-size:10px;color:#888'>" + packDesc + "</span></td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + (f.personas || 0) + " pers.</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + basePrice.toFixed(2) + " EUR</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:700'>" + (basePrice * (f.personas || 0)).toFixed(2) + " EUR</td></tr>";
+    }
+
+    // Pack options text
+    var hasABC = false; var hasAB = false; var hasA = false;
+    if (isPack && calc.packLineDetails) {
+      for (var pci = 0; pci < calc.packLineDetails.length; pci++) {
+        if (calc.packLineDetails[pci].pack === "A+B+C") hasABC = true;
+        if (calc.packLineDetails[pci].pack === "A+B") hasAB = true;
+        if (calc.packLineDetails[pci].pack === "Solo A") hasA = true;
+      }
+    } else if (isPack) { hasABC = f.producto === "A+B+C"; hasAB = f.producto === "A+B"; hasA = f.producto === "Solo A"; }
 
     return "<div style='font-family:Helvetica,Arial,sans-serif;color:#333;padding:20px;font-size:13px;line-height:1.5;max-width:700px;margin:0 auto'>" +
     "<div style='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;border-bottom:3px solid #B45309;padding-bottom:16px;flex-wrap:wrap;gap:12px'>" +
@@ -9573,7 +10062,7 @@ function CateringView(props) {
     "<table style='width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px'>" +
       "<thead><tr style='background:#1a1a1a;color:#fff'><th style='padding:8px 10px;text-align:left;font-size:10px'>CONCEPTO</th><th style='padding:8px 10px;text-align:right;font-size:10px'>CANT.</th><th style='padding:8px 10px;text-align:right;font-size:10px'>PRECIO/UD</th><th style='padding:8px 10px;text-align:right;font-size:10px'>TOTAL</th></tr></thead>" +
       "<tbody>" +
-        "<tr><td style='padding:8px 10px;border-bottom:1px solid #eee'><strong>" + f.tipo + "</strong> — " + f.producto + "<br><span style='font-size:10px;color:#888'>" + packDesc + "</span></td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + f.personas + " pers.</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right'>" + calc.base.toFixed(2) + " EUR</td><td style='padding:8px 10px;border-bottom:1px solid #eee;text-align:right;font-weight:700'>" + (calc.base * f.personas).toFixed(2) + " EUR</td></tr>" +
+        bodyRows +
         extrasText + transporteText +
       "</tbody>" +
     "</table>" +
@@ -9584,7 +10073,7 @@ function CateringView(props) {
         "<div style='display:flex;justify-content:space-between;padding:8px 0;font-size:16px;font-weight:800;color:#B45309'><span>TOTAL</span><span>" + calc.total.toFixed(2) + " EUR</span></div>" +
       "</div>" +
     "</div>" +
-    (f.tipo === "Pack Grupos" ? "<div style='background:#FFF7ED;border-radius:8px;padding:12px;margin-bottom:16px;border-left:3px solid #B45309'><div style='font-size:11px;font-weight:700;color:#B45309;margin-bottom:6px'>OPCIONES DEL PACK</div><div style='font-size:10px;color:#666;line-height:1.8'>" + (f.producto === "A+B+C" || f.producto === "A+B" || f.producto === "Solo A" ? "<strong>A:</strong> Lady Cochinita, Dona Dolores, Black Chancho, Pollo Pastor, Don Hampi, Don Juarez, Pollo Padre | Desnudos: Juarez, Cochinita, Black Chancho, Dolores<br>" : "") + (f.producto === "A+B+C" || f.producto === "A+B" ? "<strong>B:</strong> Taco Pollo Pastor, Taco Lady Cochinita, Tacos Chancho<br>" : "") + (f.producto === "A+B+C" ? "<strong>C:</strong> Filipinos Blancos, Dulce de Leche, Kinder Bueno, Galleta Lotus" : "") + "</div></div>" : "") +
+    (isPack ? "<div style='background:#FFF7ED;border-radius:8px;padding:12px;margin-bottom:16px;border-left:3px solid #B45309'><div style='font-size:11px;font-weight:700;color:#B45309;margin-bottom:6px'>OPCIONES DISPONIBLES</div><div style='font-size:10px;color:#666;line-height:1.8'>" + (hasABC || hasAB || hasA ? "<strong>A:</strong> Lady Cochinita, Dona Dolores, Black Chancho, Pollo Pastor, Don Hampi, Don Juarez, Pollo Padre | Desnudos: Juarez, Cochinita, Black Chancho, Dolores<br>" : "") + (hasABC || hasAB ? "<strong>B:</strong> Taco Pollo Pastor, Taco Lady Cochinita, Tacos Chancho<br>" : "") + (hasABC ? "<strong>C:</strong> Filipinos Blancos, Dulce de Leche, Kinder Bueno, Galleta Lotus" : "") + "</div></div>" : "") +
     (f.notas ? "<div style='background:#f8f8f8;border-radius:8px;padding:12px;margin-bottom:16px'><div style='font-size:10px;font-weight:700;color:#888;margin-bottom:3px'>NOTAS</div><div style='font-size:11px;color:#555'>" + f.notas + "</div></div>" : "") +
     "<div style='background:#f8f8f8;border-radius:8px;padding:12px;margin-bottom:16px'><div style='font-size:10px;font-weight:700;color:#888;margin-bottom:4px'>CONDICIONES</div><div style='font-size:10px;color:#666;line-height:1.8'>- Entrega incluida en Sevilla y alrededores<br>" + (f.tipo === "Pack Grupos" ? "- Minimo 25 packs<br>" : "") + "- Propuestas sin gluten y veganas disponibles<br>- Ingredientes modificables bajo peticion<br>- Pago: 50% al confirmar, 50% el dia del evento<br>- Cancelacion: Hasta 48h antes sin coste</div></div>" +
     "<div style='text-align:center;padding-top:12px;border-top:2px solid #B45309;font-size:10px;color:#888'>ORALE PADRE — www.oralepadre.com — hola@oralepadre.com — Sevilla</div>" +
@@ -9635,10 +10124,11 @@ function CateringView(props) {
       <div style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: 24 }}>🌯</span>
-          <div>
+          <div style={{ flex: 1 }}>
             <div style={{ fontSize: 20, fontWeight: 700 }}>Catering</div>
             <div style={{ fontSize: 13, color: "#888" }}>Leads, presupuestos y gestion de eventos</div>
           </div>
+          <ChefConsultant section="catering" data={(function() { var sr = leads[0].filter(function(l){return l.estado==="Nuevo"}).length; var total = leads[0].length; var cerrados = leads[0].filter(function(l){return l.estado==="Cerrado"}).length; return { sinResponder: sr, conversion: total > 0 ? (cerrados/total)*100 : 0 }; })()} />
         </div>
       </div>
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
@@ -9751,7 +10241,7 @@ function CateringView(props) {
             </div>
 
             {/* Zona Comercial Summary */}
-          {zonesData[0].length > 0 && (
+            {zonesData[0].length > 0 && (
             <div style={{ ...crd, marginBottom: 16 }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📍 Zona Comercial</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
@@ -10276,18 +10766,40 @@ function CateringView(props) {
 
                 {/* Service config */}
                 <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>SERVICIO</div>
-                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
+                <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : isPack ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
                   <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TIPO CATERING</div><select value={presuForm[0].tipo} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { tipo: e.target.value })); }} style={sel}>{MODALIDADES.map(function(m) { return <option key={m} value={m}>{m}</option>; })}</select></div>
-                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>N. PERSONAS</div><input type="number" value={presuForm[0].personas} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { personas: parseInt(e.target.value) || 0 })); }} style={inp} />{isPack && presuForm[0].personas < 25 && <div style={{ fontSize: 10, color: "#DC2626", marginTop: 2 }}>Minimo 25 packs</div>}</div>
-                  <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>{isPack ? "PACK" : "PRODUCTO"}</div><select value={presuForm[0].producto} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { producto: e.target.value })); }} style={sel}>{prodOptions.map(function(p) { return <option key={p} value={p}>{p}{PRECIOS[presuForm[0].tipo] ? " — " + (PRECIOS[presuForm[0].tipo][p] || 0).toFixed(2) + " EUR/pers" : ""}</option>; })}</select></div>
+                  {!isPack && (
+                    <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>N. PERSONAS</div><input type="number" value={presuForm[0].personas} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { personas: parseInt(e.target.value) || 0 })); }} style={inp} /></div>
+                  )}
+                  {!isPack && (
+                    <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>PRODUCTO</div><select value={presuForm[0].producto} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { producto: e.target.value })); }} style={sel}>{prodOptions.map(function(p) { return <option key={p} value={p}>{p}{PRECIOS[presuForm[0].tipo] ? " — " + (PRECIOS[presuForm[0].tipo][p] || 0).toFixed(2) + " EUR/pers" : ""}</option>; })}</select></div>
+                  )}
                 </div>
 
-                {/* Pack info */}
+                {/* Pack Grupos: multi-line selector */}
                 {isPack && (
-                  <div style={{ padding: "12px 16px", borderRadius: 8, background: "#FFF7ED", marginBottom: 12, fontSize: 11, color: "#666", lineHeight: 1.8 }}>
-                    {presuForm[0].producto === "A+B+C" && <span><strong>A:</strong> Burrito/Desnudo + <strong>B:</strong> Tacos + <strong>C:</strong> Postre — Entrega incluida</span>}
-                    {presuForm[0].producto === "A+B" && <span><strong>A:</strong> Burrito/Desnudo + <strong>B:</strong> Tacos — Entrega incluida</span>}
-                    {presuForm[0].producto === "Solo A" && <span><strong>A:</strong> 1 Burrito o 1 Desnudo individual — Entrega incluida</span>}
+                  <div style={{ background: "#FFF7ED", borderRadius: 10, padding: "14px 16px", marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginBottom: 10 }}>CONFIGURA LOS PACKS</div>
+                    {(presuForm[0].packLines || []).map(function(line, lidx) {
+                      var packPrice = PRECIOS["Pack Grupos"][line.pack] || 0;
+                      var packDesc2 = line.pack === "A+B+C" ? "Burrito/Desnudo + Tacos + Postre" : line.pack === "A+B" ? "Burrito/Desnudo + Tacos" : "Burrito o Desnudo";
+                      var lineTotal = (parseInt(line.qty) || 0) * packPrice;
+                      return (
+                        <div key={lidx} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, padding: "10px 12px", background: "#fff", borderRadius: 8, border: "1px solid #f0ede8" }}>
+                          <div style={{ flex: 1, minWidth: 120 }}>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#333" }}>Pack {line.pack}</div>
+                            <div style={{ fontSize: 10, color: "#888" }}>{packDesc2}</div>
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#B45309", minWidth: 60, textAlign: "right" }}>{packPrice.toFixed(2)}€</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            <input type="number" min="0" value={line.qty} onChange={function(e) { var newLines = presuForm[0].packLines.slice(); newLines[lidx] = Object.assign({}, newLines[lidx], { qty: parseInt(e.target.value) || 0 }); presuForm[1](Object.assign({}, presuForm[0], { packLines: newLines })); }} style={{ width: 70, padding: "8px 10px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, textAlign: "center", fontFamily: "inherit", fontWeight: 700 }} placeholder="0" />
+                            <span style={{ fontSize: 11, color: "#888" }}>pers.</span>
+                          </div>
+                          {lineTotal > 0 && <div style={{ fontSize: 13, fontWeight: 800, color: "#047857", minWidth: 60, textAlign: "right" }}>{lineTotal.toFixed(0)}€</div>}
+                        </div>
+                      );
+                    })}
+                    {(function() { var tpk = 0; for (var tpi = 0; tpi < (presuForm[0].packLines || []).length; tpi++) tpk += parseInt(presuForm[0].packLines[tpi].qty) || 0; return tpk > 0 && tpk < 25 ? <div style={{ fontSize: 10, color: "#DC2626", fontWeight: 600, marginTop: 4 }}>⚠️ Minimo 25 packs en total (actual: {tpk})</div> : tpk > 0 ? <div style={{ fontSize: 11, color: "#047857", fontWeight: 600, marginTop: 4 }}>Total: {tpk} packs</div> : null; })()}
                   </div>
                 )}
 
@@ -10326,7 +10838,7 @@ function CateringView(props) {
                     {isSocio && <div><div style={{ fontSize: 10, color: "#888" }}>MARGEN EST.</div><div style={{ fontSize: 20, fontWeight: 800, color: "#FBBF24" }}>{calc.marginPct.toFixed(0)}%</div></div>}
                   </div>
                   <div style={{ textAlign: "center", marginTop: 8, fontSize: 11, color: "#888" }}>
-                    {calc.base.toFixed(2)}EUR/pers{calc.extras > 0 ? " + " + calc.extras.toFixed(2) + "EUR/pers extras" : ""} x {presuForm[0].personas} personas{presuForm[0].transporte ? " + " + TRANSPORTE_PRICE + "EUR transporte" : ""}
+                    {isPack ? (calc.packLineDetails || []).map(function(pl) { return pl.qty + " x " + pl.pack + " (" + pl.price.toFixed(2) + "EUR)"; }).join(" + ") + " = " + (calc.totalPersonas || 0) + " personas" : calc.base.toFixed(2) + "EUR/pers" + (calc.extras > 0 ? " + " + calc.extras.toFixed(2) + "EUR/pers extras" : "") + " x " + presuForm[0].personas + " personas"}{presuForm[0].transporte ? " + " + TRANSPORTE_PRICE + "EUR transporte" : ""}
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -10428,9 +10940,12 @@ function VentasView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Ventas y Control</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Cierres de caja, control de fraude y registro de ventas</div>
+      <div style={{ marginBottom: 16, display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Ventas y Control</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Cierres de caja, control de fraude y registro de ventas</div>
+        </div>
+        <ChefConsultant section="ventas" data={{ cierresCount: cierres[0].length, fraudeRatio: cierres[0].length > 0 ? (fraude[0].length / Math.max(1, cierres[0].length)) * 100 : 0 }} />
       </div>
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
         {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
