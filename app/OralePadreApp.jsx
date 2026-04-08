@@ -1834,6 +1834,9 @@ function DashView(props) {
 
       <WeatherWidget />
 
+      {/* === DAILY TIP IA === */}
+      <DailyTip products={props.products} getPC={props.getPC} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} cateringLeads={props.cateringLeads} />
+
       <NovedadesBlock role="socio" user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} />
 
       {/* TOP KPIs - Food Cost & Pricing Health */}
@@ -1984,9 +1987,6 @@ function DashView(props) {
         );
         } catch(e) { return null; }
       })()}
-
-      {/* === DAILY TIP IA === */}
-      <DailyTip products={props.products} getPC={props.getPC} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} cateringLeads={props.cateringLeads} />
 
       {/* === SALUD POR LOCAL === */}
       {(function() {
