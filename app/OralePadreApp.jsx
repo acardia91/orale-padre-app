@@ -341,6 +341,18 @@ function NavIcon(props) {
   if (name === "calendar") return <svg {...common}><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" stroke={active?"#fff":"currentColor"} /></svg>;
   if (name === "check") return <svg {...common}><path d="M20 6L9 17l-5-5" fill="none" /></svg>;
   if (name === "edit") return <svg {...common} fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>;
+  if (name === "chart") return <svg {...common} fill="none"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>;
+  if (name === "target") return <svg {...common} fill="none"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" fill="currentColor" /></svg>;
+  if (name === "folder") return <svg {...common}><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" /></svg>;
+  if (name === "users") return <svg {...common} fill="none"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87" /><path d="M16 3.13a4 4 0 010 7.75" /></svg>;
+  if (name === "tag") return <svg {...common}><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" strokeWidth="3" /></svg>;
+  if (name === "alert") return <svg {...common} fill="none"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>;
+  if (name === "box") return <svg {...common} fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /><polyline points="3.27 6.96 12 12.01 20.73 6.96" /><line x1="12" y1="22.08" x2="12" y2="12" /></svg>;
+  if (name === "megaphone") return <svg {...common} fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" /></svg>;
+  if (name === "bulb") return <svg {...common} fill="none"><path d="M9 18h6" /><path d="M10 22h4" /><path d="M12 2a7 7 0 00-3 13.33V18h6v-2.67A7 7 0 0012 2z" /></svg>;
+  if (name === "tool") return <svg {...common} fill="none"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" /></svg>;
+  if (name === "star") return <svg {...common}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>;
+  if (name === "zap") return <svg {...common}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>;
   return <svg {...common}><circle cx="12" cy="12" r="9" /></svg>;
 }
 
@@ -898,6 +910,8 @@ export default function App() {
   var pageHistory = useRef([]);
   var touchStart = useRef(null);
   var swipeProgress = useState(0);
+  var pullProgress = useState(0);
+  var isRefreshing = useState(false);
 
   if (!authChecked[0]) {
     return (
@@ -1047,16 +1061,16 @@ export default function App() {
   var nav = allNav.filter(function(n) { return n.roles.indexOf(role) >= 0 && (n.group !== "catering" || hasCatering); });
 
   var areaConfig = [
-    { k: "inicio", l: "Inicio", icon: "📊" },
-    { k: "cocina", l: "La Cocina", icon: "🧬" },
-    { k: "analisis", l: "Analisis", icon: "💰" },
-    { k: "comercial", l: "Comercial", icon: "🎯" },
-    { k: "ops", l: "Operaciones", icon: "⚙️" },
-    { k: "proyectos", l: "Proyectos", icon: "📁" },
-    { k: "mkt", l: "Marketing", icon: "📸" },
-    { k: "rrhh", l: "RRHH", icon: "👥" },
-    { k: "ventas", l: "Ventas", icon: "💵" },
-    { k: "catering", l: "Catering", icon: "🌯" },
+    { k: "inicio", l: "Inicio", icon: "home" },
+    { k: "cocina", l: "La Cocina", icon: "flame" },
+    { k: "analisis", l: "Analisis", icon: "chart" },
+    { k: "comercial", l: "Comercial", icon: "target" },
+    { k: "ops", l: "Operaciones", icon: "settings" },
+    { k: "proyectos", l: "Proyectos", icon: "folder" },
+    { k: "mkt", l: "Marketing", icon: "camera" },
+    { k: "rrhh", l: "RRHH", icon: "users" },
+    { k: "ventas", l: "Ventas", icon: "receipt" },
+    { k: "catering", l: "Catering", icon: "food" },
   ];
 
   // Default page per role
@@ -1089,26 +1103,48 @@ export default function App() {
   }
   function handleTouchStart(e) {
     var touch = e.touches[0];
-    if (touch.clientX < 30 && pageHistory.current.length > 0) touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    if (touch.clientX < 30 && pageHistory.current.length > 0) touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now(), type: "swipe" };
+    else if (window.scrollY < 5 && !isRefreshing[0]) touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now(), type: "pull" };
     else touchStart.current = null;
   }
   function handleTouchMove(e) {
     if (!touchStart.current) return;
     var touch = e.touches[0];
-    var dx = touch.clientX - touchStart.current.x;
-    var dy = Math.abs(touch.clientY - touchStart.current.y);
-    if (dy > 60) { touchStart.current = null; swipeProgress[1](0); return; }
-    swipeProgress[1](Math.min(dx / 120, 1));
+    if (touchStart.current.type === "swipe") {
+      var dx = touch.clientX - touchStart.current.x;
+      var dy = Math.abs(touch.clientY - touchStart.current.y);
+      if (dy > 60) { touchStart.current = null; swipeProgress[1](0); return; }
+      swipeProgress[1](Math.min(dx / 120, 1));
+    } else if (touchStart.current.type === "pull") {
+      var dy2 = touch.clientY - touchStart.current.y;
+      var dx2 = Math.abs(touch.clientX - touchStart.current.x);
+      if (dx2 > 40) { touchStart.current = null; pullProgress[1](0); return; }
+      if (dy2 > 0) pullProgress[1](Math.min(dy2 / 100, 1));
+    }
   }
   function handleTouchEnd(e) {
-    if (!touchStart.current) { swipeProgress[1](0); return; }
+    if (!touchStart.current) { swipeProgress[1](0); pullProgress[1](0); return; }
     var touch = e.changedTouches[0];
-    var dx = touch.clientX - touchStart.current.x;
-    var dy = Math.abs(touch.clientY - touchStart.current.y);
-    var dt = Date.now() - touchStart.current.time;
-    if (dx > 80 && dy < 100 && dt < 500 && pageHistory.current.length > 0) goBack();
+    if (touchStart.current.type === "swipe") {
+      var dx = touch.clientX - touchStart.current.x;
+      var dy = Math.abs(touch.clientY - touchStart.current.y);
+      var dt = Date.now() - touchStart.current.time;
+      if (dx > 80 && dy < 100 && dt < 500 && pageHistory.current.length > 0) goBack();
+      swipeProgress[1](0);
+    } else if (touchStart.current.type === "pull") {
+      if (pullProgress[0] >= 0.9 && !isRefreshing[0]) {
+        isRefreshing[1](true);
+        pullProgress[1](0);
+        // Reload data
+        if (dbModule && dbModule.loadNotifications) dbModule.loadNotifications().then(function(n) { if (n) notifications[1](n); });
+        if (dbModule && dbModule.loadBoardItems) dbModule.loadBoardItems().then(function(b) { if (b) boardItems[1](b); });
+        if (dbModule && dbModule.loadProjects) dbModule.loadProjects().then(function(p) { if (p) projectsData[1](p); });
+        if (dbModule && dbModule.loadTeam) dbModule.loadTeam().then(function(t) { if (t) team[1](t); });
+        setTimeout(function() { isRefreshing[1](false); toast[1]("✅ Actualizado"); setTimeout(function() { toast[1](null); }, 1500); }, 800);
+      }
+      pullProgress[1](0);
+    }
     touchStart.current = null;
-    swipeProgress[1](0);
   }
 
   // Bottom tab bar config per role
@@ -1312,6 +1348,14 @@ export default function App() {
         "@keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}",
         "@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}",
         "@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}",
+        "@keyframes pulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(123,29,58,0)}50%{box-shadow:0 0 0 4px rgba(123,29,58,0.08)}}",
+        "@keyframes spinRefresh{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}",
+        ".card-interactive{transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer;position:relative;overflow:hidden}",
+        ".card-interactive:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.06)}",
+        ".card-interactive:active{transform:translateY(0) scale(0.98);box-shadow:0 2px 8px rgba(0,0,0,0.04)}",
+        ".card-glow{transition:all 0.3s ease;position:relative}",
+        ".card-glow::before{content:'';position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(135deg,rgba(123,29,58,0),rgba(123,29,58,0));transition:background 0.3s ease;z-index:-1;pointer-events:none}",
+        ".card-glow:hover::before{background:linear-gradient(135deg,rgba(123,29,58,0.15),rgba(123,29,58,0.05))}",
       ].join("\n") }} />
 
       {/* === TOAST NOTIFICATION === */}
@@ -1336,7 +1380,7 @@ export default function App() {
                 for (var ai = 0; ai < areaConfig.length; ai++) { if (areaConfig[ai].k === item.group) { area = areaConfig[ai]; break; } }
                 return (
                   <button key={item.k} onClick={function() { navigateTo(item.k); searchOpen[1](false); searchQuery[1](""); }} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 20px", border: "none", borderBottom: "1px solid #f8f8f8", background: pg[0] === item.k ? "#FDF2F4" : "#fff", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
-                    <span style={{ fontSize: 14 }}>{area ? area.icon : "📄"}</span>
+                    <span style={{ fontSize: 14, color: "#7B1D3A" }}>{area ? <NavIcon name={area.icon} active={false} size={18} /> : <NavIcon name="document" active={false} size={18} />}</span>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: "#5D4037" }}>{item.l}</div>
                       <div style={{ fontSize: 11, color: "#aaa" }}>{area ? area.l : ""}</div>
@@ -1389,7 +1433,7 @@ export default function App() {
                     if (isExpanded) { openArea[1](null); }
                     else { openArea[1](g.area.k); if (!hasActivePage && g.items.length > 0) navigateTo(g.items[0].k); }
                   }} style={{ display: "flex", alignItems: "center", width: "100%", padding: "10px 16px 10px 14px", border: "none", background: isExpanded ? "rgba(180,83,9,0.06)" : "transparent", cursor: "pointer", fontFamily: "inherit", gap: 6, transition: "all 0.15s" }}>
-                    <span style={{ fontSize: 13 }}>{g.area.icon}</span>
+                    <span style={{ fontSize: 13, color: isExpanded ? "#7B1D3A" : "#888", display: "flex" }}><NavIcon name={g.area.icon} active={isExpanded} size={16} /></span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: isExpanded ? "#7B1D3A" : "#666", letterSpacing: 0.5, flex: 1, textAlign: "left" }}>{g.area.l}</span>
                     {groupBadge > 0 && <span style={{ background: "#EF4444", color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px" }}>{groupBadge}</span>}
                     <span style={{ fontSize: 9, color: "#555", transition: "transform 0.2s", transform: isExpanded ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
@@ -1480,10 +1524,10 @@ export default function App() {
                   if (n.k === "stock") badge = stockAlerts[0].length;
                   if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
                   if (n.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
-                  var icons = { albaranes: "📄", turnos: "📅", "promos-hoy": "🏷️", stock: "📦", operaciones: "📢", incidencias: "⚠️", "tareas-id": "🧪", checklist: "✅", gestion: "🔧", "fichas-emp": "📋" };
+                  var icons = { albaranes: "document", turnos: "calendar", "promos-hoy": "tag", stock: "box", operaciones: "megaphone", incidencias: "alert", "tareas-id": "bulb", checklist: "check", gestion: "tool", "fichas-emp": "clipboard", pizarra: "clipboard" };
                   return (
                     <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "18px 14px", borderRadius: 12, border: isActive ? "2px solid #7B1D3A" : "1px solid #333", background: isActive ? "#7B1D3A15" : "#1a1a1a", color: isActive ? "#7B1D3A" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 20 }}>{icons[n.k] || "📋"}</span>
+                      <span style={{ display: "flex" }}><NavIcon name={icons[n.k] || "clipboard"} active={isActive} size={20} /></span>
                       <div>
                         <div>{n.l}</div>
                         {badge > 0 && <span style={{ fontSize: 10, color: "#EF4444", fontWeight: 700 }}>{badge} pendientes</span>}
@@ -1517,7 +1561,7 @@ export default function App() {
                 if (areaItems.length === 0) return null;
                 return (
                   <div key={area.k} style={{ marginBottom: 20 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 8, textTransform: "uppercase" }}>{area.icon} {area.l}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 8, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6 }}><NavIcon name={area.icon} active={true} size={14} /> {area.l}</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       {areaItems.map(function(n) {
                         var isActive = pg[0] === n.k;
@@ -1538,6 +1582,12 @@ export default function App() {
           <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden", transition: "transform 0.15s ease", transform: swipeProgress[0] > 0 ? "translateX(" + Math.round(swipeProgress[0] * 30) + "px)" : "none", opacity: swipeProgress[0] > 0 ? (1 - swipeProgress[0] * 0.15) : 1 }}>
             {/* Swipe back indicator */}
             {swipeProgress[0] > 0.1 && <div style={{ position: "fixed", left: 0, top: "50%", marginTop: -24, width: 48, height: 48, borderRadius: "0 24px 24px 0", background: "rgba(123,29,58," + (swipeProgress[0] * 0.6) + ")", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, transition: "opacity 0.1s", zIndex: 200, transform: "scale(" + (0.6 + swipeProgress[0] * 0.4) + ")" }}>←</div>}
+            {/* Pull to refresh indicator */}
+            {(pullProgress[0] > 0.05 || isRefreshing[0]) && <div style={{ display: "flex", justifyContent: "center", padding: "0 0 12px", marginTop: -8 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 16, background: "#fff", boxShadow: "0 2px 12px rgba(0,0,0,0.1)", display: "flex", alignItems: "center", justifyContent: "center", transform: "scale(" + (isRefreshing[0] ? 1 : (0.5 + pullProgress[0] * 0.5)) + ") rotate(" + (isRefreshing[0] ? 0 : Math.round(pullProgress[0] * 180)) + "deg)", transition: isRefreshing[0] ? "none" : "transform 0.1s", animation: isRefreshing[0] ? "spinRefresh 0.8s linear infinite" : "none" }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7B1D3A" strokeWidth="2.5" strokeLinecap="round"><path d="M1 4v6h6" /><path d="M3.51 15a9 9 0 105.64-11.36L1 10" /></svg>
+              </div>
+            </div>}
             {pg[0] === "dashboard" && <DashView {...PP} />}
             {pg[0] === "panel" && <EncargadoPanel {...PP} />}
             {pg[0] === "suppliers" && <SupView {...PP} />}
