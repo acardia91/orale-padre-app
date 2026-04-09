@@ -1459,15 +1459,6 @@ function LoginForm(props) {
       </div>
       {err[0] && <div style={{ padding: "12px 16px", borderRadius: 12, background: "rgba(220,38,38,0.08)", color: "#F87171", fontSize: 13, fontWeight: 600, marginBottom: 18, textAlign: "center", border: "1px solid rgba(220,38,38,0.15)", animation: shake[0] ? "shakeX 0.5s ease" : "none" }}>{err[0]}</div>}
       <button className="login-btn" onClick={doLogin} style={{ width: "100%", padding: 17, background: "linear-gradient(135deg, #7B1D3A 0%, #9B2335 50%, #C94058 100%)", color: "#fff", border: "none", borderRadius: 14, fontSize: 16, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "all 0.2s ease", boxShadow: "0 6px 25px rgba(123,29,58,0.35)", letterSpacing: 0.5 }}>Entrar →</button>
-      <div style={{ marginTop: 28, padding: 18, borderRadius: 16, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", fontSize: 11, color: "#555", lineHeight: 1.8 }}>
-        <div style={{ fontWeight: 700, marginBottom: 8, color: "#555", fontSize: 10, letterSpacing: 1.5 }}>ACCESO RAPIDO</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-          <div className="login-quick" onClick={function() { u[1]("ale"); p[1]("orale2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(123,29,58,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(123,29,58,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A" }}>Socio</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Alejandro</div></div>
-          <div className="login-quick" onClick={function() { u[1]("jesus"); p[1]("jesus2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(180,83,9,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(180,83,9,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>Catering</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Jesus</div></div>
-          <div className="login-quick" onClick={function() { u[1]("carlos"); p[1]("carlos2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(4,120,87,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(4,120,87,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#047857" }}>Encargado</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Carlos</div></div>
-          <div className="login-quick" onClick={function() { u[1]("pedro"); p[1]("pedro2026"); }} style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(30,64,175,0.08)", cursor: "pointer", textAlign: "center", border: "1px solid rgba(30,64,175,0.1)", transition: "all 0.2s" }}><div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>Empleado</div><div style={{ fontSize: 10, color: "#555", marginTop: 2 }}>Pedro</div></div>
-        </div>
-      </div>
     </div>
   );
 }
