@@ -230,6 +230,92 @@ function ChannelToggle(props) {
   );
 }
 
+/* ====== SKELETON LOADING ====== */
+function Skeleton(props) {
+  var w = props.width || "100%";
+  var h = props.height || 16;
+  var r = props.radius || 8;
+  return (
+    <div style={{ width: w, height: h, borderRadius: r, background: "linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite ease-in-out" }} />
+  );
+}
+
+function SkeletonCard(props) {
+  return (
+    <div style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" }}>
+      <Skeleton height={14} width="60%" />
+      <div style={{ height: 8 }} />
+      <Skeleton height={32} width="40%" />
+      <div style={{ height: 10 }} />
+      <Skeleton height={10} width="80%" />
+    </div>
+  );
+}
+
+/* ====== ANIMATED NUMBER ====== */
+function AnimNum(props) {
+  var val = props.value || 0;
+  var displayed = useState(0);
+  var suffix = props.suffix || "";
+  var prefix = props.prefix || "";
+  var decimals = props.decimals !== undefined ? props.decimals : (val % 1 !== 0 ? 1 : 0);
+
+  useEffect(function() {
+    var start = displayed[0];
+    var diff = val - start;
+    if (Math.abs(diff) < 0.01) { displayed[1](val); return; }
+    var duration = 600;
+    var startTime = Date.now();
+    var timer = setInterval(function() {
+      var elapsed = Date.now() - startTime;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      displayed[1](start + diff * eased);
+      if (progress >= 1) clearInterval(timer);
+    }, 16);
+    return function() { clearInterval(timer); };
+  }, [val]);
+
+  return (
+    <span>{prefix}{displayed[0].toFixed(decimals)}{suffix}</span>
+  );
+}
+
+/* ====== EMPTY STATE ====== */
+function EmptyState(props) {
+  var icon = props.icon || "📭";
+  var title = props.title || "Nada por aqui";
+  var desc = props.desc || "";
+  var action = props.action;
+  var onAction = props.onAction;
+  return (
+    <div style={{ textAlign: "center", padding: "40px 20px" }}>
+      <div style={{ fontSize: 48, marginBottom: 12, opacity: 0.8 }}>{icon}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: "#333", marginBottom: 6 }}>{title}</div>
+      {desc && <div style={{ fontSize: 13, color: "#999", marginBottom: 16, maxWidth: 280, margin: "0 auto", lineHeight: 1.5 }}>{desc}</div>}
+      {action && onAction && <button onClick={onAction} style={{ padding: "10px 24px", borderRadius: 10, border: "none", background: "#7B1D3A", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit", marginTop: 8 }}>{action}</button>}
+    </div>
+  );
+}
+
+/* ====== BOTTOM SHEET ====== */
+function BottomSheet(props) {
+  if (!props.open) return null;
+  return (
+    <div>
+      <div onClick={props.onClose} style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.4)", zIndex: 200, animation: "fadeIn 0.2s" }} />
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, maxHeight: "85vh", background: "#fff", borderRadius: "20px 20px 0 0", zIndex: 201, overflowY: "auto", animation: "slideUp 0.3s ease", boxShadow: "0 -4px 30px rgba(0,0,0,0.12)" }}>
+        <div style={{ display: "flex", justifyContent: "center", padding: "10px 0 4px" }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: "#ddd" }} />
+        </div>
+        <div style={{ padding: "8px 20px 24px" }}>
+          {props.children}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ====== CHEF CONSULTANT ====== */
 function ChefConsultant(props) {
   var open = useState(false);
@@ -1134,8 +1220,8 @@ export default function App() {
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       {/* Header */}
-      <div style={{ background: "rgba(26,26,26,0.92)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-        <img src={LOGO_HEADER_URL} alt="Orale Padre" style={{ height: 26, objectFit: "contain", opacity: 0.95, flexShrink: 0 }} />
+      <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+        <img onClick={function() { navigateTo(role === "socio" ? "dashboard" : role === "encargado" ? "panel" : role === "community" ? "mkt-panel" : "fichas-emp"); activeBottomTab[1](null); }} src={LOGO_HEADER_URL} alt="Orale Padre" style={{ height: 33, objectFit: "contain", opacity: 0.95, flexShrink: 0, cursor: "pointer" }} />
         <div style={{ flex: 1 }} />
         {/* Notification badge */}
         {(role === "socio" || role === "encargado") && (stockAlerts[0].length > 0 || incidents[0].filter(function(x){return x.status==="abierta";}).length > 0) && (
@@ -1184,17 +1270,19 @@ export default function App() {
         ".op-sidebar-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:#888;cursor:pointer;font-weight:500;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;transition:all 0.2s ease}",
         ".op-sidebar-item:hover{background:rgba(255,255,255,0.04);color:#ccc}",
         ".op-sidebar-item-active{background:rgba(123,29,58,0.15) !important;color:#7B1D3A !important;font-weight:700 !important}",
-        ".op-bottom-bar{position:fixed;bottom:0;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:space-around;padding:0 4px 6px;z-index:100;background:rgba(255,255,255,0.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(0,0,0,0.06)}",
+        ".op-bottom-bar{position:fixed;bottom:0;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:space-around;padding:0 4px 6px;z-index:100;background:#1a1a1a;border-top:1px solid #2a2a2a}",
         ".op-bottom-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:12px;border:none;cursor:pointer;background:transparent;font-family:inherit;transition:all 0.2s ease;position:relative;min-width:56px}",
         ".op-bottom-tab:active{transform:scale(0.92)}",
         ".op-bottom-tab-active{background:rgba(123,29,58,0.1)}",
         ".op-bottom-tab-icon{font-size:22px;line-height:1}",
-        ".op-bottom-tab-label{font-size:10px;font-weight:600;color:#666}",
+        ".op-bottom-tab-label{font-size:10px;font-weight:600;color:#999}",
         ".op-bottom-tab-active .op-bottom-tab-label{color:#7B1D3A;font-weight:700}",
         ".op-contextual-sub{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;padding:8px 12px;background:#1a1a1a;border-bottom:1px solid #333}",
         ".op-contextual-sub::-webkit-scrollbar{display:none}",
         "@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}",
         "@keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}",
+        "@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}",
+        "@keyframes slideUp{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}",
       ].join("\n") }} />
 
       {/* === TOAST NOTIFICATION === */}
@@ -1299,6 +1387,35 @@ export default function App() {
 
         {/* MAIN CONTENT AREA */}
         <div style={{ flex: 1, minWidth: 0 }}>
+
+          {/* CONTEXTUAL SUB-MENU — Mobile, shows when inside a group */}
+          {isMobile[0] && !activeBottomTab[0] && (function() {
+            var currentGroup = null;
+            for (var cgi = 0; cgi < allNav.length; cgi++) { if (allNav[cgi].k === pg[0]) { currentGroup = allNav[cgi].group; break; } }
+            if (!currentGroup) return null;
+            var groupTab = null;
+            for (var gti = 0; gti < bottomTabs.length; gti++) { if (bottomTabs[gti].group === currentGroup || (bottomTabs[gti].group === "negocio" && (currentGroup === "analisis" || currentGroup === "comercial"))) { groupTab = bottomTabs[gti]; break; } }
+            var menuKey = groupTab ? groupTab.group : currentGroup;
+            var items = tabSubMenus[menuKey];
+            if (!items || items.length < 2) return null;
+            return (
+              <div className="op-contextual-sub">
+                {items.map(function(n) {
+                  var active = pg[0] === n.k;
+                  var nk = n.k;
+                  var badge = 0;
+                  if (n.k === "stock") badge = stockAlerts[0].length;
+                  if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
+                  return (
+                    <button key={nk} onClick={function() { navigateTo(nk); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#7B1D3A" : "#ffffff08", color: active ? "#fff" : "#999", fontWeight: active ? 700 : 500, fontSize: 12, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
+                      {n.l}
+                      {badge > 0 && <span style={{ background: active ? "#fff" : "#EF4444", color: active ? "#7B1D3A" : "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px", marginLeft: 2 }}>{badge}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
 
           {/* CONTEXTUAL SUB-MENU — Mobile only, when a group tab is active */}
           {isMobile[0] && activeBottomTab[0] && activeBottomTab[0] !== "mas" && activeBottomTab[0] !== "ops" && activeBottomTab[0] !== "catering-blocked" && tabSubMenus[activeBottomTab[0]] && (
@@ -2006,7 +2123,7 @@ function DashView(props) {
                   <circle cx="50" cy="50" r="42" fill="none" stroke={hsColor} strokeWidth="8" strokeDasharray={2 * Math.PI * 42} strokeDashoffset={2 * Math.PI * 42 * (1 - healthScore / 100)} strokeLinecap="round" />
                 </svg>
                 <div style={{ position: "absolute", top: 0, left: 0, width: 100, height: 100, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
-                  <div style={{ fontSize: 28, fontWeight: 800, color: hsColor }}>{healthScore}</div>
+                  <div style={{ fontSize: 28, fontWeight: 800, color: hsColor }}><AnimNum value={healthScore} decimals={0} /></div>
                   <div style={{ fontSize: 9, color: "#888" }}>/100</div>
                 </div>
               </div>
@@ -2103,7 +2220,7 @@ function DashView(props) {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 12, marginBottom: 16 }}>
         <div onClick={function(){props.setPage("recipes");}} style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #2d1f0e 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff", cursor: "pointer", transition: "transform 0.15s", }} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)";}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)";}}>
           <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>FC MEDIO</div>
-          <div style={{ fontSize: 32, fontWeight: 800, color: avgFC > 33 ? "#EF4444" : "#4ADE80", lineHeight: 1 }}>{fPct(avgFC)}</div>
+          <div style={{ fontSize: 32, fontWeight: 800, color: avgFC > 33 ? "#EF4444" : "#4ADE80", lineHeight: 1 }}><AnimNum value={avgFC} suffix="%" decimals={1} /></div>
           <div style={{ fontSize: 11, color: "#666", marginTop: 4 }}>Objetivo 28-32%</div>
         </div>
         <div onClick={function(){props.setPage("products");}} style={{ background: "#fff", borderRadius: 14, padding: "18px 16px", textAlign: "center", border: "1px solid #eee", cursor: "pointer", transition: "transform 0.15s" }} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)";}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)";}}>
@@ -3023,7 +3140,7 @@ function EncargadoPanel(props) {
             {openInc.length > 0 && <Pill t={openInc.length + " abiertas"} c="#D97706" />}
           </div>
           {openInc.length === 0 && (
-            <div style={{ padding: 24, textAlign: "center", color: "#ccc", fontSize: 13 }}>Sin incidencias abiertas</div>
+            <EmptyState icon="✅" title="Sin incidencias abiertas" desc="Todo bajo control. Sigue asi." />
           )}
           {urgentInc.length > 0 && (
             <div style={{ marginBottom: 12 }}>
@@ -4479,9 +4596,12 @@ function PromoView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Promos & Marketing</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Simula, planifica y gestiona promos con margenes reales</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Promos & Marketing</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Simula, planifica y gestiona promos con margenes reales</div>
+        </div>
+        <ChefConsultant section="promos" data={{ viableCount: viableCount }} />
       </div>
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto", WebkitOverflowScrolling: "touch", paddingBottom: 4 }}>
         {tabs.map(function(t) { var a = promoTab[0] === t.k; return <button key={t.k} onClick={function() { promoTab[1](t.k); }} style={{ padding: "8px 14px", borderRadius: 10, border: a ? "2px solid #7C3AED" : "1px solid #e5e5e5", background: a ? "#7C3AED08" : "#fff", color: a ? "#7C3AED" : "#888", fontWeight: 600, fontSize: 12, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {props.isMobile ? "" : t.l}</button>; })}
@@ -4914,9 +5034,12 @@ function ComboView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Combos</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Crea, analiza y guarda combinaciones de productos</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Combos</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Crea, analiza y guarda combinaciones de productos</div>
+        </div>
+        <ChefConsultant section="promos" data={{}} />
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
@@ -5255,9 +5378,12 @@ function PricingView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Precios</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Recomendaciones automaticas basadas en tus costes reales</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 24 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Precios</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Recomendaciones automaticas basadas en tus costes reales</div>
+        </div>
+        <ChefConsultant section="products" data={(function() { var fcs2 = []; var dg2 = 0; for (var ci2 = 0; ci2 < props.products.length; ci2++) { var p2 = props.products[ci2]; var cost2 = props.getPC(p2); var pvp2 = p2.prices ? (p2.prices.Sala || p2.prices["Uber Eats"] || 0) : 0; var fc2 = pvp2 > 0 ? (cost2 / pvp2) * 100 : 0; if (fc2 > 0) { fcs2.push(fc2); if (fc2 > 35) dg2++; } } return { avgFC: fcs2.length > 0 ? fcs2.reduce(function(s,v){return s+v;},0)/fcs2.length : 0, dangerCount: dg2 }; })()} />
       </div>
 
       <div style={{ display: "flex", gap: 12, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
@@ -6415,7 +6541,7 @@ function IncidenciasView(props) {
           )}
 
           {filteredInc.length === 0 && (
-            <div style={{ padding: 30, textAlign: "center", color: "#ccc", fontSize: 13 }}>Sin incidencias{incLocalF[0] !== "Todos" ? " en " + incLocalF[0] : ""}</div>
+            <EmptyState icon="🎉" title={"Sin incidencias" + (incLocalF[0] !== "Todos" ? " en " + incLocalF[0] : "")} desc="Sin problemas reportados. Buen trabajo." />
           )}
 
           {filteredInc.map(function(inc) {
@@ -8599,9 +8725,12 @@ function CartaDeliveryView(props) {
 
   return (
     <div>
-      <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Carta Delivery</div>
-        <div style={{ fontSize: 13, color: "#888" }}>Como montar tu menu en apps de delivery para maximizar ventas y margen</div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Carta Delivery</div>
+          <div style={{ fontSize: 13, color: "#888" }}>Como montar tu menu en apps de delivery para maximizar ventas y margen</div>
+        </div>
+        <ChefConsultant section="promos" data={{}} />
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
@@ -10463,7 +10592,7 @@ function ProjectsView(props) {
                 </div>
               );
             })}
-            {comments[0].length === 0 && <div style={{ color: "#ccc", fontSize: 12, textAlign: "center", padding: 16 }}>Sin comentarios aun</div>}
+            {comments[0].length === 0 && <div style={{ textAlign: "center", padding: 20 }}><div style={{ fontSize: 28, opacity: 0.3 }}>💬</div><div style={{ fontSize: 12, color: "#ccc", marginTop: 4 }}>Se el primero en comentar</div></div>}
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <input value={commentText[0]} onChange={function(e) { commentText[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") postComment(); }} placeholder="Escribe un comentario..." style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none" }} />
@@ -10543,7 +10672,7 @@ function ProjectsView(props) {
                       <span style={{ fontSize: 12, fontWeight: 700, color: col.color }}>{col.l}</span>
                       <span style={{ fontSize: 10, fontWeight: 700, color: "#fff", background: col.color, borderRadius: 8, padding: "1px 6px" }}>{colTasks.length}</span>
                     </div>
-                    {colTasks.length === 0 && <div style={{ textAlign: "center", color: "#ccc", fontSize: 11, padding: "16px 0" }}>Sin tareas</div>}
+                    {colTasks.length === 0 && <div style={{ textAlign: "center", padding: "20px 0" }}><div style={{ fontSize: 24, opacity: 0.4 }}>📋</div><div style={{ fontSize: 11, color: "#bbb", marginTop: 4 }}>Sin tareas</div></div>}
                     {colTasks.map(function(task) {
                       var tpri = PRIS[task.priority] || PRIS.media;
                       return (
@@ -10632,7 +10761,7 @@ function ProjectsView(props) {
         })}
       </div>
 
-      {activeProjs.length === 0 && !showNewProject[0] && <div style={{ textAlign: "center", color: "#ccc", padding: 40, fontSize: 14 }}>Sin proyectos activos — crea el primero</div>}
+      {activeProjs.length === 0 && !showNewProject[0] && <EmptyState icon="📁" title="Sin proyectos activos" desc="Crea tu primer proyecto y organiza las tareas del equipo." action="+ Nuevo proyecto" onAction={function() { showNewProject[1](true); }} />}
 
       {pausedProjs.length > 0 && (
         <div>
@@ -10815,7 +10944,7 @@ function PizarraView(props) {
               <button onClick={addItem} style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: pc.pin, color: "#fff", fontWeight: 800, fontSize: 16, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 4px rgba(0,0,0,0.15)" }}>+</button>
             </div>
 
-            {locItems.length === 0 && <div style={{ textAlign: "center", color: "#A1887F", padding: "40px 20px", fontSize: 14, fontStyle: "italic" }}>Pizarra limpia — nada pendiente 🎉</div>}
+            {locItems.length === 0 && <EmptyState icon="🎉" title="Pizarra limpia" desc="Nada pendiente. Buen trabajo equipo." />}
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {locItems.sort(function(a, b) { if (a.status === "hecho" && b.status !== "hecho") return 1; if (a.status !== "hecho" && b.status === "hecho") return -1; return 0; }).map(function(item, idx) {
