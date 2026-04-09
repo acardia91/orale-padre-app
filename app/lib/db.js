@@ -482,3 +482,188 @@ export async function createProduct(recipe, items, product, prices) {
     });
   } catch (err) { console.error("Create product error:", err); }
 }
+
+// === NOTIFICATIONS ===
+export async function loadNotifications() {
+  try {
+    var { data } = await supabase.from('notifications').select('*').order('created_at', { ascending: false });
+    return (data || []).map(function(n) {
+      return { id: n.id, type: n.type, title: n.title, detail: n.detail || "", targetPage: n.target_page || "", targetId: n.target_id || "", priority: n.priority || 2, createdBy: n.created_by || "", createdAt: n.created_at || "", targetRoles: n.target_roles || [], targetLocal: n.target_local || "", status: n.status || {}, resolvedAt: n.resolved_at || {} };
+    });
+  } catch (err) { console.error("Load notifications error:", err); return []; }
+}
+
+export async function addNotification(notif) {
+  try {
+    await supabase.from('notifications').insert({
+      id: notif.id, type: notif.type, title: notif.title, detail: notif.detail || "", target_page: notif.targetPage || "", target_id: notif.targetId || "", priority: notif.priority || 2, created_by: notif.createdBy || "", created_at: notif.createdAt || new Date().toISOString(), target_roles: notif.targetRoles || [], target_local: notif.targetLocal || "", status: notif.status || {}, resolved_at: notif.resolvedAt || {}
+    });
+  } catch (err) { console.error("Add notification error:", err); }
+}
+
+export async function updateNotificationStatus(notifId, userName, newStatus) {
+  try {
+    var { data: existing } = await supabase.from('notifications').select('status, resolved_at').eq('id', notifId).single();
+    if (!existing) return;
+    var st = existing.status || {};
+    var ra = existing.resolved_at || {};
+    st[userName] = newStatus;
+    if (newStatus === "resuelta") ra[userName] = new Date().toISOString();
+    await supabase.from('notifications').update({ status: st, resolved_at: ra }).eq('id', notifId);
+  } catch (err) { console.error("Update notification status error:", err); }
+}
+
+export async function deleteNotification(notifId) {
+  try { await supabase.from('notifications').delete().eq('id', notifId); } catch (err) { console.error("Delete notification error:", err); }
+}
+
+export async function cleanOldNotifications() {
+  try {
+    var cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    var { data } = await supabase.from('notifications').select('id, status, resolved_at');
+    if (!data) return;
+    for (var i = 0; i < data.length; i++) {
+      var n = data[i];
+      var ra = n.resolved_at || {};
+      var allResolved = Object.keys(ra).length > 0;
+      var allOld = true;
+      for (var k in ra) { if (ra[k] > cutoff) { allOld = false; break; } }
+      if (allResolved && allOld) {
+        await supabase.from('notifications').delete().eq('id', n.id);
+      }
+    }
+  } catch (err) { console.error("Clean notifications error:", err); }
+}
+
+// === PIZARRA (BOARD) ===
+export async function loadBoardItems() {
+  try {
+    var { data } = await supabase.from('board_items').select('*').eq('archived', false).order('created_at', { ascending: false });
+    return (data || []).map(function(b) {
+      return { id: b.id, local: b.local_name, section: b.section, content: b.content, status: b.status || "pendiente", createdBy: b.created_by || "", createdAt: b.created_at || "", completedBy: b.completed_by || "", completedAt: b.completed_at || "" };
+    });
+  } catch (err) { console.error("Load board error:", err); return []; }
+}
+
+export async function addBoardItem(item) {
+  try {
+    await supabase.from('board_items').insert({
+      id: item.id, local_name: item.local, section: item.section, content: item.content, status: item.status || "pendiente", created_by: item.createdBy || "", created_at: item.createdAt || new Date().toISOString(), completed_by: "", completed_at: "", archived: false
+    });
+  } catch (err) { console.error("Add board item error:", err); }
+}
+
+export async function updateBoardItem(itemId, updates) {
+  try {
+    var dbUpdates = {};
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.completedBy !== undefined) dbUpdates.completed_by = updates.completedBy;
+    if (updates.completedAt !== undefined) dbUpdates.completed_at = updates.completedAt;
+    if (updates.archived !== undefined) dbUpdates.archived = updates.archived;
+    await supabase.from('board_items').update(dbUpdates).eq('id', itemId);
+  } catch (err) { console.error("Update board item error:", err); }
+}
+
+export async function deleteBoardItem(itemId) {
+  try { await supabase.from('board_items').delete().eq('id', itemId); } catch (err) { console.error("Delete board item error:", err); }
+}
+
+export async function archiveDailyBoard(localName) {
+  try {
+    var today = new Date().toISOString().slice(0, 10);
+    await supabase.from('board_items').update({ archived: true }).in('section', ['preparaciones', 'super']).eq('local_name', localName).lt('created_at', today + 'T00:00:00');
+  } catch (err) { console.error("Archive board error:", err); }
+}
+
+export async function loadCleaningLog() {
+  try {
+    var { data } = await supabase.from('cleaning_log').select('*').order('cleaned_at', { ascending: false });
+    return (data || []).map(function(c) {
+      return { id: c.id, local: c.local_name, zone: c.zone, cleanedBy: c.cleaned_by || "", cleanedAt: c.cleaned_at || "" };
+    });
+  } catch (err) { console.error("Load cleaning error:", err); return []; }
+}
+
+export async function addCleaningEntry(entry) {
+  try {
+    await supabase.from('cleaning_log').insert({
+      id: entry.id, local_name: entry.local, zone: entry.zone, cleaned_by: entry.cleanedBy || "", cleaned_at: entry.cleanedAt || new Date().toISOString()
+    });
+  } catch (err) { console.error("Add cleaning error:", err); }
+}
+
+// === PROJECTS & TASKS ===
+export async function loadProjects() {
+  try {
+    var { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false });
+    return (data || []).map(function(p) {
+      return { id: p.id, name: p.name, description: p.description || "", status: p.status || "activo", lead: p.lead || "", color: p.color || "#B45309", createdBy: p.created_by || "", createdAt: p.created_at || "" };
+    });
+  } catch (err) { console.error("Load projects error:", err); return []; }
+}
+
+export async function saveProject(project) {
+  try {
+    await supabase.from('projects').upsert({
+      id: project.id, name: project.name, description: project.description || "", status: project.status || "activo", lead: project.lead || "", color: project.color || "#B45309", created_by: project.createdBy || "", created_at: project.createdAt || new Date().toISOString()
+    });
+  } catch (err) { console.error("Save project error:", err); }
+}
+
+export async function deleteProject(projectId) {
+  try {
+    await supabase.from('project_comments').delete().in('task_id', (await supabase.from('project_tasks').select('id').eq('project_id', projectId)).data.map(function(t) { return t.id; }));
+    await supabase.from('project_tasks').delete().eq('project_id', projectId);
+    await supabase.from('projects').delete().eq('id', projectId);
+  } catch (err) { console.error("Delete project error:", err); }
+}
+
+export async function loadProjectTasks(projectId) {
+  try {
+    var { data } = await supabase.from('project_tasks').select('*').eq('project_id', projectId).order('created_at', { ascending: false });
+    return (data || []).map(function(t) {
+      return { id: t.id, projectId: t.project_id, title: t.title, description: t.description || "", status: t.status || "por_hacer", assignedTo: t.assigned_to || [], priority: t.priority || "media", deadline: t.deadline || "", createdBy: t.created_by || "", createdAt: t.created_at || "", completedAt: t.completed_at || "" };
+    });
+  } catch (err) { console.error("Load tasks error:", err); return []; }
+}
+
+export async function saveProjectTask(task) {
+  try {
+    await supabase.from('project_tasks').upsert({
+      id: task.id, project_id: task.projectId, title: task.title, description: task.description || "", status: task.status || "por_hacer", assigned_to: task.assignedTo || [], priority: task.priority || "media", deadline: task.deadline || "", created_by: task.createdBy || "", created_at: task.createdAt || new Date().toISOString(), completed_at: task.completedAt || ""
+    });
+  } catch (err) { console.error("Save task error:", err); }
+}
+
+export async function deleteProjectTask(taskId) {
+  try {
+    await supabase.from('project_comments').delete().eq('task_id', taskId);
+    await supabase.from('project_tasks').delete().eq('id', taskId);
+  } catch (err) { console.error("Delete task error:", err); }
+}
+
+export async function loadTaskComments(taskId) {
+  try {
+    var { data } = await supabase.from('project_comments').select('*').eq('task_id', taskId).order('created_at', { ascending: true });
+    return (data || []).map(function(c) {
+      return { id: c.id, taskId: c.task_id, author: c.author || "", text: c.text, createdAt: c.created_at || "" };
+    });
+  } catch (err) { console.error("Load comments error:", err); return []; }
+}
+
+export async function addTaskComment(comment) {
+  try {
+    await supabase.from('project_comments').insert({
+      id: comment.id, task_id: comment.taskId, author: comment.author || "", text: comment.text, created_at: comment.createdAt || new Date().toISOString()
+    });
+  } catch (err) { console.error("Add comment error:", err); }
+}
+
+export async function loadAllProjectTasks() {
+  try {
+    var { data } = await supabase.from('project_tasks').select('*').order('created_at', { ascending: false }).limit(50);
+    return (data || []).map(function(t) {
+      return { id: t.id, projectId: t.project_id, title: t.title, status: t.status || "por_hacer", assignedTo: t.assigned_to || [], priority: t.priority || "media", deadline: t.deadline || "", createdBy: t.created_by || "", createdAt: t.created_at || "", completedAt: t.completed_at || "" };
+    });
+  } catch (err) { console.error("Load all tasks error:", err); return []; }
+}
