@@ -316,6 +316,34 @@ function BottomSheet(props) {
   );
 }
 
+/* ====== NAV ICONS (Instagram-style line art) ====== */
+function NavIcon(props) {
+  var name = props.name;
+  var active = props.active;
+  var s = active ? "currentColor" : "none";
+  var k = active ? "currentColor" : "currentColor";
+  var w = active ? 2.2 : 1.8;
+  var sz = props.size || 24;
+  var common = { width: sz, height: sz, viewBox: "0 0 24 24", fill: s, stroke: k, strokeWidth: w, strokeLinecap: "round", strokeLinejoin: "round", xmlns: "http://www.w3.org/2000/svg" };
+
+  if (name === "home") return <svg {...common}><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" />{!active && <path d="M9 21V12h6v9" fill="none" />}</svg>;
+  if (name === "flame") return <svg {...common}><path d="M12 2c0 4-4 6-4 10a4 4 0 008 0c0-4-4-6-4-10z" />{active && <circle cx="12" cy="14" r="1.5" fill="#fff" stroke="none" />}</svg>;
+  if (name === "trending") return <svg {...common} fill="none"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17" /><polyline points="16 7 22 7 22 13" /></svg>;
+  if (name === "receipt") return <svg {...common}><path d="M4 2v20l3-2 3 2 3-2 3 2 3-2 3 2V2l-3 2-3-2-3 2-3-2-3 2-3-2z" fill={active ? "currentColor" : "none"} />{!active && <line x1="8" y1="8" x2="16" y2="8" />}{!active && <line x1="8" y1="12" x2="16" y2="12" />}{!active && <line x1="8" y1="16" x2="12" y2="16" />}</svg>;
+  if (name === "grid") return <svg {...common} fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></svg>;
+  if (name === "clock") return <svg {...common}><circle cx="12" cy="12" r="9" />{!active && <polyline points="12 7 12 12 15 15" fill="none" />}</svg>;
+  if (name === "settings") return <svg {...common} fill="none"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09a1.65 1.65 0 00-1.08-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09a1.65 1.65 0 001.51-1.08 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001.08 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9c.26.604.852.997 1.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1.08z" /></svg>;
+  if (name === "clipboard") return <svg {...common}><rect x="6" y="4" width="12" height="17" rx="2" /><line x1="6" y1="8" x2="18" y2="8" stroke={active?"#fff":"currentColor"} />{!active && <line x1="9" y1="12" x2="15" y2="12" />}{!active && <line x1="9" y1="15" x2="13" y2="15" />}<path d="M9 2h6v3a1 1 0 01-1 1h-4a1 1 0 01-1-1V2z" fill={active ? "currentColor" : "none"} /></svg>;
+  if (name === "food") return <svg {...common}><ellipse cx="12" cy="14" rx="9" ry="6" /><path d="M3 14V12a9 6 0 0118 0v2" fill={active ? "currentColor" : "none"} /><line x1="12" y1="8" x2="12" y2="5" /><circle cx="12" cy="4" r="1" fill="currentColor" stroke="none" /></svg>;
+  if (name === "document") return <svg {...common}><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" fill="none" stroke="currentColor" /></svg>;
+  if (name === "user") return <svg {...common}><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>;
+  if (name === "camera") return <svg {...common}><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" /><circle cx="12" cy="13" r="4" fill={active?"#111":"none"} stroke={active?"#fff":"currentColor"} /></svg>;
+  if (name === "calendar") return <svg {...common}><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" stroke={active?"#fff":"currentColor"} /></svg>;
+  if (name === "check") return <svg {...common}><path d="M20 6L9 17l-5-5" fill="none" /></svg>;
+  if (name === "edit") return <svg {...common} fill="none"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>;
+  return <svg {...common}><circle cx="12" cy="12" r="9" /></svg>;
+}
+
 /* ====== CHEF CONSULTANT ====== */
 function ChefConsultant(props) {
   var open = useState(false);
@@ -1087,40 +1115,40 @@ export default function App() {
   var bottomTabs = [];
   if (role === "socio") {
     bottomTabs = [
-      { k: "dashboard", l: "Inicio", icon: "📊", group: null },
-      { k: "_cocina", l: "Cocina", icon: "🧬", group: "cocina" },
-      { k: "_negocio", l: "Negocio", icon: "💰", group: "negocio" },
-      { k: "_ventas", l: "Ventas", icon: "💵", group: "ventas" },
-      { k: "_mas", l: "Mas", icon: "☰", group: "mas" },
+      { k: "dashboard", l: "Inicio", icon: "home", group: null },
+      { k: "_cocina", l: "Cocina", icon: "flame", group: "cocina" },
+      { k: "_negocio", l: "Negocio", icon: "trending", group: "negocio" },
+      { k: "_ventas", l: "Ventas", icon: "receipt", group: "ventas" },
+      { k: "_mas", l: "Mas", icon: "grid", group: "mas" },
     ];
   } else if (role === "encargado") {
     bottomTabs = hasCatering ? [
-      { k: "panel", l: "Inicio", icon: "🏠", group: null },
-      { k: "fichaje", l: "Fichaje", icon: "⏱️", group: null },
-      { k: "_ops", l: "Ops", icon: "⚙️", group: "ops" },
-      { k: "pizarra", l: "Pizarra", icon: "📋", group: null },
-      { k: "_catering", l: "Catering", icon: "🌯", group: "catering" },
+      { k: "panel", l: "Inicio", icon: "home", group: null },
+      { k: "fichaje", l: "Fichaje", icon: "clock", group: null },
+      { k: "_ops", l: "Ops", icon: "settings", group: "ops" },
+      { k: "pizarra", l: "Pizarra", icon: "clipboard", group: null },
+      { k: "_catering", l: "Catering", icon: "food", group: "catering" },
     ] : [
-      { k: "panel", l: "Inicio", icon: "🏠", group: null },
-      { k: "fichaje", l: "Fichaje", icon: "⏱️", group: null },
-      { k: "albaranes", l: "Albaranes", icon: "📄", group: null },
-      { k: "_ops", l: "Ops", icon: "⚙️", group: "ops" },
-      { k: "pizarra", l: "Pizarra", icon: "📋", group: null },
+      { k: "panel", l: "Inicio", icon: "home", group: null },
+      { k: "fichaje", l: "Fichaje", icon: "clock", group: null },
+      { k: "albaranes", l: "Albaranes", icon: "document", group: null },
+      { k: "_ops", l: "Ops", icon: "settings", group: "ops" },
+      { k: "pizarra", l: "Pizarra", icon: "clipboard", group: null },
     ];
   } else if (role === "empleado") {
     bottomTabs = [
-      { k: "fichas-emp", l: "Inicio", icon: "🏠", group: null },
-      { k: "fichaje", l: "Fichaje", icon: "⏱️", group: null },
-      { k: "pizarra", l: "Pizarra", icon: "📋", group: null },
-      { k: "_ops", l: "Ops", icon: "⚙️", group: "ops" },
-      { k: "mi-perfil", l: "Perfil", icon: "👤", group: null },
+      { k: "fichas-emp", l: "Inicio", icon: "home", group: null },
+      { k: "fichaje", l: "Fichaje", icon: "clock", group: null },
+      { k: "pizarra", l: "Pizarra", icon: "clipboard", group: null },
+      { k: "_ops", l: "Ops", icon: "settings", group: "ops" },
+      { k: "mi-perfil", l: "Perfil", icon: "user", group: null },
     ];
   } else if (role === "community") {
     bottomTabs = [
-      { k: "mkt-panel", l: "Panel", icon: "📸", group: null },
-      { k: "mkt-calendar", l: "Calendario", icon: "📅", group: null },
-      { k: "mkt-tasks", l: "Tareas", icon: "✅", group: null },
-      { k: "mkt-content", l: "Contenido", icon: "📝", group: null },
+      { k: "mkt-panel", l: "Panel", icon: "camera", group: null },
+      { k: "mkt-calendar", l: "Calendario", icon: "calendar", group: null },
+      { k: "mkt-tasks", l: "Tareas", icon: "check", group: null },
+      { k: "mkt-content", l: "Contenido", icon: "edit", group: null },
     ];
   }
 
@@ -1274,7 +1302,8 @@ export default function App() {
         ".op-bottom-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:12px;border:none;cursor:pointer;background:transparent;font-family:inherit;transition:all 0.2s ease;position:relative;min-width:56px}",
         ".op-bottom-tab:active{transform:scale(0.92)}",
         ".op-bottom-tab-active{background:rgba(123,29,58,0.1)}",
-        ".op-bottom-tab-icon{font-size:22px;line-height:1}",
+        ".op-bottom-tab-icon{font-size:22px;line-height:1;color:#666;display:flex;align-items:center;justify-content:center}",
+        ".op-bottom-tab-active .op-bottom-tab-icon{color:#7B1D3A}",
         ".op-bottom-tab-label{font-size:10px;font-weight:600;color:#999}",
         ".op-bottom-tab-active .op-bottom-tab-label{color:#7B1D3A;font-weight:700}",
         ".op-contextual-sub{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;padding:8px 12px;background:#1a1a1a;border-bottom:1px solid #333}",
@@ -1570,7 +1599,7 @@ export default function App() {
             }
             return (
               <button key={tabK} className={"op-bottom-tab" + (isActive ? " op-bottom-tab-active" : "")} onClick={function() { handleBottomTabClick(tab); }}>
-                <span className="op-bottom-tab-icon">{tab.icon}</span>
+                <span className="op-bottom-tab-icon"><NavIcon name={tab.icon} active={isActive} size={24} /></span>
                 <span className="op-bottom-tab-label">{tab.l}</span>
                 {totalBadge > 0 && <span style={{ position: "absolute", top: 2, right: 6, width: 16, height: 16, borderRadius: 8, background: "#DC2626", color: "#fff", fontSize: 9, fontWeight: 800, display: "flex", alignItems: "center", justifyContent: "center" }}>{totalBadge}</span>}
               </button>
