@@ -178,7 +178,7 @@ function CollapseCard(props) {
     <div style={{ background: "#fff", borderRadius: 16, overflow: "hidden", border: "1px solid #eee", boxShadow: "0 1px 4px rgba(0,0,0,.04)" }}>
       <div style={{ padding: "18px 20px 14px", borderBottom: shown.length > 0 ? "1px solid #f3f3f3" : "none" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 10, height: 10, borderRadius: 5, background: props.color || "#B45309", flexShrink: 0 }} />
+          <div style={{ width: 10, height: 10, borderRadius: 5, background: props.color || "#7B1D3A", flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13, fontWeight: 700, color: props.color || "#333", letterSpacing: 0.3 }}>{props.title}</div>
             {props.subtitle && <div style={{ fontSize: 12, color: "#aaa", marginTop: 2 }}>{props.subtitle}</div>}
@@ -188,7 +188,7 @@ function CollapseCard(props) {
       </div>
       {shown.length > 0 && <div style={{ padding: "6px 12px 8px" }}>{shown.map(function(item, idx) { return item; })}</div>}
       {hasMore && (
-        <button onClick={function() { st[1](!open); }} style={{ width: "100%", padding: "10px", background: open ? "#f9f9f9" : "#fafafa", border: "none", borderTop: "1px solid #f0f0f0", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#888", fontFamily: "inherit" }}>
+        <button onClick={function() { st[1](!open); }} style={{ width: "100%", padding: "10px", background: open ? "#f9f9f9" : "#fafafa", border: "none", borderTop: "1px solid #eee", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#888", fontFamily: "inherit" }}>
           {open ? "Ver menos" : "Ver los " + items.length + " productos"}
         </button>
       )}
@@ -204,7 +204,7 @@ function RankRow(props) {
     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 8px", borderRadius: 10, marginBottom: 2, background: props.bg || "transparent" }}>
       <div style={{ width: 24, height: 24, borderRadius: 12, background: idx < 3 ? accentColor + "12" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: idx < 3 ? accentColor : "#bbb", flexShrink: 0 }}>{idx + 1}</div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 13, fontWeight: 600, color: "#333" }}>{p.name}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: "#5D4037" }}>{p.name}</div>
         <div style={{ fontSize: 11, color: "#aaa" }}>{p.category} | PVP {fmt(p.pvp)}</div>
       </div>
       <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -216,16 +216,16 @@ function RankRow(props) {
 }
 
 function Pill(props) {
-  return <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: (props.c || "#B45309") + "12", color: props.c || "#B45309" }}>{props.t}</span>;
+  return <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, background: (props.c || "#7B1D3A") + "12", color: props.c || "#7B1D3A" }}>{props.t}</span>;
 }
 
 function ChannelToggle(props) {
   var v = props.value;
   var base = { padding: "7px 20px", borderRadius: 10, border: "none", cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit", transition: "all 0.15s" };
   return (
-    <div style={{ display: "inline-flex", background: "#f0ede8", borderRadius: 12, padding: 3, gap: 2 }}>
+    <div style={{ display: "inline-flex", background: "#eee", borderRadius: 12, padding: 3, gap: 2 }}>
       <button onClick={function() { props.onChange("sala"); }} style={{ ...base, background: v === "sala" ? "#fff" : "transparent", color: v === "sala" ? "#1a1a1a" : "#999", boxShadow: v === "sala" ? "0 1px 4px rgba(0,0,0,.1)" : "none" }}>Sala / Local</button>
-      <button onClick={function() { props.onChange("delivery"); }} style={{ ...base, background: v === "delivery" ? "#B45309" : "transparent", color: v === "delivery" ? "#fff" : "#999", boxShadow: v === "delivery" ? "0 1px 4px rgba(180,83,9,.3)" : "none" }}>Delivery</button>
+      <button onClick={function() { props.onChange("delivery"); }} style={{ ...base, background: v === "delivery" ? "#7B1D3A" : "transparent", color: v === "delivery" ? "#fff" : "#999", boxShadow: v === "delivery" ? "0 1px 4px rgba(180,83,9,.3)" : "none" }}>Delivery</button>
     </div>
   );
 }
@@ -400,10 +400,10 @@ function ChefConsultant(props) {
 
   return (
     <div style={{ display: "inline-block", position: "relative" }}>
-      <button onClick={function() { open[1](!open[0]); }} style={{ width: 36, height: 36, borderRadius: 18, border: "none", background: open[0] ? "#B45309" : "#FFF7ED", color: open[0] ? "#fff" : "#B45309", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", transition: "all 0.2s" }} title="Mejores practicas">👨‍🍳</button>
+      <button onClick={function() { open[1](!open[0]); }} style={{ width: 36, height: 36, borderRadius: 18, border: "none", background: open[0] ? "#7B1D3A" : "#FDF2F4", color: open[0] ? "#fff" : "#7B1D3A", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", transition: "all 0.2s" }} title="Mejores practicas">👨‍🍳</button>
       {open[0] && (
         <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: "min(420px, 90vw)", background: "#fff", boxShadow: "-4px 0 30px rgba(0,0,0,0.15)", zIndex: 150, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-          <div style={{ padding: "16px 20px", background: "#1a1a1a", color: "#fff", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+          <div style={{ padding: "16px 20px", background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#fff", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
             <span style={{ fontSize: 22 }}>👨‍🍳</span>
             <div style={{ flex: 1 }}>
               <div style={{ fontSize: 15, fontWeight: 700 }}>{content.title}</div>
@@ -414,37 +414,37 @@ function ChefConsultant(props) {
           <div style={{ padding: "16px 20px", flex: 1 }}>
             {content.diagnosis.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 10 }}>DIAGNOSTICO CON TUS DATOS</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 10 }}>DIAGNOSTICO CON TUS DATOS</div>
                 {content.diagnosis.map(function(d, idx) {
                   return (
                     <div key={idx} style={{ padding: "10px 12px", marginBottom: 6, borderRadius: 8, background: d.level === "critica" ? "#FEF2F2" : d.level === "alta" ? "#FFFBEB" : d.level === "ok" ? "#F0FDF4" : "#f8f8f8", borderLeft: "3px solid " + (priColors[d.level] || "#888") }}>
                       <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
                         <span style={{ fontSize: 11, flexShrink: 0 }}>{priIcons[d.level]}</span>
-                        <div style={{ fontSize: 12, color: "#333", lineHeight: 1.5 }}>{d.text}</div>
+                        <div style={{ fontSize: 12, color: "#5D4037", lineHeight: 1.5 }}>{d.text}</div>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-            <div onClick={function() { showPractices[1](!showPractices[0]); }} style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>MEJORES PRACTICAS <span style={{ fontSize: 10, color: "#aaa", transform: showPractices[0] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▶</span></div>
+            <div onClick={function() { showPractices[1](!showPractices[0]); }} style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 10, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>MEJORES PRACTICAS <span style={{ fontSize: 10, color: "#aaa", transform: showPractices[0] ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>▶</span></div>
             {showPractices[0] && content.practices.map(function(p, idx) {
               return (
-                <div key={idx} style={{ marginBottom: 12, padding: "12px 14px", borderRadius: 10, background: "#FAF6F1", border: "1px solid #f0ede8" }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: "#333", marginBottom: 4 }}>{p.t}</div>
+                <div key={idx} style={{ marginBottom: 12, padding: "12px 14px", borderRadius: 10, background: "#FDF2F4", border: "1px solid #eee" }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: "#5D4037", marginBottom: 4 }}>{p.t}</div>
                   <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>{p.d}</div>
                 </div>
               );
             })}
 
             {/* AI CHAT */}
-            <div style={{ marginTop: 16, borderTop: "2px solid #f0ede8", paddingTop: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 10 }}>💬 CONSULTA AL CHEF IA</div>
+            <div style={{ marginTop: 16, borderTop: "2px solid #eee", paddingTop: 16 }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 10 }}>💬 CONSULTA AL CHEF IA</div>
               <div style={{ marginBottom: 12 }}>
                 {chatMsgs[0].map(function(m, idx) {
                   return (
                     <div key={idx} style={{ marginBottom: 8, display: "flex", justifyContent: m.role === "user" ? "flex-end" : "flex-start" }}>
-                      <div style={{ maxWidth: "85%", padding: "10px 14px", borderRadius: m.role === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px", background: m.role === "user" ? "#B45309" : "#f5f5f5", color: m.role === "user" ? "#fff" : "#333", fontSize: 12, lineHeight: 1.5 }}>
+                      <div style={{ maxWidth: "85%", padding: "10px 14px", borderRadius: m.role === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px", background: m.role === "user" ? "#7B1D3A" : "#f5f5f5", color: m.role === "user" ? "#fff" : "#333", fontSize: 12, lineHeight: 1.5 }}>
                         {m.text}
                       </div>
                     </div>
@@ -458,7 +458,7 @@ function ChefConsultant(props) {
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <input value={chatInput[0]} onChange={function(e) { chatInput[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") sendChat(); }} placeholder="Pregunta sobre esta seccion..." style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none" }} />
-                <button onClick={sendChat} disabled={chatLoading[0] || !chatInput[0].trim()} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: chatLoading[0] ? "#ccc" : "#B45309", color: "#fff", fontWeight: 700, fontSize: 13, cursor: chatLoading[0] ? "default" : "pointer", fontFamily: "inherit" }}>▶</button>
+                <button onClick={sendChat} disabled={chatLoading[0] || !chatInput[0].trim()} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: chatLoading[0] ? "#ccc" : "#7B1D3A", color: "#fff", fontWeight: 700, fontSize: 13, cursor: chatLoading[0] ? "default" : "pointer", fontFamily: "inherit" }}>▶</button>
               </div>
               <div style={{ fontSize: 10, color: "#bbb", marginTop: 6 }}>La IA analiza los datos de esta seccion para responder</div>
             </div>
@@ -501,7 +501,7 @@ export default function App() {
   var priceHistory = useState([]);
   var ideasState = useState([
     { id: "idea1", title: "Burrito de Birria", desc: "Burrito con birria de res, queso oaxaca, consomme para dip. Tendencia viral en EEUU y Mexico.", category: "nuevo producto", status: "idea", date: "20/03/2026", assignedTo: "", feedback: "" },
-    { id: "idea2", title: "Postre Churros Rellenos", desc: "Churros rellenos de dulce de leche o Nutella. Margen alto, facil de hacer.", category: "nuevo producto", status: "por probar", date: "18/03/2026", assignedTo: "Carlos", feedback: "" },
+    { id: "idea2", title: "Postre Churros Rellenos", desc: "Churros rellenos de dulce de leche o Nutella. Margen alto, facil de hacer.", category: "nuevo producto", status: "por probar", date: "18/03/2026", assignedTo: "Jesus", feedback: "" },
     { id: "idea3", title: "Taco de Pescado", desc: "Taco de pescado rebozado con slaw de col y mayo chipotle. Ampliar oferta de proteinas.", category: "nuevo producto", status: "idea", date: "15/03/2026", assignedTo: "", feedback: "" },
     { id: "idea4", title: "Reducir porcion arroz burritos", desc: "De 70g a 60g. Ahorro 0.012/ud x 400uds/sem = 4.80/sem. Cliente no lo nota.", category: "optimizacion", status: "en prueba", date: "22/03/2026", assignedTo: "Maria", feedback: "Probado 3 dias. Nadie se ha quejado." },
     { id: "idea5", title: "Hacer guacamole in-house", desc: "Actualmente 5.00/kg. Con aguacate a 4.20/kg + lima + cilantro podria salir a 3.80/kg.", category: "optimizacion", status: "idea", date: "19/03/2026", assignedTo: "", feedback: "" },
@@ -510,22 +510,13 @@ export default function App() {
   var employeeProfiles = useState({});
   var gamification = useState({
     points: [
-      { userId: "u-carlos", name: "Carlos", role: "encargado", local: "San Luis", dorados: 12, actions: [
-        { type: "login", date: "2026-03-26", pts: 2 },
-        { type: "leer_comunicado", date: "2026-03-26", pts: 3 },
-        { type: "reportar_stock", date: "2026-03-25", pts: 5 },
-        { type: "crear_incidencia", date: "2026-03-24", pts: 5 },
-      ]},
-      { userId: "u-pedro", name: "Pedro", role: "empleado", local: "San Luis", dorados: 7, actions: [
-        { type: "login", date: "2026-03-26", pts: 2 },
-        { type: "leer_comunicado", date: "2026-03-26", pts: 3 },
-        { type: "login", date: "2026-03-25", pts: 2 },
-      ]},
-      { userId: "u-maria", name: "Maria", role: "community", local: null, dorados: 9, actions: [
-        { type: "login", date: "2026-03-26", pts: 2 },
-        { type: "crear_contenido", date: "2026-03-26", pts: 5 },
-        { type: "login", date: "2026-03-25", pts: 2 },
-      ]},
+      { userId: "u-jesus", name: "Jesus", role: "encargado", local: "Los Remedios", dorados: 0, actions: []},
+      { userId: "u-nando", name: "Nando", role: "encargado", local: "Sevilla Este", dorados: 0, actions: []},
+      { userId: "u-pupu", name: "Pupu", role: "empleado", local: "Los Remedios", dorados: 0, actions: []},
+      { userId: "u-paula", name: "Paula", role: "empleado", local: "Sevilla Este", dorados: 0, actions: []},
+      { userId: "u-pablo", name: "Pablo", role: "empleado", local: "Sevilla Este", dorados: 0, actions: []},
+      { userId: "u-andy", name: "Andy", role: "empleado", local: "Los Remedios", dorados: 0, actions: []},
+      { userId: "u-maria", name: "Maria", role: "community", local: null, dorados: 0, actions: []},
     ],
     rewards: [
       { id: "rw1", name: "Comida gratis para 2", cost: 20, icon: "🌯", claimed: [] },
@@ -623,19 +614,19 @@ export default function App() {
       { id: "ap6", product: "Coca-Cola Zero", level: "atencion", local: "Todos", notes: "Se olvida frecuentemente en pedidos.", actions: "Siempre lo ultimo en la bolsa. Comprobar antes de cerrar.", date: "25/03/2026" },
     ],
     planAccion: [
-      { id: "pa1", action: "Auditoria cadena de frio en los 3 locales", responsible: "Encargados + Ale", deadline: "Inmediato", status: "en curso", priority: "inmediata" },
+      { id: "pa1", action: "Auditoria cadena de frio en los 3 locales", responsible: "Encargados + Carrick", deadline: "Inmediato", status: "en curso", priority: "inmediata" },
       { id: "pa2", action: "Implementar checklist cierre de bolsa para TODOS los pedidos delivery", responsible: "Encargados", deadline: "Esta semana", status: "pendiente", priority: "inmediata" },
       { id: "pa3", action: "Sistema pegatina roja para pedidos con alergias/modificaciones", responsible: "Encargados", deadline: "Esta semana", status: "pendiente", priority: "inmediata" },
-      { id: "pa4", action: "Estandarizar recetas problematicas (Dolores, cochinita, patatas)", responsible: "Cocina + Ale", deadline: "2 semanas", status: "pendiente", priority: "corto" },
+      { id: "pa4", action: "Estandarizar recetas problematicas (Dolores, cochinita, patatas)", responsible: "Cocina + Carrick", deadline: "2 semanas", status: "pendiente", priority: "corto" },
       { id: "pa5", action: "Formacion equipo: alergias, notas, protocolo anti-errores", responsible: "Ale + encargados", deadline: "2 semanas", status: "pendiente", priority: "corto" },
       { id: "pa6", action: "Crear zona de staging para pedidos delivery en cada local", responsible: "Cada local", deadline: "2 semanas", status: "pendiente", priority: "corto" },
-      { id: "pa7", action: "Evaluar packaging termico para burritos", responsible: "Ale", deadline: "3 semanas", status: "pendiente", priority: "corto" },
+      { id: "pa7", action: "Evaluar packaging termico para burritos", responsible: "Carrick", deadline: "3 semanas", status: "pendiente", priority: "corto" },
       { id: "pa8", action: "Manual de operaciones completo", responsible: "Ale + equipo", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
-      { id: "pa9", action: "Sistema de control productividad: pedidos/hora por local", responsible: "Ale", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
+      { id: "pa9", action: "Sistema de control productividad: pedidos/hora por local", responsible: "Carrick", deadline: "1-2 meses", status: "pendiente", priority: "medio" },
     ],
     comunicados: [
-      { id: "com1", title: "Nuevos protocolos de delivery activos", content: "A partir de hoy son obligatorios el checklist de cierre de bolsa y el protocolo de alergias de 3 niveles. Ningun pedido sale sin completar los 12 pasos. Sin excepciones.", author: "Ale", date: "25/03/2026", readBy: [] },
-      { id: "com2", title: "Productos a vigilar esta semana", content: "Atencion especial a: Bacon Cheese (revisar ingredientes cada turno), Burro Lady Cochinita (desmenuzar siempre), Nachos delivery (toppings separados). Cualquier duda, preguntad al encargado.", author: "Ale", date: "25/03/2026", readBy: [] },
+      { id: "com1", title: "Nuevos protocolos de delivery activos", content: "A partir de hoy son obligatorios el checklist de cierre de bolsa y el protocolo de alergias de 3 niveles. Ningun pedido sale sin completar los 12 pasos. Sin excepciones.", author: "Carrick", date: "25/03/2026", readBy: [] },
+      { id: "com2", title: "Productos a vigilar esta semana", content: "Atencion especial a: Bacon Cheese (revisar ingredientes cada turno), Burro Lady Cochinita (desmenuzar siempre), Nachos delivery (toppings separados). Cualquier duda, preguntad al encargado.", author: "Carrick", date: "25/03/2026", readBy: [] },
     ],
     valoraciones: {
       locales: {
@@ -792,6 +783,7 @@ export default function App() {
   // Navigation refs (must be before early return)
   var pageHistory = useRef([]);
   var touchStart = useRef(null);
+  var swipeProgress = useState(0);
 
   if (!authChecked[0]) {
     return (
@@ -865,14 +857,14 @@ export default function App() {
               
               <div style={{ textAlign: "center", marginBottom: 32 }}>
                 <img src={LOGO_CARD_URL} alt="Orale Padre" style={{ width: 180, height: "auto", objectFit: "contain", margin: "0 auto 24px", display: "block", filter: "drop-shadow(0 2px 8px rgba(123,29,58,0.3))" }} />
-                <div style={{ fontSize: 24, fontWeight: 800, color: "#FAF6F1", marginBottom: 4 }}>Bienvenido</div>
+                <div style={{ fontSize: 24, fontWeight: 800, color: "#FDF2F4", marginBottom: 4 }}>Bienvenido</div>
                 <div style={{ fontSize: 13, color: "#555", fontWeight: 400 }}>Introduce tus credenciales</div>
               </div>
 
               <LoginForm onLogin={function(role, local, name, catering) { usr[1]({ role: role, local: local, name: name, catering: catering || false }); }} />
             </div>
             
-            <div style={{ marginTop: 24, textAlign: "center", fontSize: 11, color: "#333" }}>
+            <div style={{ marginTop: 24, textAlign: "center", fontSize: 11, color: "#5D4037" }}>
               Orale Padre © 2026 — Sevilla, España
             </div>
           </div>
@@ -983,17 +975,26 @@ export default function App() {
   }
   function handleTouchStart(e) {
     var touch = e.touches[0];
-    if (touch.clientX < 25) touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+    if (touch.clientX < 30 && pageHistory.current.length > 0) touchStart.current = { x: touch.clientX, y: touch.clientY, time: Date.now() };
     else touchStart.current = null;
   }
-  function handleTouchEnd(e) {
+  function handleTouchMove(e) {
     if (!touchStart.current) return;
+    var touch = e.touches[0];
+    var dx = touch.clientX - touchStart.current.x;
+    var dy = Math.abs(touch.clientY - touchStart.current.y);
+    if (dy > 60) { touchStart.current = null; swipeProgress[1](0); return; }
+    swipeProgress[1](Math.min(dx / 120, 1));
+  }
+  function handleTouchEnd(e) {
+    if (!touchStart.current) { swipeProgress[1](0); return; }
     var touch = e.changedTouches[0];
     var dx = touch.clientX - touchStart.current.x;
     var dy = Math.abs(touch.clientY - touchStart.current.y);
     var dt = Date.now() - touchStart.current.time;
-    if (dx > 80 && dy < 100 && dt < 400 && pageHistory.current.length > 0) goBack();
+    if (dx > 80 && dy < 100 && dt < 500 && pageHistory.current.length > 0) goBack();
     touchStart.current = null;
+    swipeProgress[1](0);
   }
 
   // Bottom tab bar config per role
@@ -1133,7 +1134,7 @@ export default function App() {
     <div style={{ fontFamily: "'Outfit', system-ui, sans-serif", background: "#f6f4f0", minHeight: "100vh", overflowX: "hidden" }}>
       <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
       {/* Header */}
-      <div style={{ background: "#1a1a1a", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+      <div style={{ background: "rgba(26,26,26,0.92)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
         <img src={LOGO_HEADER_URL} alt="Orale Padre" style={{ height: 26, objectFit: "contain", opacity: 0.95, flexShrink: 0 }} />
         <div style={{ flex: 1 }} />
         {/* Notification badge */}
@@ -1157,15 +1158,15 @@ export default function App() {
           var gPts = gamification[0] && Array.isArray(gamification[0].points) ? gamification[0].points : [];
           for (var gi = 0; gi < gPts.length; gi++) { if (gPts[gi] && gPts[gi].name === (usr[0] ? usr[0].name : "")) { myDorados = gPts[gi].dorados || 0; break; } }
           return (
-            <div onClick={function() { pg[1]("mi-perfil"); }} style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, background: "#B4530920", cursor: "pointer", flexShrink: 0 }}>
+            <div onClick={function() { pg[1]("mi-perfil"); }} style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 8, background: "#7B1D3A20", cursor: "pointer", flexShrink: 0 }}>
               <span style={{ fontSize: 13 }}>🫘</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: "#B45309" }}>{myDorados}</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A" }}>{myDorados}</span>
             </div>
           );
           } catch(e) { return null; }
         })()}
         <div className="op-header-info" onClick={function() { if (role === "encargado" || role === "empleado") { navigateTo("mi-perfil"); activeBottomTab[1](null); } }} style={{ cursor: role === "encargado" || role === "empleado" ? "pointer" : "default" }}>
-          <div style={{ width: 28, height: 28, borderRadius: 14, background: isEmp ? "#1E40AF" : role === "encargado" ? "#047857" : role === "community" ? "#E11D48" : "#B45309", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>{(usr[0].name || "U")[0].toUpperCase()}</div>
+          <div style={{ width: 28, height: 28, borderRadius: 14, background: isEmp ? "#1E40AF" : role === "encargado" ? "#047857" : role === "community" ? "#E11D48" : "#7B1D3A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: "#fff", flexShrink: 0 }}>{(usr[0].name || "U")[0].toUpperCase()}</div>
           <div className="op-header-text"><div style={{ fontSize: 12, fontWeight: 600, color: "#eee" }}>{usr[0].name}</div><div style={{ fontSize: 10, color: "#888" }}>{usr[0].role}{usr[0].local ? " - " + usr[0].local : ""}{role === "encargado" || role === "empleado" ? " | Perfil →" : ""}</div></div>
         </div>
         <button onClick={function() { signOut(); usr[1](null); pg[1]("dashboard"); }} style={{ background: "#333", color: "#aaa", border: "none", borderRadius: 8, padding: "5px 12px", fontSize: 11, cursor: "pointer", fontFamily: "inherit", fontWeight: 500, flexShrink: 0 }}>Salir</button>
@@ -1175,22 +1176,25 @@ export default function App() {
         ".op-header-info{display:flex;align-items:center;gap:10px}",
         ".op-header-text{}",
         "@media(max-width:500px){.op-header-text{display:none} .op-header-info{gap:6px}}",
-        "*{box-sizing:border-box}",
+        "*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}",
         "table{table-layout:auto;word-break:break-word}",
         "@media(max-width:600px){table{font-size:12px !important} table th,table td{padding:8px 6px !important}}",
-        ".op-sidebar{width:220px;background:#111;overflow-y:auto;flex-shrink:0;border-right:1px solid #222;position:sticky;top:0;height:calc(100vh - 48px)}",
+        ".op-sidebar{width:220px;background:#111;overflow-y:auto;flex-shrink:0;border-right:1px solid #1a1a1a;position:sticky;top:0;height:calc(100vh - 48px)}",
         ".op-sidebar-group-label{font-size:10px;font-weight:700;color:#555;letter-spacing:1px;padding:12px 16px 4px;text-transform:uppercase}",
-        ".op-sidebar-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:#888;cursor:pointer;font-weight:500;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;transition:all 0.15s}",
-        ".op-sidebar-item:hover{background:rgba(255,255,255,0.03);color:#ccc}",
-        ".op-sidebar-item-active{background:rgba(180,83,9,0.12) !important;color:#B45309 !important;font-weight:700 !important}",
-        ".op-bottom-bar{position:fixed;bottom:0;left:0;right:0;height:68px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:space-around;padding:0 4px 6px;z-index:100}",
-        ".op-bottom-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:12px;border:none;cursor:pointer;background:transparent;font-family:inherit;transition:all 0.15s;position:relative;min-width:56px}",
-        ".op-bottom-tab-active{background:rgba(180,83,9,0.1)}",
+        ".op-sidebar-item{display:flex;align-items:center;gap:8px;padding:9px 16px;font-size:13px;color:#888;cursor:pointer;font-weight:500;border:none;background:transparent;width:100%;text-align:left;font-family:inherit;transition:all 0.2s ease}",
+        ".op-sidebar-item:hover{background:rgba(255,255,255,0.04);color:#ccc}",
+        ".op-sidebar-item-active{background:rgba(123,29,58,0.15) !important;color:#7B1D3A !important;font-weight:700 !important}",
+        ".op-bottom-bar{position:fixed;bottom:0;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:space-around;padding:0 4px 6px;z-index:100;background:rgba(255,255,255,0.82);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-top:1px solid rgba(0,0,0,0.06)}",
+        ".op-bottom-tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;border-radius:12px;border:none;cursor:pointer;background:transparent;font-family:inherit;transition:all 0.2s ease;position:relative;min-width:56px}",
+        ".op-bottom-tab:active{transform:scale(0.92)}",
+        ".op-bottom-tab-active{background:rgba(123,29,58,0.1)}",
         ".op-bottom-tab-icon{font-size:22px;line-height:1}",
         ".op-bottom-tab-label{font-size:10px;font-weight:600;color:#666}",
-        ".op-bottom-tab-active .op-bottom-tab-label{color:#B45309;font-weight:700}",
-        ".op-contextual-sub{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;padding:8px 12px;background:#1a1a1a;border-bottom:1px solid #222}",
+        ".op-bottom-tab-active .op-bottom-tab-label{color:#7B1D3A;font-weight:700}",
+        ".op-contextual-sub{display:flex;gap:3px;overflow-x:auto;scrollbar-width:none;padding:8px 12px;background:#1a1a1a;border-bottom:1px solid #333}",
         ".op-contextual-sub::-webkit-scrollbar{display:none}",
+        "@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}",
+        "@keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}",
       ].join("\n") }} />
 
       {/* === TOAST NOTIFICATION === */}
@@ -1214,13 +1218,13 @@ export default function App() {
                 var area = null;
                 for (var ai = 0; ai < areaConfig.length; ai++) { if (areaConfig[ai].k === item.group) { area = areaConfig[ai]; break; } }
                 return (
-                  <button key={item.k} onClick={function() { navigateTo(item.k); searchOpen[1](false); searchQuery[1](""); }} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 20px", border: "none", borderBottom: "1px solid #f8f8f8", background: pg[0] === item.k ? "#FFF7ED" : "#fff", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+                  <button key={item.k} onClick={function() { navigateTo(item.k); searchOpen[1](false); searchQuery[1](""); }} style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", padding: "12px 20px", border: "none", borderBottom: "1px solid #f8f8f8", background: pg[0] === item.k ? "#FDF2F4" : "#fff", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
                     <span style={{ fontSize: 14 }}>{area ? area.icon : "📄"}</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#333" }}>{item.l}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#5D4037" }}>{item.l}</div>
                       <div style={{ fontSize: 11, color: "#aaa" }}>{area ? area.l : ""}</div>
                     </div>
-                    {pg[0] === item.k && <span style={{ fontSize: 10, color: "#B45309", fontWeight: 700 }}>Aqui</span>}
+                    {pg[0] === item.k && <span style={{ fontSize: 10, color: "#7B1D3A", fontWeight: 700 }}>Aqui</span>}
                   </button>
                 );
               })}
@@ -1240,7 +1244,7 @@ export default function App() {
           <div className="op-sidebar">
             <div style={{ padding: "16px 16px 12px", borderBottom: "1px solid #222" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <div style={{ width: 24, height: 24, borderRadius: 12, background: isEmp ? "#1E40AF" : role === "encargado" ? "#047857" : role === "community" ? "#E11D48" : "#B45309", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#fff" }}>{(usr[0].name || "U")[0].toUpperCase()}</div>
+                <div style={{ width: 24, height: 24, borderRadius: 12, background: isEmp ? "#1E40AF" : role === "encargado" ? "#047857" : role === "community" ? "#E11D48" : "#7B1D3A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#fff" }}>{(usr[0].name || "U")[0].toUpperCase()}</div>
                 <div><div style={{ fontSize: 12, fontWeight: 600, color: "#ddd" }}>{usr[0].name}</div><div style={{ fontSize: 10, color: "#666" }}>{usr[0].role === "socio" ? "Socio" : usr[0].role === "encargado" ? "Encargado" : usr[0].role === "community" ? "Community" : "Empleado"}{usr[0].local ? " · " + usr[0].local : ""}</div></div>
               </div>
             </div>
@@ -1249,7 +1253,7 @@ export default function App() {
               <div style={{ padding: "12px 10px 8px" }}>
                 <button onClick={function() { navigateTo("fichaje"); }} style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "none", cursor: "pointer", fontFamily: "inherit", background: pg[0] === "fichaje" ? "#047857" : "linear-gradient(135deg, #047857, #065F46)", color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 6, display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>⏱️ Fichaje</button>
                 {role === "encargado" && (
-                  <button onClick={function() { navigateTo("checklist"); }} style={{ width: "100%", padding: "9px 14px", borderRadius: 10, border: "none", cursor: "pointer", fontFamily: "inherit", background: pg[0] === "checklist" ? "#B45309" : "#ffffff08", color: pg[0] === "checklist" ? "#fff" : "#aaa", fontWeight: 600, fontSize: 12, display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>📋 Checklist</button>
+                  <button onClick={function() { navigateTo("checklist"); }} style={{ width: "100%", padding: "9px 14px", borderRadius: 10, border: "none", cursor: "pointer", fontFamily: "inherit", background: pg[0] === "checklist" ? "#7B1D3A" : "#ffffff08", color: pg[0] === "checklist" ? "#fff" : "#aaa", fontWeight: 600, fontSize: 12, display: "flex", alignItems: "center", gap: 8, justifyContent: "center" }}>📋 Checklist</button>
                 )}
               </div>
             )}
@@ -1269,7 +1273,7 @@ export default function App() {
                     else { openArea[1](g.area.k); if (!hasActivePage && g.items.length > 0) navigateTo(g.items[0].k); }
                   }} style={{ display: "flex", alignItems: "center", width: "100%", padding: "10px 16px 10px 14px", border: "none", background: isExpanded ? "rgba(180,83,9,0.06)" : "transparent", cursor: "pointer", fontFamily: "inherit", gap: 6, transition: "all 0.15s" }}>
                     <span style={{ fontSize: 13 }}>{g.area.icon}</span>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: isExpanded ? "#B45309" : "#666", letterSpacing: 0.5, flex: 1, textAlign: "left" }}>{g.area.l}</span>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: isExpanded ? "#7B1D3A" : "#666", letterSpacing: 0.5, flex: 1, textAlign: "left" }}>{g.area.l}</span>
                     {groupBadge > 0 && <span style={{ background: "#EF4444", color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px" }}>{groupBadge}</span>}
                     <span style={{ fontSize: 9, color: "#555", transition: "transform 0.2s", transform: isExpanded ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
                   </button>
@@ -1307,9 +1311,9 @@ export default function App() {
                 if (n.k === "incidencias") badge = incidents[0].filter(function(x){return x.status==="abierta";}).length;
                 if (n.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
                 return (
-                  <button key={nk} onClick={function() { navigateTo(nk); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#B45309" : "#ffffff08", color: active ? "#fff" : "#999", fontWeight: active ? 700 : 500, fontSize: 12, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
+                  <button key={nk} onClick={function() { navigateTo(nk); }} style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", background: active ? "#7B1D3A" : "#ffffff08", color: active ? "#fff" : "#999", fontWeight: active ? 700 : 500, fontSize: 12, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
                     {n.l}
-                    {badge > 0 && <span style={{ background: active ? "#fff" : "#EF4444", color: active ? "#B45309" : "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px", marginLeft: 2 }}>{badge}</span>}
+                    {badge > 0 && <span style={{ background: active ? "#fff" : "#EF4444", color: active ? "#7B1D3A" : "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px", marginLeft: 2 }}>{badge}</span>}
                   </button>
                 );
               })}
@@ -1332,7 +1336,7 @@ export default function App() {
                   if (n.k === "operaciones" && usr[0]) badge = (opsData[0].comunicados || []).filter(function(c){ return (c.readBy||[]).indexOf(usr[0].name)<0; }).length;
                   var icons = { albaranes: "📄", turnos: "📅", "promos-hoy": "🏷️", stock: "📦", operaciones: "📢", incidencias: "⚠️", "tareas-id": "🧪", checklist: "✅", gestion: "🔧", "fichas-emp": "📋" };
                   return (
-                    <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "18px 14px", borderRadius: 12, border: isActive ? "2px solid #B45309" : "1px solid #333", background: isActive ? "#B4530915" : "#1a1a1a", color: isActive ? "#B45309" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}>
+                    <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "18px 14px", borderRadius: 12, border: isActive ? "2px solid #7B1D3A" : "1px solid #333", background: isActive ? "#7B1D3A15" : "#1a1a1a", color: isActive ? "#7B1D3A" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left", display: "flex", alignItems: "center", gap: 10 }}>
                       <span style={{ fontSize: 20 }}>{icons[n.k] || "📋"}</span>
                       <div>
                         <div>{n.l}</div>
@@ -1367,12 +1371,12 @@ export default function App() {
                 if (areaItems.length === 0) return null;
                 return (
                   <div key={area.k} style={{ marginBottom: 20 }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 8, textTransform: "uppercase" }}>{area.icon} {area.l}</div>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 8, textTransform: "uppercase" }}>{area.icon} {area.l}</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
                       {areaItems.map(function(n) {
                         var isActive = pg[0] === n.k;
                         return (
-                          <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "14px 12px", borderRadius: 12, border: isActive ? "2px solid #B45309" : "1px solid #333", background: isActive ? "#B4530915" : "#1a1a1a", color: isActive ? "#B45309" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
+                          <button key={n.k} onClick={function() { navigateTo(n.k); activeBottomTab[1](null); }} style={{ padding: "14px 12px", borderRadius: 12, border: isActive ? "2px solid #7B1D3A" : "1px solid #333", background: isActive ? "#7B1D3A15" : "#1a1a1a", color: isActive ? "#7B1D3A" : "#ccc", fontSize: 13, fontWeight: isActive ? 700 : 500, cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}>
                             {n.l}
                           </button>
                         );
@@ -1385,7 +1389,9 @@ export default function App() {
           )}
 
           {/* PAGE CONTENT */}
-          <div onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden" }}>
+          <div onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{ padding: isMobile[0] ? "20px 14px 90px" : "24px 28px", maxWidth: 1400, margin: "0 auto", overflowX: "hidden", transition: "transform 0.15s ease", transform: swipeProgress[0] > 0 ? "translateX(" + Math.round(swipeProgress[0] * 30) + "px)" : "none", opacity: swipeProgress[0] > 0 ? (1 - swipeProgress[0] * 0.15) : 1 }}>
+            {/* Swipe back indicator */}
+            {swipeProgress[0] > 0.1 && <div style={{ position: "fixed", left: 0, top: "50%", marginTop: -24, width: 48, height: 48, borderRadius: "0 24px 24px 0", background: "rgba(123,29,58," + (swipeProgress[0] * 0.6) + ")", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, transition: "opacity 0.1s", zIndex: 200, transform: "scale(" + (0.6 + swipeProgress[0] * 0.4) + ")" }}>←</div>}
             {pg[0] === "dashboard" && <DashView {...PP} />}
             {pg[0] === "panel" && <EncargadoPanel {...PP} />}
             {pg[0] === "suppliers" && <SupView {...PP} />}
@@ -1461,7 +1467,7 @@ export default function App() {
 
 function LoginForm(props) {
   var u = useState(""); var p = useState(""); var err = useState(""); var focused = useState(""); var shake = useState(false); var loading = useState(false);
-  var inp = function(field) { return { width: "100%", padding: "15px 18px", border: "1.5px solid " + (focused[0] === field ? "#7B1D3A" : "rgba(255,255,255,0.08)"), borderRadius: 14, fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit", background: "rgba(255,255,255,0.03)", color: "#FAF6F1", transition: "all 0.3s ease", boxShadow: focused[0] === field ? "0 0 0 3px rgba(123,29,58,0.12)" : "none" }; };
+  var inp = function(field) { return { width: "100%", padding: "15px 18px", border: "1.5px solid " + (focused[0] === field ? "#7B1D3A" : "rgba(255,255,255,0.08)"), borderRadius: 14, fontSize: 14, outline: "none", boxSizing: "border-box", fontFamily: "inherit", background: "rgba(255,255,255,0.03)", color: "#FDF2F4", transition: "all 0.3s ease", boxShadow: focused[0] === field ? "0 0 0 3px rgba(123,29,58,0.12)" : "none" }; };
   function doLogin() {
     if (loading[0]) return;
     var email = u[0].trim().toLowerCase();
@@ -1566,8 +1572,8 @@ function WeatherWidget(props) {
               var wc = (daily.weathercode || [])[idx] || 0;
               var isToday = idx === 0;
               return (
-                <div key={idx} style={{ minWidth: 70, textAlign: "center", padding: "10px 8px", borderRadius: 10, background: isToday ? ("#FFF7ED") : ("#f8f8f8"), flexShrink: 0 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: isToday ? "#B45309" : ("#aaa") }}>{isToday ? "HOY" : DIAS[d.getDay()]}</div>
+                <div key={idx} style={{ minWidth: 70, textAlign: "center", padding: "10px 8px", borderRadius: 10, background: isToday ? ("#FDF2F4") : ("#f8f8f8"), flexShrink: 0 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: isToday ? "#7B1D3A" : ("#aaa") }}>{isToday ? "HOY" : DIAS[d.getDay()]}</div>
                   <div style={{ fontSize: 20, margin: "4px 0" }}>{wcIcons[wc] || "🌤️"}</div>
                   <div style={{ fontSize: 12, fontWeight: 700 }}>{Math.round(tMax)}°</div>
                   <div style={{ fontSize: 10, color: "#888" }}>{Math.round(tMin)}°</div>
@@ -1577,8 +1583,8 @@ function WeatherWidget(props) {
             })}
           </div>
           {/* Business impact */}
-          <div style={{ borderTop: "1px solid " + ("#f0f0f0"), paddingTop: 12 }}>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#B45309" }}>📋 Impacto en el negocio</div>
+          <div style={{ borderTop: "1px solid " + ("#eee"), paddingTop: 12 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#7B1D3A" }}>📋 Impacto en el negocio</div>
             {tips.map(function(tip, idx) {
               return <div key={idx} style={{ fontSize: 12, color: "#555", marginBottom: 4, lineHeight: 1.5 }}>{tip}</div>;
             })}
@@ -1673,7 +1679,7 @@ function DailyTip(props) {
   if (dismissed[0]) return null;
 
   return (
-    <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a2a1a 100%)", borderRadius: 14, padding: "18px 20px", marginBottom: 20, position: "relative" }}>
+    <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 14, padding: "18px 20px", marginBottom: 20, position: "relative" }}>
       <button onClick={function() { dismissed[1](true); }} style={{ position: "absolute", top: 10, right: 12, background: "none", border: "none", color: "#555", fontSize: 16, cursor: "pointer", padding: 4 }}>✕</button>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
         <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>🤖</span>
@@ -1770,7 +1776,7 @@ function NovedadesBlock(props) {
                 if (props.setPage && item.page) props.setPage(item.page);
                 if (item.type === "db" && item.status === "nueva" && props.updateNotifStatus) props.updateNotifStatus(item.id, "vista");
               }} style={{ flex: 1, cursor: "pointer" }}>
-                <div style={{ fontSize: 13, fontWeight: item.isNew ? 700 : 500, color: "#333" }}>
+                <div style={{ fontSize: 13, fontWeight: item.isNew ? 700 : 500, color: "#5D4037" }}>
                   {item.isNew && <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: 4, background: "#DC2626", marginRight: 6 }} />}
                   {item.text}
                   {item.isResolved && <span style={{ marginLeft: 6, fontSize: 10, color: "#047857", fontWeight: 700 }}>✓ Resuelta</span>}
@@ -1780,7 +1786,7 @@ function NovedadesBlock(props) {
               </div>
               {item.type === "db" && !item.isResolved && (
                 <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                  {item.status === "nueva" && <button onClick={function(e) { e.stopPropagation(); if (props.updateNotifStatus) props.updateNotifStatus(item.id, "vista"); }} style={{ background: "#EFF6FF", border: "none", borderRadius: 6, padding: "4px 8px", fontSize: 10, fontWeight: 700, color: "#1E40AF", cursor: "pointer", fontFamily: "inherit" }}>👁</button>}
+                  {item.status === "nueva" && <button onClick={function(e) { e.stopPropagation(); if (props.updateNotifStatus) props.updateNotifStatus(item.id, "vista"); }} style={{ background: "#FFF8E1", border: "none", borderRadius: 6, padding: "4px 8px", fontSize: 10, fontWeight: 700, color: "#1E40AF", cursor: "pointer", fontFamily: "inherit" }}>👁</button>}
                   <button onClick={function(e) { e.stopPropagation(); if (props.updateNotifStatus) props.updateNotifStatus(item.id, "resuelta"); }} style={{ background: "#F0FDF4", border: "none", borderRadius: 6, padding: "4px 8px", fontSize: 10, fontWeight: 700, color: "#047857", cursor: "pointer", fontFamily: "inherit" }}>✓</button>
                 </div>
               )}
@@ -1875,9 +1881,9 @@ function DashView(props) {
       <div style={{ background: "#111", borderRadius: 16, padding: "22px 24px", marginBottom: 20, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -20, right: -20, width: 120, height: 120, borderRadius: "50%", background: "radial-gradient(circle, rgba(180,83,9,0.15) 0%, transparent 70%)" }} />
         <div style={{ position: "absolute", bottom: -30, left: -10, width: 80, height: 80, borderRadius: "50%", background: "radial-gradient(circle, rgba(4,120,87,0.1) 0%, transparent 70%)" }} />
-        <div style={{ fontSize: 18, fontWeight: 700, color: "#FAF6F1", marginBottom: 4 }}>{saludo}, Orale Padre 🌮</div>
-        <div style={{ fontSize: 13, color: "#FAF6F1", opacity: 0.85, lineHeight: 1.5, maxWidth: 700, marginBottom: 6, fontStyle: "italic" }}>"{frase.txt}"</div>
-        <div style={{ fontSize: 11, color: "#B45309", fontWeight: 600 }}>— {frase.autor}</div>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#FDF2F4", marginBottom: 4 }}>{saludo}, Orale Padre 🌮</div>
+        <div style={{ fontSize: 13, color: "#FDF2F4", opacity: 0.85, lineHeight: 1.5, maxWidth: 700, marginBottom: 6, fontStyle: "italic" }}>"{frase.txt}"</div>
+        <div style={{ fontSize: 11, color: "#7B1D3A", fontWeight: 600 }}>— {frase.autor}</div>
       </div>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
@@ -1901,7 +1907,7 @@ function DashView(props) {
         var activeProjs = projs.filter(function(p) { return p.status === "activo"; });
         var allTasks = props.allProjectTasks ? props.allProjectTasks[0] : [];
         if (activeProjs.length === 0 && allTasks.length === 0) return null;
-        var SOCIO_COLORS = { Lale: "#B45309", Carrick: "#1E40AF", Rafa: "#7C3AED", Coti: "#DC2626" };
+        var SOCIO_COLORS = { Lale: "#7B1D3A", Carrick: "#1E40AF", Rafa: "#7C3AED", Coti: "#DC2626" };
         var STATUS_ICONS = { por_hacer: "📋", en_proceso: "🔄", revision: "👀", hecho: "✅" };
         var STATUS_LABELS = { por_hacer: "Por hacer", en_proceso: "En proceso", revision: "Revision", hecho: "Hecho" };
         var projMap = {};
@@ -1917,7 +1923,7 @@ function DashView(props) {
             <div onClick={function() { props.setPage("proyectos"); }} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, cursor: "pointer" }}>
               <span style={{ fontSize: 18 }}>📁</span>
               <span style={{ fontSize: 15, fontWeight: 700, flex: 1 }}>Proyectos</span>
-              <span style={{ fontSize: 11, color: "#B45309", fontWeight: 600 }}>Ver todos →</span>
+              <span style={{ fontSize: 11, color: "#7B1D3A", fontWeight: 600 }}>Ver todos →</span>
             </div>
             {urgent.length > 0 && (
               <div style={{ background: "#FEF2F2", borderRadius: 8, padding: "8px 12px", marginBottom: 10, borderLeft: "3px solid #DC2626" }}>
@@ -1952,8 +1958,8 @@ function DashView(props) {
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {activeProjs.slice(0, 3).map(function(proj) {
                   return (
-                    <div key={proj.id} onClick={function() { props.setPage("proyectos"); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#f8f8f8", borderRadius: 8, borderLeft: "3px solid " + (proj.color || "#B45309"), cursor: "pointer" }}>
-                      <div style={{ width: 24, height: 24, borderRadius: 6, background: proj.color || "#B45309", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>{proj.name[0]}</div>
+                    <div key={proj.id} onClick={function() { props.setPage("proyectos"); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 12px", background: "#f8f8f8", borderRadius: 8, borderLeft: "3px solid " + (proj.color || "#7B1D3A"), cursor: "pointer" }}>
+                      <div style={{ width: 24, height: 24, borderRadius: 6, background: proj.color || "#7B1D3A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800 }}>{proj.name[0]}</div>
                       <div style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{proj.name}</div>
                       <span style={{ width: 18, height: 18, borderRadius: 9, background: SOCIO_COLORS[proj.lead] || "#888", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 8, fontWeight: 800 }}>{proj.lead ? proj.lead[0] : "?"}</span>
                     </div>
@@ -1993,7 +1999,7 @@ function DashView(props) {
         var hsLabel = healthScore >= 80 ? "Excelente" : healthScore >= 60 ? "Aceptable" : "Necesita atencion";
         return (
           <div style={{ marginTop: 20, marginBottom: 20 }}>
-            <div style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: 16, padding: "24px", color: "#fff", display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+            <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 16, padding: "24px", color: "#fff", display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
               <div style={{ position: "relative", width: 100, height: 100, flexShrink: 0 }}>
                 <svg viewBox="0 0 100 100" style={{ width: 100, height: 100, transform: "rotate(-90deg)" }}>
                   <circle cx="50" cy="50" r="42" fill="none" stroke="#333" strokeWidth="8" />
@@ -2027,7 +2033,7 @@ function DashView(props) {
         try {
         var od = props.opsData ? props.opsData[0] : {};
         var valData = od.valoraciones || {};
-        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#B45309" : "#DC2626"; };
+        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#7B1D3A" : "#DC2626"; };
 
         var localScores = LOCALS.map(function(loc) {
           // Stock
@@ -2139,14 +2145,14 @@ function DashView(props) {
           </div>
         </div>
         <div onClick={function(){props.setPage("id");}} style={{ background: "#fff", borderRadius: 14, padding: "14px 16px", border: "1px solid #eee", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", transition: "transform 0.15s" }} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)";}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)";}}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#EFF6FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🧪</div>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#FFF8E1", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>🧪</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800, color: "#1E40AF" }}>{props.ideasState ? props.ideasState[0].filter(function(x){return x.status==="en prueba";}).length : 0}</div>
             <div style={{ fontSize: 11, color: "#888" }}>Ideas en prueba</div>
           </div>
         </div>
         <div onClick={function(){props.setPage("pricing");}} style={{ background: "#fff", borderRadius: 14, padding: "14px 16px", border: "1px solid #eee", display: "flex", alignItems: "center", gap: 12, cursor: "pointer", transition: "transform 0.15s" }} onMouseEnter={function(e){e.currentTarget.style.transform="scale(1.03)";}} onMouseLeave={function(e){e.currentTarget.style.transform="scale(1)";}}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#FAF6F1", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>📊</div>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#FDF2F4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0 }}>📊</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 800 }}>{props.priceHistory[0].length}</div>
             <div style={{ fontSize: 11, color: "#888" }}>Cambios precio</div>
@@ -2181,7 +2187,7 @@ function DashView(props) {
               return <div key={"p" + idx} style={{ padding: "10px 12px", marginBottom: 4, borderRadius: 10, background: "#F0FDF4", borderLeft: "3px solid #047857" }}><div style={{ fontSize: 13, fontWeight: 700, color: "#065F46" }}>{r.name}</div><div style={{ fontSize: 11, color: "#047857", marginTop: 2 }}>{r.txt}</div></div>;
             }),
             dangers.map(function(r, idx) {
-              return <div key={"d" + idx} style={{ padding: "10px 12px", marginBottom: 4, borderRadius: 10, background: r.red ? "#FEF2F2" : "#FFFBEB", borderLeft: "3px solid " + (r.red ? "#DC2626" : "#D97706") }}><div style={{ fontSize: 13, fontWeight: 700, color: r.red ? "#991B1B" : "#92400E" }}>{r.name}</div><div style={{ fontSize: 11, color: r.red ? "#DC2626" : "#D97706", marginTop: 2 }}>{r.txt}</div></div>;
+              return <div key={"d" + idx} style={{ padding: "10px 12px", marginBottom: 4, borderRadius: 10, background: r.red ? "#FEF2F2" : "#FFFBEB", borderLeft: "3px solid " + (r.red ? "#DC2626" : "#D97706") }}><div style={{ fontSize: 13, fontWeight: 700, color: r.red ? "#991B1B" : "#5C1530" }}>{r.name}</div><div style={{ fontSize: 11, color: r.red ? "#DC2626" : "#D97706", marginTop: 2 }}>{r.txt}</div></div>;
             })
           )} />
       </div>
@@ -2222,7 +2228,7 @@ function DashView(props) {
                 </div>
               );
             })}
-            <div style={{ borderTop: "1px solid #f0f0f0", paddingTop: 8, marginTop: 8, display: "flex", gap: 16, fontSize: 10, color: "#aaa" }}>
+            <div style={{ borderTop: "1px solid #eee", paddingTop: 8, marginTop: 8, display: "flex", gap: 16, fontSize: 10, color: "#aaa" }}>
               <span>🟢 &lt;30%</span><span>🟡 30-35%</span><span>🔴 &gt;35%</span>
               <span style={{ marginLeft: "auto" }}>Objetivo: 28-32%</span>
             </div>
@@ -2268,7 +2274,7 @@ function DashView(props) {
                 var pct = totalCostAll > 0 ? (ing.total / totalCostAll * 100) : 0;
                 return (
                   <div key={idx} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, padding: "6px 0", borderBottom: "1px solid #f8f8f8" }}>
-                    <div style={{ width: 22, height: 22, borderRadius: 11, background: idx < 3 ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: idx < 3 ? "#B45309" : "#aaa" }}>{idx + 1}</div>
+                    <div style={{ width: 22, height: 22, borderRadius: 11, background: idx < 3 ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, color: idx < 3 ? "#7B1D3A" : "#aaa" }}>{idx + 1}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 12, fontWeight: 600 }}>{ing.name}</div>
                       <div style={{ fontSize: 10, color: "#aaa" }}>{ing.cost.toFixed(2)}€/{ing.unit}</div>
@@ -2319,7 +2325,7 @@ function DashView(props) {
               <div style={{ fontSize: 11, color: "#888", marginBottom: 12 }}>% del gasto semanal por proveedor</div>
               {supList.filter(function(s) { return s.totalCost > 0; }).map(function(s, idx) {
                 var pct = totalAll > 0 ? (s.totalCost / totalAll * 100) : 0;
-                var barColors = ["#B45309", "#1E40AF", "#047857", "#7C3AED", "#DC2626", "#D97706", "#0E7490", "#4338CA"];
+                var barColors = ["#7B1D3A", "#1E40AF", "#047857", "#7C3AED", "#DC2626", "#D97706", "#0E7490", "#4338CA"];
                 var bc = barColors[idx % barColors.length];
                 return (
                   <div key={idx} style={{ marginBottom: 10 }}>
@@ -2414,7 +2420,7 @@ function DashView(props) {
               {Object.keys(byLocal).map(function(loc3) {
                 return (
                   <div key={loc3} style={{ marginBottom: 12 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginBottom: 6 }}>{loc3}</div>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7B1D3A", marginBottom: 6 }}>{loc3}</div>
                     {byLocal[loc3].map(function(p2) {
                       var platColors = { Uber: "#1E40AF", Glovo: "#D97706" };
                       return (
@@ -2453,7 +2459,7 @@ function DashView(props) {
           locAvg = locCt > 0 ? locAvg / locCt : 0;
           locCards.push({ local: loc3, avg: locAvg, g: vl2.google ? vl2.google.nota : 0, u: vl2.uber ? vl2.uber.nota : 0, gl: vl2.glovo ? vl2.glovo.nota : 0 });
         }
-        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#B45309" : "#DC2626"; };
+        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#7B1D3A" : "#DC2626"; };
         return (
           <div onClick={function(){props.setPage("operaciones");}} style={{ background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee", marginBottom: 20, cursor: "pointer" }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>⭐ Valoraciones</div>
@@ -2510,12 +2516,12 @@ function DashView(props) {
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#D97706" }}>{pendingTasks.length}</div>
                 <div style={{ fontSize: 10, color: "#888" }}>Tareas pendientes</div>
               </div>
-              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#ECFDF5" }}>
+              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#E8F5E9" }}>
                 <div style={{ fontSize: 22, fontWeight: 800, color: "#047857" }}>{doneTasks.length}</div>
                 <div style={{ fontSize: 10, color: "#888" }}>Tareas hechas</div>
               </div>
-              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#FAF6F1" }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: "#B45309" }}>{totalPts}</div>
+              <div style={{ textAlign: "center", padding: 12, borderRadius: 10, background: "#FDF2F4" }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: "#7B1D3A" }}>{totalPts}</div>
                 <div style={{ fontSize: 10, color: "#888" }}>Alubias Doradas 🫘</div>
               </div>
             </div>
@@ -2528,7 +2534,7 @@ function DashView(props) {
                     <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 4px", borderBottom: "1px solid #f8f8f8" }}>
                       <span style={{ fontSize: 16, width: 24, textAlign: "center" }}>{medals[idx] || (idx + 1)}</span>
                       <div style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{tp.name}</div>
-                      <div style={{ fontSize: 14, fontWeight: 800, color: "#B45309" }}>{tp.points} 🫘</div>
+                      <div style={{ fontSize: 14, fontWeight: 800, color: "#7B1D3A" }}>{tp.points} 🫘</div>
                     </div>
                   );
                 })}
@@ -2587,7 +2593,7 @@ function DashView(props) {
               var incCount = isAll ? props.incidents[0].filter(function(x){return x.status==="abierta";}).length : props.incidents[0].filter(function(x){return x.status==="abierta" && x.local === loc;}).length;
               var total = stockCount + incCount;
               return (
-                <button key={loc} onClick={function() { localF[1](loc); }} style={{ padding: "6px 14px", borderRadius: 8, border: localF[0] === loc ? "2px solid #B45309" : "1px solid #e5e5e5", background: localF[0] === loc ? "#B4530908" : "#fff", color: localF[0] === loc ? "#B45309" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                <button key={loc} onClick={function() { localF[1](loc); }} style={{ padding: "6px 14px", borderRadius: 8, border: localF[0] === loc ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: localF[0] === loc ? "#7B1D3A08" : "#fff", color: localF[0] === loc ? "#7B1D3A" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                   {loc} {total > 0 && <span style={{ background: "#DC2626", color: "#fff", fontSize: 10, borderRadius: 8, padding: "1px 5px", marginLeft: 4 }}>{total}</span>}
                 </button>
               );
@@ -2684,8 +2690,8 @@ function EncargadoPanel(props) {
       {/* Motivational banner encargado */}
       <div style={{ background: "#111", borderRadius: 16, padding: "20px 22px", marginBottom: 20, position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", top: -15, right: -15, width: 100, height: 100, borderRadius: "50%", background: "radial-gradient(circle, rgba(30,64,175,0.15) 0%, transparent 70%)" }} />
-        <div style={{ fontSize: 16, fontWeight: 700, color: "#FAF6F1", marginBottom: 4 }}>{saludoEnc}, {props.user ? props.user.name : "Encargado"} 💪</div>
-        <div style={{ fontSize: 12, color: "#FAF6F1", opacity: 0.85, lineHeight: 1.5, maxWidth: 600, marginBottom: 4, fontStyle: "italic" }}>"{fraseEnc.txt}"</div>
+        <div style={{ fontSize: 16, fontWeight: 700, color: "#FDF2F4", marginBottom: 4 }}>{saludoEnc}, {props.user ? props.user.name : "Encargado"} 💪</div>
+        <div style={{ fontSize: 12, color: "#FDF2F4", opacity: 0.85, lineHeight: 1.5, maxWidth: 600, marginBottom: 4, fontStyle: "italic" }}>"{fraseEnc.txt}"</div>
         <div style={{ fontSize: 10, color: "#60A5FA", fontWeight: 600 }}>— {fraseEnc.autor}</div>
       </div>
 
@@ -2738,10 +2744,10 @@ function EncargadoPanel(props) {
         var totalScore = Math.min(100, stockPts + incPts + valPts + alertPts + comPts + planPts);
         var hsColor = totalScore >= 80 ? "#047857" : totalScore >= 60 ? "#D97706" : "#DC2626";
         var hsLabel = totalScore >= 80 ? "Excelente" : totalScore >= 60 ? "Aceptable" : "Necesita atencion";
-        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#B45309" : "#DC2626"; };
+        var noteC = function(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#7B1D3A" : "#DC2626"; };
 
         return (
-          <div style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 20 }}>
+          <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 16, padding: "20px", color: "#fff", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
               <div style={{ position: "relative", width: 80, height: 80, flexShrink: 0 }}>
                 <svg viewBox="0 0 100 100" style={{ width: 80, height: 80, transform: "rotate(-90deg)" }}>
@@ -2800,15 +2806,15 @@ function EncargadoPanel(props) {
         }
         if (pending.length === 0 && alertZones === 0) return null;
         return (
-          <div onClick={function() { props.setPage("pizarra"); }} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid #eee", borderLeft: "4px solid #B45309", marginBottom: 20, cursor: "pointer" }}>
+          <div onClick={function() { props.setPage("pizarra"); }} style={{ background: "#fff", borderRadius: 14, padding: "16px 20px", border: "1px solid #eee", borderLeft: "4px solid #7B1D3A", marginBottom: 20, cursor: "pointer" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
               <span style={{ fontSize: 20 }}>📋</span>
               <div style={{ flex: 1, fontSize: 15, fontWeight: 700 }}>Pizarra — {miLocal}</div>
-              <span style={{ fontSize: 12, color: "#B45309" }}>Ver →</span>
+              <span style={{ fontSize: 12, color: "#7B1D3A" }}>Ver →</span>
             </div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {prepPend > 0 && <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#FEF3C7", color: "#D97706" }}>🍳 {prepPend} prep.</span>}
-              {compPend > 0 && <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#EFF6FF", color: "#1E40AF" }}>📦 {compPend} compras</span>}
+              {compPend > 0 && <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#FFF8E1", color: "#1E40AF" }}>📦 {compPend} compras</span>}
               {superPend > 0 && <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#F5F3FF", color: "#7C3AED" }}>🛒 {superPend} super</span>}
               {alertZones > 0 && <span style={{ padding: "3px 10px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#FEF2F2", color: "#DC2626" }}>🧹 {alertZones} zona{alertZones > 1 ? "s" : ""} pendiente{alertZones > 1 ? "s" : ""}</span>}
             </div>
@@ -2863,7 +2869,7 @@ function EncargadoPanel(props) {
         var enNegociacion = allLeads.filter(function(l) { return l.estado === "Presupuestado" || l.estado === "Negociacion"; }).length;
 
         return (
-          <div onClick={function() { props.setPage("catering-dash"); }} style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 14, padding: "20px", color: "#fff", marginBottom: 20, cursor: "pointer" }}>
+          <div onClick={function() { props.setPage("catering-dash"); }} style={{ background: "linear-gradient(135deg, #7B1D3A 0%, #5C1530 100%)", borderRadius: 14, padding: "20px", color: "#fff", marginBottom: 20, cursor: "pointer" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
               <span style={{ fontSize: 24 }}>🌯</span>
               <div style={{ flex: 1 }}>
@@ -2999,7 +3005,7 @@ function EncargadoPanel(props) {
                   <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 8px", marginBottom: 4, borderRadius: 8, background: "#FEF3C7" }}>
                     <span style={{ fontSize: 14 }}>🟡</span>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: "#92400E" }}>{a.name}</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: "#5C1530" }}>{a.name}</div>
                       <div style={{ fontSize: 11, color: "#D97706" }}>{a.category} | {a.time}</div>
                     </div>
                   </div>
@@ -3158,8 +3164,8 @@ function EncargadoPanel(props) {
                 {unreadComs.map(function(c) {
                   return (
                     <div key={c.id} style={{ padding: "10px 12px", marginBottom: 6, borderRadius: 10, background: "#FEF3C7", borderLeft: "3px solid #D97706" }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#92400E" }}>{c.title}</div>
-                      <div style={{ fontSize: 11, color: "#B45309", marginTop: 2 }}>{c.author} | {c.date}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: "#5C1530" }}>{c.title}</div>
+                      <div style={{ fontSize: 11, color: "#7B1D3A", marginTop: 2 }}>{c.author} | {c.date}</div>
                       <div style={{ fontSize: 12, color: "#555", marginTop: 4 }}>{c.content.length > 120 ? c.content.substring(0, 120) + "..." : c.content}</div>
                     </div>
                   );
@@ -3198,7 +3204,7 @@ function SupView(props) {
   var tabs = [{ k: "actuales", l: "Proveedores actuales" }, { k: "reuniones", l: "Reuniones" }, { k: "potenciales", l: "Potenciales" }];
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
   var inp = { width: "100%", padding: "10px 12px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, boxSizing: "border-box", fontFamily: "inherit" };
-  var btn = { padding: "8px 18px", background: "#B45309", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
+  var btn = { padding: "8px 18px", background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
 
   return (
     <div>
@@ -3212,7 +3218,7 @@ function SupView(props) {
           var badge = 0;
           if (t.k === "reuniones") badge = meetings[0].filter(function(m) { return m.status === "pendiente"; }).length;
           if (t.k === "potenciales") badge = potentials[0].filter(function(p) { return p.sampleStatus === "pendiente"; }).length;
-          return <button key={t.k} onClick={function() { supTab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: active ? "2px solid #B45309" : "1px solid #e5e5e5", background: active ? "#B4530908" : "#fff", color: active ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}{badge > 0 ? " (" + badge + ")" : ""}</button>;
+          return <button key={t.k} onClick={function() { supTab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: active ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: active ? "#7B1D3A08" : "#fff", color: active ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}{badge > 0 ? " (" + badge + ")" : ""}</button>;
         })}
       </div>
 
@@ -3226,9 +3232,9 @@ function SupView(props) {
           var supIngs = props.ingredients.filter(function(i) { return i.supplierId === s.id; });
           supIngs.sort(function(a, b) { return b.costPerUnit - a.costPerUnit; });
           return (
-            <div key={s.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#B4530940" : "#eee"), overflow: "hidden" }}>
+            <div key={s.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#7B1D3A40" : "#eee"), overflow: "hidden" }}>
               <div onClick={function() { expanded[1](isOpen ? null : s.id); }} style={{ display: "flex", alignItems: "center", padding: "16px 20px", cursor: "pointer", gap: 12 }}>
-                <div style={{ width: 22, height: 22, borderRadius: 6, background: isOpen ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#B45309" : "#ccc", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                <div style={{ width: 22, height: 22, borderRadius: 6, background: isOpen ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#7B1D3A" : "#ccc", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 16, fontWeight: 700 }}>{s.name}</div>
                   <div style={{ fontSize: 12, color: "#aaa" }}>{supIngs.length} ingredientes{s.contact ? " | " + s.contact : ""}{s.deliveryDays ? " | " + s.deliveryDays : ""}</div>
@@ -3236,7 +3242,7 @@ function SupView(props) {
                 <Pill t={supIngs.length + " prod."} c="#1E40AF" />
               </div>
               {isOpen && (
-                <div style={{ borderTop: "1px solid #f0f0f0" }}>
+                <div style={{ borderTop: "1px solid #eee" }}>
                   {/* Contact & conditions */}
                   <div style={{ display: "flex", gap: 12, padding: "14px 20px", background: "#fafaf8", flexWrap: "wrap" }}>
                     <div style={{ flex: "1 1 140px", padding: "10px 14px", background: "#fff", borderRadius: 10, border: "1px solid #eee" }}>
@@ -3258,11 +3264,11 @@ function SupView(props) {
                   {(s.discount || s.rappel) && (
                     <div style={{ padding: "10px 20px", display: "flex", gap: 12 }}>
                       {s.discount && s.discount !== "-" && <div style={{ flex: 1, padding: "8px 12px", borderRadius: 8, background: "#F0FDF4", borderLeft: "3px solid #047857" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>DESCUENTO</div><div style={{ fontSize: 12, fontWeight: 600, color: "#047857" }}>{s.discount}</div></div>}
-                      {s.rappel && s.rappel !== "-" && <div style={{ flex: 1, padding: "8px 12px", borderRadius: 8, background: "#EFF6FF", borderLeft: "3px solid #1E40AF" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>RAPPEL</div><div style={{ fontSize: 12, fontWeight: 600, color: "#1E40AF" }}>{s.rappel}</div></div>}
+                      {s.rappel && s.rappel !== "-" && <div style={{ flex: 1, padding: "8px 12px", borderRadius: 8, background: "#FFF8E1", borderLeft: "3px solid #1E40AF" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>RAPPEL</div><div style={{ fontSize: 12, fontWeight: 600, color: "#1E40AF" }}>{s.rappel}</div></div>}
                     </div>
                   )}
                   {s.commercialNotes && (
-                    <div style={{ padding: "6px 20px 14px" }}><div style={{ padding: "8px 12px", borderRadius: 8, background: "#FFFBEB", borderLeft: "3px solid #D97706", fontSize: 12, color: "#92400E", lineHeight: 1.5 }}>{s.commercialNotes}</div></div>
+                    <div style={{ padding: "6px 20px 14px" }}><div style={{ padding: "8px 12px", borderRadius: 8, background: "#FFFBEB", borderLeft: "3px solid #D97706", fontSize: 12, color: "#5C1530", lineHeight: 1.5 }}>{s.commercialNotes}</div></div>
                   )}
                   {/* Ingredients table */}
                   <div style={{ padding: "0 20px 16px", overflowX: "auto" }}>
@@ -3334,7 +3340,7 @@ function SupView(props) {
                     <option value="hecha">Hecha</option>
                     <option value="cancelada">Cancelada</option>
                   </select>
-                  <button onClick={function() { if (isEditingM) { editingMeeting[1](null); } else { editingMeeting[1](m.id); meetNotes[1](m.notes || ""); } }} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #1E40AF", background: isEditingM ? "#1E40AF" : "#EFF6FF", color: isEditingM ? "#fff" : "#1E40AF", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{isEditingM ? "Cerrar" : "Notas"}</button>
+                  <button onClick={function() { if (isEditingM) { editingMeeting[1](null); } else { editingMeeting[1](m.id); meetNotes[1](m.notes || ""); } }} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #1E40AF", background: isEditingM ? "#1E40AF" : "#FFF8E1", color: isEditingM ? "#fff" : "#1E40AF", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{isEditingM ? "Cerrar" : "Notas"}</button>
                   <button onClick={function() { meetings[1](meetings[0].filter(function(x) { return x.id !== m.id; })); }} style={{ background: "none", border: "none", color: "#ccc", cursor: "pointer", fontSize: 16 }}>x</button>
                 </div>
                 {m.notes && !isEditingM && <div style={{ fontSize: 12, color: "#666", padding: "8px 12px", background: "#f9f9f6", borderRadius: 8, marginTop: 4 }}>{m.notes}</div>}
@@ -3418,12 +3424,12 @@ function SupView(props) {
                     <option value="aprobado">Aprobado</option>
                     <option value="descartado">Descartado</option>
                   </select>
-                  <div style={{ fontSize: 12, color: isExpanded ? "#B45309" : "#ccc", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                  <div style={{ fontSize: 12, color: isExpanded ? "#7B1D3A" : "#ccc", transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
                 </div>
 
                 {/* Expanded detail */}
                 {isExpanded && (
-                  <div style={{ marginTop: 14, borderTop: "1px solid #f0f0f0", paddingTop: 14 }}>
+                  <div style={{ marginTop: 14, borderTop: "1px solid #eee", paddingTop: 14 }}>
                     {/* Contact info */}
                     <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
                       <div style={{ padding: "10px 14px", borderRadius: 10, background: "#f9f9f6", flex: "1 1 150px" }}>
@@ -3445,7 +3451,7 @@ function SupView(props) {
                       <div style={{ background: "#fafaf8", borderRadius: 10, overflow: "hidden" }}>
                         {(pot.products || []).map(function(pp, idx) {
                           return (
-                            <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderBottom: "1px solid #f0f0f0" }}>
+                            <div key={idx} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderBottom: "1px solid #eee" }}>
                               <div style={{ flex: 1, fontSize: 13, fontWeight: 600 }}>{pp.name}</div>
                               <div style={{ fontSize: 15, fontWeight: 800, color: "#047857" }}>{pp.price.toFixed(2)} E<span style={{ fontSize: 11, fontWeight: 500, color: "#888" }}>/{pp.unit}</span></div>
                             </div>
@@ -3455,7 +3461,7 @@ function SupView(props) {
                     </div>
 
                     {/* Notes */}
-                    {pot.notes && <div style={{ fontSize: 12, color: "#1E40AF", padding: "8px 12px", background: "#EFF6FF", borderRadius: 8, marginBottom: 14 }}>{pot.notes}</div>}
+                    {pot.notes && <div style={{ fontSize: 12, color: "#1E40AF", padding: "8px 12px", background: "#FFF8E1", borderRadius: 8, marginBottom: 14 }}>{pot.notes}</div>}
 
                     {/* Actions */}
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -3533,7 +3539,7 @@ function IngView(props) {
       )}
       <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #eee", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+          <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
             <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>INGREDIENTE</th>
             <th style={{ padding: "12px 16px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>PROVEEDOR</th>
             <th style={{ padding: "12px 16px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>COSTE</th>
@@ -3548,8 +3554,8 @@ function IngView(props) {
                 <td style={{ padding: "10px 16px", textAlign: "right" }}>
                   {isEditing ? (
                     <div style={{ display: "flex", gap: 4, justifyContent: "flex-end" }}>
-                      <input autoFocus value={editVal[0]} onChange={function(e) { editVal[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") saveCost(i.id); if (e.key === "Escape") editing[1](null); }} style={{ width: 80, padding: "4px 8px", border: "2px solid #B45309", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 700 }} type="number" step="0.01" />
-                      <button onClick={function() { saveCost(i.id); }} style={{ padding: "4px 8px", borderRadius: 6, border: "none", background: "#B45309", color: "#fff", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>OK</button>
+                      <input autoFocus value={editVal[0]} onChange={function(e) { editVal[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") saveCost(i.id); if (e.key === "Escape") editing[1](null); }} style={{ width: 80, padding: "4px 8px", border: "2px solid #7B1D3A", borderRadius: 6, fontSize: 13, textAlign: "right", fontFamily: "inherit", fontWeight: 700 }} type="number" step="0.01" />
+                      <button onClick={function() { saveCost(i.id); }} style={{ padding: "4px 8px", borderRadius: 6, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>OK</button>
                     </div>
                   ) : (
                     <span onClick={props.isSocio ? function() { editing[1](i.id); editVal[1](i.costPerUnit.toString()); } : undefined} style={{ fontWeight: 700, cursor: props.isSocio ? "pointer" : "default", padding: "2px 6px", borderRadius: 4, background: props.isSocio ? "#fafaf8" : "transparent" }}>{fmt(i.costPerUnit)}</span>
@@ -3627,17 +3633,17 @@ function RecView(props) {
           var avgFC = catFCCount > 0 ? catAvgFC / catFCCount : 0;
 
           return (
-            <div key={cat} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#B4530940" : "#eee"), overflow: "hidden" }}>
+            <div key={cat} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#7B1D3A40" : "#eee"), overflow: "hidden" }}>
               <div onClick={function() { openCat[1](isOpen && !ss[0] ? null : cat); }} style={{ display: "flex", alignItems: "center", padding: "16px 20px", cursor: "pointer", gap: 12 }}>
                 <span style={{ fontSize: 22 }}>{catEmojis[cat] || "📋"}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 16, fontWeight: 700 }}>{cat}</div>
                   <div style={{ fontSize: 12, color: "#aaa" }}>{items.length} escandallos | Coste medio {fmt(catAvgCost)} | FC medio <span style={{ color: avgFC > 35 ? "#DC2626" : avgFC > 30 ? "#D97706" : "#047857", fontWeight: 700 }}>{fPct(avgFC)}</span></div>
                 </div>
-                <div style={{ width: 22, height: 22, borderRadius: 6, background: isOpen ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#B45309" : "#ccc", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                <div style={{ width: 22, height: 22, borderRadius: 6, background: isOpen ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#7B1D3A" : "#ccc", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
               </div>
               {isOpen && (
-                <div style={{ borderTop: "1px solid #f0f0f0", padding: "12px 20px" }}>
+                <div style={{ borderTop: "1px solid #eee", padding: "12px 20px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 10 }}>
                     {items.map(function(r) {
                       var cost = calcRC(r.id, props.recipes, props.ingredients, {});
@@ -3657,12 +3663,12 @@ function RecView(props) {
                           <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{r.name.replace("Esc ", "")}</div>
                           <div style={{ fontSize: 11, color: "#aaa", marginBottom: 8 }}>{(r.items || []).length} ingredientes | {r.notes}{isPack ? " | x" + packQty + " uds" : ""}</div>
                           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                            <div><div style={{ fontSize: 10, color: "#bbb", fontWeight: 600 }}>{isPack ? "COSTE/UD" : "COSTE"}</div><div style={{ fontSize: 16, fontWeight: 800, color: "#B45309" }}>{fmt(per)}</div></div>
-                            {isPack && <div><div style={{ fontSize: 10, color: "#bbb", fontWeight: 600 }}>COSTE x{packQty}</div><div style={{ fontSize: 16, fontWeight: 800, color: "#B45309" }}>{fmt(productCost)}</div></div>}
+                            <div><div style={{ fontSize: 10, color: "#bbb", fontWeight: 600 }}>{isPack ? "COSTE/UD" : "COSTE"}</div><div style={{ fontSize: 16, fontWeight: 800, color: "#7B1D3A" }}>{fmt(per)}</div></div>
+                            {isPack && <div><div style={{ fontSize: 10, color: "#bbb", fontWeight: 600 }}>COSTE x{packQty}</div><div style={{ fontSize: 16, fontWeight: 800, color: "#7B1D3A" }}>{fmt(productCost)}</div></div>}
                             {pvp > 0 && <div><div style={{ fontSize: 10, color: "#bbb", fontWeight: 600 }}>PVP {chLabel}</div><div style={{ fontSize: 16, fontWeight: 800 }}>{fmt(pvp)}</div></div>}
                             {pvp > 0 && <div><div style={{ fontSize: 10, color: "#bbb", fontWeight: 600 }}>FC {chLabel}</div><div style={{ fontSize: 16, fontWeight: 800, color: fc > 35 ? "#DC2626" : fc > 30 ? "#D97706" : "#047857" }}>{fPct(fc)}</div></div>}
                             {pvpSala > 0 && pvpDel > 0 && pvpSala !== pvpDel && (
-                              <div style={{ padding: "4px 10px", borderRadius: 6, background: isDel ? "#F0FDF4" : "#EFF6FF", alignSelf: "center" }}>
+                              <div style={{ padding: "4px 10px", borderRadius: 6, background: isDel ? "#F0FDF4" : "#FFF8E1", alignSelf: "center" }}>
                                 <div style={{ fontSize: 9, color: "#888", fontWeight: 600 }}>{isDel ? "SALA" : "DELIVERY"}</div>
                                 <div style={{ fontSize: 12, fontWeight: 600, color: "#888" }}>FC {fPct((productCost / (isDel ? pvpSala : pvpDel)) * 100)}</div>
                               </div>
@@ -3814,7 +3820,7 @@ function ProdView(props) {
               var step = idx + 1;
               var active = createStep[0] === step;
               var done = createStep[0] > step;
-              return <button key={step} onClick={function() { createStep[1](step); }} style={{ flex: 1, padding: "8px 4px", borderRadius: 8, border: "none", background: active ? "#047857" : done ? "#ECFDF5" : "#f5f5f5", color: active ? "#fff" : done ? "#047857" : "#aaa", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+              return <button key={step} onClick={function() { createStep[1](step); }} style={{ flex: 1, padding: "8px 4px", borderRadius: 8, border: "none", background: active ? "#047857" : done ? "#E8F5E9" : "#f5f5f5", color: active ? "#fff" : done ? "#047857" : "#aaa", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                 {done ? "✓ " : step + ". "}{label}
               </button>;
             })}
@@ -3886,7 +3892,7 @@ function ProdView(props) {
                           </td>
                           <td style={{ padding: "6px", textAlign: "center", color: "#888" }}>{item.unit === "ud" ? "ud" : "kg"}</td>
                           <td style={{ padding: "6px", textAlign: "right", color: "#888" }}>{item.costPerUnit.toFixed(2)}</td>
-                          <td style={{ padding: "6px", textAlign: "right", fontWeight: 700, color: "#B45309" }}>{item.lineCost.toFixed(2)}€</td>
+                          <td style={{ padding: "6px", textAlign: "right", fontWeight: 700, color: "#7B1D3A" }}>{item.lineCost.toFixed(2)}€</td>
                           <td style={{ padding: "6px", textAlign: "right", fontSize: 10, color: pct > 40 ? "#DC2626" : "#888" }}>{pct.toFixed(0)}%</td>
                           <td style={{ padding: "6px" }}><button onClick={function() { removeIng(idx); }} style={{ border: "none", background: "transparent", color: "#DC2626", cursor: "pointer", fontSize: 14 }}>×</button></td>
                         </tr>
@@ -3900,10 +3906,10 @@ function ProdView(props) {
               )}
               {/* Cost summary */}
               <div style={{ display: "flex", gap: 16, padding: "12px 16px", background: "#F0FDF4", borderRadius: 10, marginBottom: 12, flexWrap: "wrap" }}>
-                <div><span style={{ fontSize: 11, color: "#888" }}>Coste total:</span> <strong style={{ color: "#B45309", fontSize: 16 }}>{newCost.toFixed(2)}€</strong></div>
+                <div><span style={{ fontSize: 11, color: "#888" }}>Coste total:</span> <strong style={{ color: "#7B1D3A", fontSize: 16 }}>{newCost.toFixed(2)}€</strong></div>
                 <div><span style={{ fontSize: 11, color: "#888" }}>Ingredientes:</span> <strong>{newProd[0].ingredients.length}</strong></div>
                 <div><span style={{ fontSize: 11, color: "#888" }}>Peso aprox:</span> <strong>{Math.round(newProd[0].ingredients.reduce(function(s, x) { return s + (x.unit === "ud" ? 0 : x.qty * 1000); }, 0))}g</strong></div>
-                {newProd[0].packQty > 1 && <div><span style={{ fontSize: 11, color: "#888" }}>x{newProd[0].packQty} =</span> <strong style={{ color: "#B45309" }}>{(newCost * newProd[0].packQty).toFixed(2)}€</strong></div>}
+                {newProd[0].packQty > 1 && <div><span style={{ fontSize: 11, color: "#888" }}>x{newProd[0].packQty} =</span> <strong style={{ color: "#7B1D3A" }}>{(newCost * newProd[0].packQty).toFixed(2)}€</strong></div>}
               </div>
               <div style={{ display: "flex", gap: 8 }}>
                 <button onClick={function() { createStep[1](1); }} style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid #e5e5e5", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>← Atras</button>
@@ -3916,7 +3922,7 @@ function ProdView(props) {
           {createStep[0] === 3 && (
             <div>
               <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 4 }}>💰 Precios — {newProd[0].name}</div>
-              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Coste: <strong style={{ color: "#B45309" }}>{newCost.toFixed(2)}€</strong> — Pon precios por canal. Te recomendamos FC entre 25-35%.</div>
+              <div style={{ fontSize: 12, color: "#888", marginBottom: 16 }}>Coste: <strong style={{ color: "#7B1D3A" }}>{newCost.toFixed(2)}€</strong> — Pon precios por canal. Te recomendamos FC entre 25-35%.</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 16 }}>
                 {["Sala", "Uber Eats", "Glovo", "Canal Propio"].map(function(ch) {
                   var price = newProd[0].prices[ch] || 0;
@@ -3942,7 +3948,7 @@ function ProdView(props) {
                 })}
               </div>
               {/* FC guide */}
-              <div style={{ padding: "10px 14px", background: "#FFF7ED", borderRadius: 8, fontSize: 11, color: "#92400E", marginBottom: 12 }}>
+              <div style={{ padding: "10px 14px", background: "#FDF2F4", borderRadius: 8, fontSize: 11, color: "#5C1530", marginBottom: 12 }}>
                 💡 <strong>Guia FC:</strong> {"<"}25% = excelente | 25-30% = bueno | 30-35% = aceptable | {">"}35% = revisar coste o subir precio
               </div>
               <div style={{ display: "flex", gap: 8 }}>
@@ -3997,7 +4003,7 @@ function ProdView(props) {
                     var np = Object.assign({}, newProd[0]);
                     np.channels = active ? np.channels.filter(function(c) { return c !== ch; }) : np.channels.concat([ch]);
                     newProd[1](np);
-                  }} style={{ padding: "10px 20px", borderRadius: 10, border: "2px solid " + (active ? "#047857" : "#e5e5e5"), background: active ? "#ECFDF5" : "#fff", color: active ? "#047857" : "#888", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                  }} style={{ padding: "10px 20px", borderRadius: 10, border: "2px solid " + (active ? "#047857" : "#e5e5e5"), background: active ? "#E8F5E9" : "#fff", color: active ? "#047857" : "#888", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                     {active ? "✓ " : ""}{ch}
                   </button>;
                 })}
@@ -4009,7 +4015,7 @@ function ProdView(props) {
                   <div><span style={{ color: "#888" }}>Producto:</span> <strong>{newProd[0].name}</strong></div>
                   <div><span style={{ color: "#888" }}>Categoria:</span> <strong>{newProd[0].category}</strong></div>
                   <div><span style={{ color: "#888" }}>Ingredientes:</span> <strong>{newProd[0].ingredients.length}</strong></div>
-                  <div><span style={{ color: "#888" }}>Coste:</span> <strong style={{ color: "#B45309" }}>{newCost.toFixed(2)}€</strong></div>
+                  <div><span style={{ color: "#888" }}>Coste:</span> <strong style={{ color: "#7B1D3A" }}>{newCost.toFixed(2)}€</strong></div>
                   <div><span style={{ color: "#888" }}>PVP Sala:</span> <strong>{newProd[0].prices.Sala || "—"}€</strong></div>
                   <div><span style={{ color: "#888" }}>FC Sala:</span> <strong style={{ color: newProd[0].prices.Sala > 0 && (newCost / newProd[0].prices.Sala * 100) > 35 ? "#DC2626" : "#047857" }}>{newProd[0].prices.Sala > 0 ? (newCost / newProd[0].prices.Sala * 100).toFixed(1) + "%" : "—"}</strong></div>
                   <div><span style={{ color: "#888" }}>Pasos:</span> <strong>{newProd[0].steps.filter(function(s) { return s; }).length}</strong></div>
@@ -4039,17 +4045,17 @@ function ProdView(props) {
           var avgFC = catFCCount > 0 ? catAvgFC / catFCCount : 0;
 
           return (
-            <div key={cat} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isCatOpen ? "#B4530940" : "#eee"), overflow: "hidden" }}>
+            <div key={cat} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isCatOpen ? "#7B1D3A40" : "#eee"), overflow: "hidden" }}>
               <div onClick={function() { if (!ss[0] && !cs[0]) openCat[1](isCatOpen ? null : cat); }} style={{ display: "flex", alignItems: "center", padding: "16px 20px", cursor: "pointer", gap: 12 }}>
                 <span style={{ fontSize: 22 }}>{catEmojis[cat] || "📋"}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 16, fontWeight: 700 }}>{cat}</div>
                   <div style={{ fontSize: 12, color: "#aaa" }}>{catItems.length} productos | FC medio <span style={{ color: avgFC > 35 ? "#DC2626" : avgFC > 30 ? "#D97706" : "#047857", fontWeight: 700 }}>{fPct(avgFC)}</span></div>
                 </div>
-                <div style={{ width: 22, height: 22, borderRadius: 6, background: isCatOpen ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isCatOpen ? "#B45309" : "#ccc", transform: isCatOpen ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>&#9654;</div>
+                <div style={{ width: 22, height: 22, borderRadius: 6, background: isCatOpen ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isCatOpen ? "#7B1D3A" : "#ccc", transform: isCatOpen ? "rotate(90deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>&#9654;</div>
               </div>
               {isCatOpen && (
-                <div style={{ borderTop: "1px solid #f0f0f0", padding: "8px 12px" }}>
+                <div style={{ borderTop: "1px solid #eee", padding: "8px 12px" }}>
         {catItems.map(function(p) {
           var cost = props.getPC(p);
           var pvp = isDel ? (p.prices ? p.prices["Uber Eats"] || 0 : 0) : (p.prices ? p.prices.Sala || 0 : 0);
@@ -4060,11 +4066,11 @@ function ProdView(props) {
           var escItems = isOpen ? getRecipeItems(p.recipeId) : [];
 
           return (
-            <div key={p.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#B4530940" : "#eee"), overflow: "hidden", transition: "border-color 0.2s" }}>
+            <div key={p.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#7B1D3A40" : "#eee"), overflow: "hidden", transition: "border-color 0.2s" }}>
               {/* Product Row */}
               <div onClick={function() { expanded[1](isOpen ? null : p.id); }} style={{ padding: "14px 16px", cursor: "pointer" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: props.isMobile ? 8 : 0 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: 6, background: isOpen ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#B45309" : "#ccc", flexShrink: 0, transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                  <div style={{ width: 20, height: 20, borderRadius: 6, background: isOpen ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#7B1D3A" : "#ccc", flexShrink: 0, transition: "transform 0.2s", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 14, fontWeight: 600 }}>{p.name}</div>
                     <div style={{ fontSize: 11, color: "#aaa" }}>{p.category}</div>
@@ -4103,11 +4109,11 @@ function ProdView(props) {
 
               {/* Expanded Escandallo */}
               {isOpen && (
-                <div style={{ borderTop: "1px solid #f0f0f0", background: "#fafaf8" }}>
+                <div style={{ borderTop: "1px solid #eee", background: "#fafaf8" }}>
                   {/* Summary bar */}
                   <div style={{ display: "flex", gap: 16, padding: "12px 16px", flexWrap: "wrap", fontSize: 12, color: "#888" }}>
-                    <span>Escandallo: <strong style={{ color: "#333" }}>{escItems.length} ingredientes</strong></span>
-                    <span>Coste total: <strong style={{ color: "#B45309" }}>{fmt(cost)}</strong></span>
+                    <span>Escandallo: <strong style={{ color: "#5D4037" }}>{escItems.length} ingredientes</strong></span>
+                    <span>Coste total: <strong style={{ color: "#7B1D3A" }}>{fmt(cost)}</strong></span>
                     {pvp > 0 && <span>FC: <strong style={{ color: fcC }}>{fPct(fc)}</strong></span>}
                     <span>Sala: <strong>{fmt(p.prices ? p.prices.Sala || 0 : 0)}</strong></span>
                     <span>Delivery: <strong>{fmt(p.prices ? p.prices["Uber Eats"] || 0 : 0)}</strong></span>
@@ -4128,7 +4134,7 @@ function ProdView(props) {
                           var pctOfTotal = cost > 0 ? (item.lineCost / cost) * 100 : 0;
                           var isTop = idx < 2;
                           return (
-                            <tr key={idx} style={{ borderBottom: "1px solid #f0f0f0", background: isTop ? "#B4530906" : "transparent" }}>
+                            <tr key={idx} style={{ borderBottom: "1px solid #eee", background: isTop ? "#7B1D3A06" : "transparent" }}>
                               <td style={{ padding: "8px 8px", fontWeight: isTop ? 600 : 400 }}>{item.name}</td>
                               <td style={{ padding: "8px 8px", color: "#999" }}>{item.supplier}</td>
                               <td style={{ padding: "8px 8px", textAlign: "right", color: "#666" }}>{item.qty}</td>
@@ -4136,8 +4142,8 @@ function ProdView(props) {
                               <td style={{ padding: "8px 8px", textAlign: "right", fontWeight: 700 }}>{fmt(item.lineCost)}</td>
                               <td style={{ padding: "8px 8px", textAlign: "right" }}>
                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 6 }}>
-                                  <div style={{ width: 40, height: 5, borderRadius: 3, background: "#f0f0f0", overflow: "hidden" }}>
-                                    <div style={{ height: "100%", borderRadius: 3, background: pctOfTotal > 30 ? "#DC2626" : pctOfTotal > 15 ? "#B45309" : "#047857", width: Math.min(pctOfTotal, 100) + "%" }} />
+                                  <div style={{ width: 40, height: 5, borderRadius: 3, background: "#eee", overflow: "hidden" }}>
+                                    <div style={{ height: "100%", borderRadius: 3, background: pctOfTotal > 30 ? "#DC2626" : pctOfTotal > 15 ? "#7B1D3A" : "#047857", width: Math.min(pctOfTotal, 100) + "%" }} />
                                   </div>
                                   <span style={{ fontSize: 11, fontWeight: 600, color: pctOfTotal > 30 ? "#DC2626" : "#888" }}>{fPct(pctOfTotal)}</span>
                                 </div>
@@ -4158,8 +4164,8 @@ function ProdView(props) {
                     var curGlovo = p.prices ? (p.prices.Glovo || 0) : 0;
                     var curSales = p.weekSales || 0;
                     return (
-                    <div style={{ padding: "14px 16px", borderTop: "1px solid #f0f0f0", background: "#fff" }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 10 }}>EDITAR PRODUCTO</div>
+                    <div style={{ padding: "14px 16px", borderTop: "1px solid #eee", background: "#fff" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", marginBottom: 10 }}>EDITAR PRODUCTO</div>
                       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "end" }}>
                         <div style={{ minWidth: 90 }}>
                           <div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Sala</div>
@@ -4193,8 +4199,8 @@ function ProdView(props) {
                           // Save immediately with the NEW data
                           if (props.saveIngProd) props.saveIngProd(props.ingredients, updatedProducts);
                           var btn = document.getElementById("savebtn_" + pId);
-                          if (btn) { btn.textContent = "Guardado!"; btn.style.background = "#047857"; setTimeout(function() { btn.textContent = "Guardar precios"; btn.style.background = "#B45309"; }, 2000); }
-                        }} id={"savebtn_" + pId} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "#B45309", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "background 0.2s" }}>
+                          if (btn) { btn.textContent = "Guardado!"; btn.style.background = "#047857"; setTimeout(function() { btn.textContent = "Guardar precios"; btn.style.background = "#7B1D3A"; }, 2000); }
+                        }} id={"savebtn_" + pId} style={{ padding: "6px 16px", borderRadius: 6, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", transition: "background 0.2s" }}>
                           Guardar precios
                         </button>
                         <button onClick={function() {
@@ -4316,8 +4322,8 @@ function SimView(props) {
             <div>
               {/* Mode toggle */}
               <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
-                <button onClick={function() { simMode[1]("pct"); }} style={{ flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: simMode[0] === "pct" ? "2px solid #B45309" : "1px solid #e5e5e5", background: simMode[0] === "pct" ? "#B4530908" : "#fff", color: simMode[0] === "pct" ? "#B45309" : "#aaa", fontFamily: "inherit" }}>% Porcentaje</button>
-                <button onClick={function() { simMode[1]("manual"); manualPrice[1](String(selectedIngredient.costPerUnit)); }} style={{ flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: simMode[0] === "manual" ? "2px solid #B45309" : "1px solid #e5e5e5", background: simMode[0] === "manual" ? "#B4530908" : "#fff", color: simMode[0] === "manual" ? "#B45309" : "#aaa", fontFamily: "inherit" }}>Precio manual</button>
+                <button onClick={function() { simMode[1]("pct"); }} style={{ flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: simMode[0] === "pct" ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: simMode[0] === "pct" ? "#7B1D3A08" : "#fff", color: simMode[0] === "pct" ? "#7B1D3A" : "#aaa", fontFamily: "inherit" }}>% Porcentaje</button>
+                <button onClick={function() { simMode[1]("manual"); manualPrice[1](String(selectedIngredient.costPerUnit)); }} style={{ flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: simMode[0] === "manual" ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: simMode[0] === "manual" ? "#7B1D3A08" : "#fff", color: simMode[0] === "manual" ? "#7B1D3A" : "#aaa", fontFamily: "inherit" }}>Precio manual</button>
                 <button onClick={function() { simMode[1]("sustitucion"); subName[1](""); subPrice[1](""); }} style={{ flex: 1, padding: "8px 0", borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: "pointer", border: simMode[0] === "sustitucion" ? "2px solid #047857" : "1px solid #e5e5e5", background: simMode[0] === "sustitucion" ? "#04785708" : "#fff", color: simMode[0] === "sustitucion" ? "#047857" : "#aaa", fontFamily: "inherit" }}>Sustitucion</button>
               </div>
 
@@ -4327,7 +4333,7 @@ function SimView(props) {
                   <input type="range" min="-50" max="50" step="5" value={pct} onChange={function(e) { pctChange[1](parseInt(e.target.value)); }} style={{ width: "100%", marginBottom: 12 }} />
                   <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                     {[-20, -10, -5, 5, 10, 15, 20, 30].map(function(v) {
-                      return <button key={v} onClick={function() { pctChange[1](v); }} style={{ padding: "5px 10px", borderRadius: 8, border: pct === v ? "2px solid #B45309" : "1px solid #e5e5e5", background: pct === v ? "#B4530910" : "#fff", color: pct === v ? "#B45309" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{v > 0 ? "+" : ""}{v}%</button>;
+                      return <button key={v} onClick={function() { pctChange[1](v); }} style={{ padding: "5px 10px", borderRadius: 8, border: pct === v ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: pct === v ? "#7B1D3A10" : "#fff", color: pct === v ? "#7B1D3A" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{v > 0 ? "+" : ""}{v}%</button>;
                     })}
                   </div>
                 </div>
@@ -4406,12 +4412,12 @@ function SimView(props) {
           {ingImpact.slice(0, 15).map(function(i, idx) {
             return (
               <div key={i.id} onClick={function() { selIng[1](i.id); pctChange[1](10); simMode[1]("pct"); manualPrice[1](""); subName[1](""); subPrice[1](""); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "8px 6px", borderRadius: 8, cursor: "pointer", borderBottom: "1px solid #f5f5f5" }}>
-                <div style={{ width: 22, height: 22, borderRadius: 11, background: idx < 3 ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: idx < 3 ? "#B45309" : "#bbb", flexShrink: 0 }}>{idx + 1}</div>
+                <div style={{ width: 22, height: 22, borderRadius: 11, background: idx < 3 ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: idx < 3 ? "#7B1D3A" : "#bbb", flexShrink: 0 }}>{idx + 1}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{i.name}</div>
                   <div style={{ fontSize: 11, color: "#aaa" }}>{fmt(i.costPerUnit)}/{i.unit}</div>
                 </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#B45309" }}>en {i.count} prod.</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#7B1D3A" }}>en {i.count} prod.</div>
               </div>
             );
           })}
@@ -4529,7 +4535,7 @@ function PromoView(props) {
               {LOCS.map(function(loc) {
                 var a = calLocal[0] === loc;
                 var cnt = allPromos.filter(function(p) { return p.local === loc && p.estado === "activa"; }).length;
-                return <button key={loc} onClick={function() { calLocal[1](loc); promoForm[1](Object.assign({}, promoForm[0], { local: loc })); }} style={{ padding: "8px 14px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", flex: props.isMobile ? "1 1 auto" : "0 0 auto" }}>{loc} ({cnt})</button>;
+                return <button key={loc} onClick={function() { calLocal[1](loc); promoForm[1](Object.assign({}, promoForm[0], { local: loc })); }} style={{ padding: "8px 14px", borderRadius: 10, border: a ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: a ? "#7B1D3A08" : "#fff", color: a ? "#7B1D3A" : "#888", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", flex: props.isMobile ? "1 1 auto" : "0 0 auto" }}>{loc} ({cnt})</button>;
               })}
               <button onClick={function() { showAddPromo[1](!showAddPromo[0]); editId[1](null); promoForm[1]({ promo: 20, products: "", usuarios: "TODOS", local: calLocal[0], dias: ["jueves","viernes"], plataforma: "Uber", estado: "activa" }); }} style={{ padding: "8px 14px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", flex: props.isMobile ? "1 1 100%" : "0 0 auto" }}>{showAddPromo[0] ? "Cerrar" : "+ Nueva promo"}</button>
             </div>
@@ -4576,7 +4582,7 @@ function PromoView(props) {
               <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 600 }}>
                 <thead>
-                  <tr style={{ background: "#1a1a1a" }}>
+                  <tr style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)" }}>
                     <th style={{ padding: "12px 14px", textAlign: "left", color: "#888", fontWeight: 600, borderBottom: "1px solid #333", minWidth: 200 }}>PROMO</th>
                     <th style={{ padding: "12px 8px", textAlign: "center", color: "#888", fontWeight: 600, borderBottom: "1px solid #333", minWidth: 80 }}>PLATAFORMA</th>
                     <th style={{ padding: "12px 8px", textAlign: "center", color: "#888", fontWeight: 600, borderBottom: "1px solid #333" }}>USUARIOS</th>
@@ -4589,7 +4595,7 @@ function PromoView(props) {
                   {locPromos.length === 0 && <tr><td colSpan={11} style={{ padding: 30, textAlign: "center", color: "#ccc" }}>No hay promos en {calLocal[0]}</td></tr>}
                   {locPromos.map(function(p) {
                     return (
-                      <tr key={p.id} style={{ borderBottom: "1px solid #f0f0f0", opacity: p.estado === "pausada" ? 0.5 : 1 }}>
+                      <tr key={p.id} style={{ borderBottom: "1px solid #eee", opacity: p.estado === "pausada" ? 0.5 : 1 }}>
                         <td style={{ padding: "10px 14px" }}>
                           <div style={{ fontWeight: 700, fontSize: 13 }}>{p.promo}% — {p.products}</div>
                         </td>
@@ -4648,7 +4654,7 @@ function PromoView(props) {
         var gr = analyzeProducts("pct", 15, "Glovo");
         return (
           <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "repeat(auto-fit, minmax(310px, 1fr))", gap: 16 }}>
-            <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a2a1a 100%)", borderRadius: 14, padding: 20, color: "#fff" }}>
+            <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 14, padding: 20, color: "#fff" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}><span style={{ fontSize: 24 }}>🟢</span><div><div style={{ fontSize: 16, fontWeight: 800 }}>Uber Eats — 20% dto</div><div style={{ fontSize: 12, opacity: 0.6 }}>Comision 24% + 0.82E/promo</div></div></div>
               <div style={{ fontSize: 11, fontWeight: 600, color: "#4ADE80", marginBottom: 8 }}>MEJORES PARA PROMOCIONAR</div>
               {ur.filter(function(r) { return r.viable; }).slice(0, 5).map(function(r, idx) {
@@ -4676,8 +4682,8 @@ function PromoView(props) {
               <div style={{ fontSize: 14, fontWeight: 700, color: "#7C3AED", marginBottom: 14 }}>RESUMEN RAPIDO</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 <div style={{ padding: "12px 14px", borderRadius: 10, background: "#F0FDF4" }}><div style={{ fontSize: 12, fontWeight: 600, color: "#047857" }}>Descuento max seguro (Uber)</div><div style={{ fontSize: 11, color: "#666", marginTop: 4 }}>Burritos: 20% | Tacos: 25% | Nachos: 15%</div></div>
-                <div style={{ padding: "12px 14px", borderRadius: 10, background: "#FEF3C7" }}><div style={{ fontSize: 12, fontWeight: 600, color: "#92400E" }}>Nunca promocionar</div><div style={{ fontSize: 11, color: "#666", marginTop: 4 }}>Dona Juana Vegano (Heura FC altisimo)</div></div>
-                <div style={{ padding: "12px 14px", borderRadius: 10, background: "#FAF6F1" }}><div style={{ fontSize: 12, fontWeight: 600, color: "#B45309" }}>Ads Uber</div><div style={{ fontSize: 11, color: "#666", marginTop: 4 }}>{adBudgetPerLocal[0]}E/dia x 3 = {adBudgetPerLocal[0] * 3}E/dia = {adBudgetPerLocal[0] * 3 * 30}E/mes</div></div>
+                <div style={{ padding: "12px 14px", borderRadius: 10, background: "#FEF3C7" }}><div style={{ fontSize: 12, fontWeight: 600, color: "#5C1530" }}>Nunca promocionar</div><div style={{ fontSize: 11, color: "#666", marginTop: 4 }}>Dona Juana Vegano (Heura FC altisimo)</div></div>
+                <div style={{ padding: "12px 14px", borderRadius: 10, background: "#FDF2F4" }}><div style={{ fontSize: 12, fontWeight: 600, color: "#7B1D3A" }}>Ads Uber</div><div style={{ fontSize: 11, color: "#666", marginTop: 4 }}>{adBudgetPerLocal[0]}E/dia x 3 = {adBudgetPerLocal[0] * 3}E/dia = {adBudgetPerLocal[0] * 3 * 30}E/mes</div></div>
               </div>
             </div>
           </div>
@@ -4709,7 +4715,7 @@ function PromoView(props) {
           <div style={{ background: "#fff", borderRadius: 14, border: "1px solid #eee", overflow: "hidden" }}>
             <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 500 }}>
-              <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+              <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
                 <th style={{ padding: "10px 8px", textAlign: "left", fontWeight: 600, color: "#888", fontSize: 11 }}>PRODUCTO</th>
                 <th style={{ padding: "10px 8px", textAlign: "right", fontWeight: 600, color: "#888", fontSize: 11 }}>PVP</th>
                 <th style={{ padding: "10px 8px", textAlign: "right", fontWeight: 600, color: "#888", fontSize: 11 }}>PROMO</th>
@@ -4747,7 +4753,7 @@ function PromoView(props) {
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14 }}>Margen neto real por producto y plataforma (sin promo)</div>
             <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
-              <thead><tr style={{ borderBottom: "2px solid #f0f0f0" }}>
+              <thead><tr style={{ borderBottom: "2px solid #eee" }}>
                 <th style={{ padding: "8px", textAlign: "left", fontWeight: 600, color: "#888", fontSize: 11 }}>PRODUCTO</th>
                 <th style={{ padding: "8px", textAlign: "right", fontWeight: 600, color: "#888", fontSize: 11 }}>COSTE</th>
                 <th style={{ padding: "8px", textAlign: "center", fontWeight: 600, color: "#047857", fontSize: 11 }}>UBER</th>
@@ -4918,7 +4924,7 @@ function ComboView(props) {
         <div style={{ flex: 1 }} />
         {tabs.map(function(t) {
           var active = tab[0] === t.k;
-          return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: active ? "2px solid #B45309" : "1px solid #e5e5e5", background: active ? "#B4530908" : "#fff", color: active ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}</button>;
+          return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: active ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: active ? "#7B1D3A08" : "#fff", color: active ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}</button>;
         })}
       </div>
 
@@ -4979,7 +4985,7 @@ function ComboView(props) {
                         <div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>MARGEN</div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: comboMargin > 0 ? "#047857" : "#DC2626" }}>{fmt(comboMargin)}</div>
                       </div>
-                      <div style={{ padding: 12, borderRadius: 10, background: "#EFF6FF", textAlign: "center" }}>
+                      <div style={{ padding: 12, borderRadius: 10, background: "#FFF8E1", textAlign: "center" }}>
                         <div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>AHORRO CLIENTE</div>
                         <div style={{ fontSize: 20, fontWeight: 800, color: "#1E40AF" }}>-{fPct(savingsPct)}</div>
                       </div>
@@ -4999,8 +5005,8 @@ function ComboView(props) {
                     )}
                     {risky && <div style={{ padding: "10px 14px", borderRadius: 10, background: "#FEF2F2", borderLeft: "3px solid #DC2626", marginBottom: 12, fontSize: 12, color: "#991B1B" }}><strong>FC alto.</strong> Sube el precio o quita el producto mas caro.</div>}
                     {viable && <div style={{ padding: "10px 14px", borderRadius: 10, background: "#F0FDF4", borderLeft: "3px solid #047857", marginBottom: 12, fontSize: 12, color: "#065F46" }}><strong>Combo viable.</strong> Buen FC y el cliente ahorra {fPct(savingsPct)}. Listo para guardar.</div>}
-                    {price > 0 && savingsPct < 8 && !risky && <div style={{ padding: "10px 14px", borderRadius: 10, background: "#FFFBEB", borderLeft: "3px solid #D97706", marginBottom: 12, fontSize: 12, color: "#92400E" }}><strong>Ahorro bajo.</strong> El cliente solo ahorra {fPct(savingsPct)}. Un combo debe ofrecer al menos 10-15% de ahorro para que sea atractivo.</div>}
-                    <button onClick={saveCombo} disabled={comboProducts.length < 2 || price <= 0} style={{ width: "100%", padding: 14, background: viable ? "#047857" : "#B45309", color: "#fff", border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: comboProducts.length < 2 || price <= 0 ? 0.4 : 1 }}>💾 Guardar combo</button>
+                    {price > 0 && savingsPct < 8 && !risky && <div style={{ padding: "10px 14px", borderRadius: 10, background: "#FFFBEB", borderLeft: "3px solid #D97706", marginBottom: 12, fontSize: 12, color: "#5C1530" }}><strong>Ahorro bajo.</strong> El cliente solo ahorra {fPct(savingsPct)}. Un combo debe ofrecer al menos 10-15% de ahorro para que sea atractivo.</div>}
+                    <button onClick={saveCombo} disabled={comboProducts.length < 2 || price <= 0} style={{ width: "100%", padding: 14, background: viable ? "#047857" : "#7B1D3A", color: "#fff", border: "none", borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: comboProducts.length < 2 || price <= 0 ? 0.4 : 1 }}>💾 Guardar combo</button>
                   </div>
                 )}
               </div>
@@ -5027,7 +5033,7 @@ function ComboView(props) {
                     </div>
                     <span style={{ padding: "4px 12px", borderRadius: 8, background: sc + "12", color: sc, fontSize: 11, fontWeight: 700, cursor: "pointer" }} onClick={function() { toggleComboStatus(c.id); }}>{statusLabels[c.status]} ▾</span>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 24, fontWeight: 800, color: "#B45309" }}>{fmt(c.price)}</div>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: "#7B1D3A" }}>{fmt(c.price)}</div>
                     </div>
                   </div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 12 }}>
@@ -5052,7 +5058,7 @@ function ComboView(props) {
                       <div style={{ fontSize: 9, color: "#888", fontWeight: 600 }}>MARGEN</div>
                       <div style={{ fontSize: 16, fontWeight: 800, color: "#047857" }}>{fmt(c.margin)}</div>
                     </div>
-                    <div style={{ padding: "8px 10px", borderRadius: 8, background: "#EFF6FF", textAlign: "center" }}>
+                    <div style={{ padding: "8px 10px", borderRadius: 8, background: "#FFF8E1", textAlign: "center" }}>
                       <div style={{ fontSize: 9, color: "#888", fontWeight: 600 }}>AHORRO</div>
                       <div style={{ fontSize: 16, fontWeight: 800, color: "#1E40AF" }}>-{fPct(c.savingPct)}</div>
                     </div>
@@ -5125,7 +5131,7 @@ function ComboView(props) {
                       <div style={{ fontSize: 12, color: "#888" }}>{combo.desc}</div>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 24, fontWeight: 800, color: "#B45309" }}>{fmt(combo.suggested)}</div>
+                      <div style={{ fontSize: 24, fontWeight: 800, color: "#7B1D3A" }}>{fmt(combo.suggested)}</div>
                       <div style={{ fontSize: 11, color: "#888" }}>PVP sugerido</div>
                     </div>
                   </div>
@@ -5136,10 +5142,10 @@ function ComboView(props) {
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: "#fafaf8", textAlign: "center", fontSize: 12 }}><div style={{ color: "#888", fontSize: 9, fontWeight: 600 }}>COSTE</div><div style={{ fontWeight: 700 }}>{fmt(combo.cost)}</div></div>
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: "#fafaf8", textAlign: "center", fontSize: 12 }}><div style={{ color: "#888", fontSize: 9, fontWeight: 600 }}>SEPARADO</div><div style={{ fontWeight: 700 }}>{fmt(combo.individual)}</div></div>
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: combo.fc > 35 ? "#FEF2F2" : "#F0FDF4", textAlign: "center", fontSize: 12 }}><div style={{ color: "#888", fontSize: 9, fontWeight: 600 }}>FC</div><div style={{ fontWeight: 700, color: combo.fc > 35 ? "#DC2626" : "#047857" }}>{fPct(combo.fc)}</div></div>
-                    <div style={{ padding: "8px 10px", borderRadius: 8, background: "#EFF6FF", textAlign: "center", fontSize: 12 }}><div style={{ color: "#888", fontSize: 9, fontWeight: 600 }}>AHORRO</div><div style={{ fontWeight: 700, color: "#1E40AF" }}>-{fPct(combo.saving)}</div></div>
+                    <div style={{ padding: "8px 10px", borderRadius: 8, background: "#FFF8E1", textAlign: "center", fontSize: 12 }}><div style={{ color: "#888", fontSize: 9, fontWeight: 600 }}>AHORRO</div><div style={{ fontWeight: 700, color: "#1E40AF" }}>-{fPct(combo.saving)}</div></div>
                     <div style={{ padding: "8px 10px", borderRadius: 8, background: mgReal < 2 ? "#FEF2F2" : "#7C3AED08", textAlign: "center", fontSize: 12 }}><div style={{ color: "#888", fontSize: 9, fontWeight: 600 }}>MG UBER</div><div style={{ fontWeight: 700, color: mgReal < 2 ? "#DC2626" : "#7C3AED" }}>{fmt(mgReal)}</div></div>
                   </div>
-                  <div style={{ padding: "8px 12px", borderRadius: 8, background: "#FFFBEB", borderLeft: "3px solid #D97706", fontSize: 12, color: "#92400E", lineHeight: 1.5 }}>{combo.tip}</div>
+                  <div style={{ padding: "8px 12px", borderRadius: 8, background: "#FFFBEB", borderLeft: "3px solid #D97706", fontSize: 12, color: "#5C1530", lineHeight: 1.5 }}>{combo.tip}</div>
                 </div>
               );
             });
@@ -5236,14 +5242,14 @@ function PricingView(props) {
   function statusColor(s) {
     if (s === "critical") return "#DC2626";
     if (s === "high") return "#D97706";
-    if (s === "watch") return "#B45309";
+    if (s === "watch") return "#7B1D3A";
     if (s === "good" || s === "premium") return "#047857";
     return "#555";
   }
   function statusBg(s) {
     if (s === "critical") return "#FEF2F2";
     if (s === "high") return "#FFFBEB";
-    if (s === "watch") return "#FFF7ED";
+    if (s === "watch") return "#FDF2F4";
     return "transparent";
   }
 
@@ -5317,7 +5323,7 @@ function PricingView(props) {
 
       {/* MAIN TABLE - all products with recommendations */}
       <div style={{ ...crd, padding: 0, overflow: "hidden", marginBottom: 20 }}>
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid #f0f0f0", background: "#fafaf8" }}>
+        <div style={{ padding: "16px 20px", borderBottom: "1px solid #eee", background: "#fafaf8" }}>
           <div style={{ fontSize: 14, fontWeight: 700 }}>Todos los productos - {isDel ? "Delivery" : "Sala"}</div>
           <div style={{ fontSize: 12, color: "#888" }}>Precio ideal calculado para FC 30% (punto optimo rentabilidad)</div>
         </div>
@@ -5325,7 +5331,7 @@ function PricingView(props) {
         {!props.isMobile && (
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead><tr style={{ borderBottom: "2px solid #f0f0f0" }}>
+            <thead><tr style={{ borderBottom: "2px solid #eee" }}>
               <th style={{ padding: "10px 16px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>PRODUCTO</th>
               <th style={{ padding: "10px 16px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>COSTE MP</th>
               <th style={{ padding: "10px 16px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>PVP ACTUAL</th>
@@ -5511,10 +5517,10 @@ function PricingView(props) {
                     <span style={{ fontSize: 16, fontWeight: 800, color: fcC }}>{fPct(c.avgFC)}</span>
                   </div>
                   <div style={{ display: "flex", gap: 16, fontSize: 12, color: "#888" }}>
-                    <span>PVP medio <strong style={{ color: "#333" }}>{fmt(c.avgPvp)}</strong></span>
+                    <span>PVP medio <strong style={{ color: "#5D4037" }}>{fmt(c.avgPvp)}</strong></span>
                     <span>Margen <strong style={{ color: "#047857" }}>{fmt(c.avgMg)}</strong></span>
                   </div>
-                  <div style={{ marginTop: 6, height: 5, borderRadius: 3, background: "#f0f0f0" }}>
+                  <div style={{ marginTop: 6, height: 5, borderRadius: 3, background: "#eee" }}>
                     <div style={{ height: "100%", borderRadius: 3, width: Math.min(c.avgFC, 60) / 60 * 100 + "%", background: fcC }} />
                   </div>
                 </div>
@@ -5574,7 +5580,7 @@ function PricingView(props) {
           studies.push({id:d.id,name:d.name,category:d.category,cost:d.cost,sala:d.sala,del:d.del,fc:d.fc,margin:d.margin,vTier:vTier,vLabel:vLabel,mainProt:mainProt,premC:premC,ingNames:ingNames,idSala:idSala,idDel:idDel,ingUber:ingUber,mgUber:mgUber,fcUber:fcUber,mkup:mkup,recS:recS,recD:recD,recs:recs,ws:d.weekSales||0});
         }
         var tC={premium:"#7C3AED",alto:"#1E40AF",standard:"#555"};
-        var rC={subir:"#DC2626",delivery:"#7C3AED",premium:"#047857",psych:"#D97706",coherencia:"#1E40AF",mercado:"#B45309",ok:"#047857"};
+        var rC={subir:"#DC2626",delivery:"#7C3AED",premium:"#047857",psych:"#D97706",coherencia:"#1E40AF",mercado:"#7B1D3A",ok:"#047857"};
         return (
           <div style={{display:"flex",flexDirection:"column",gap:10,marginTop:12}}>
             {studies.sort(function(a,b){return b.fc-a.fc;}).map(function(s){
@@ -5597,9 +5603,9 @@ function PricingView(props) {
                     <div style={{fontSize:12,color:isO?mC:"#ccc",transform:isO?"rotate(90deg)":"rotate(0deg)"}}>&#9654;</div>
                   </div>
                   {isO&&(
-                    <div style={{borderTop:"1px solid #f0f0f0",padding:"16px 20px"}}>
+                    <div style={{borderTop:"1px solid #eee",padding:"16px 20px"}}>
                       <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
-                        <div style={{padding:"10px 16px",borderRadius:10,background:"#fafaf8",flex:"1 1 100px",textAlign:"center"}}><div style={{fontSize:10,color:"#888",fontWeight:600}}>COSTE MP</div><div style={{fontSize:18,fontWeight:800,color:"#B45309"}}>{fmt(s.cost)}</div></div>
+                        <div style={{padding:"10px 16px",borderRadius:10,background:"#fafaf8",flex:"1 1 100px",textAlign:"center"}}><div style={{fontSize:10,color:"#888",fontWeight:600}}>COSTE MP</div><div style={{fontSize:18,fontWeight:800,color:"#7B1D3A"}}>{fmt(s.cost)}</div></div>
                         <div style={{padding:"10px 16px",borderRadius:10,background:"#fafaf8",flex:"1 1 100px",textAlign:"center"}}><div style={{fontSize:10,color:"#888",fontWeight:600}}>MARGEN SALA</div><div style={{fontSize:18,fontWeight:800,color:"#047857"}}>{fmt(s.margin)}</div></div>
                         <div style={{padding:"10px 16px",borderRadius:10,background:"#fafaf8",flex:"1 1 100px",textAlign:"center"}}><div style={{fontSize:10,color:"#888",fontWeight:600}}>INGRESO UBER</div><div style={{fontSize:18,fontWeight:800,color:"#7C3AED"}}>{fmt(s.ingUber)}</div><div style={{fontSize:10,color:"#aaa"}}>-24% comision</div></div>
                         <div style={{padding:"10px 16px",borderRadius:10,background:s.mgUber<2?"#FEF2F2":"#fafaf8",flex:"1 1 100px",textAlign:"center"}}><div style={{fontSize:10,color:"#888",fontWeight:600}}>MARGEN UBER</div><div style={{fontSize:18,fontWeight:800,color:s.mgUber<2?"#DC2626":"#047857"}}>{fmt(s.mgUber)}</div><div style={{fontSize:10,color:"#aaa"}}>FC {fPct(s.fcUber)}</div></div>
@@ -5613,7 +5619,7 @@ function PricingView(props) {
                             {s.recS!==s.sala&&<div style={{textAlign:"right"}}><div style={{fontSize:10,color:"#047857"}}>Recomendado</div><div style={{fontSize:22,fontWeight:800,color:"#047857"}}>{fmt(s.recS)}</div></div>}
                           </div>
                         </div>
-                        <div style={{flex:"1 1 200px",padding:"14px 18px",borderRadius:12,background:"#EFF6FF",border:"1px solid #1E40AF20"}}>
+                        <div style={{flex:"1 1 200px",padding:"14px 18px",borderRadius:12,background:"#FFF8E1",border:"1px solid #1E40AF20"}}>
                           <div style={{fontSize:11,fontWeight:700,color:"#1E40AF",marginBottom:8}}>DELIVERY</div>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                             <div><div style={{fontSize:10,color:"#888"}}>Actual</div><div style={{fontSize:22,fontWeight:800}}>{fmt(s.del)}</div></div>
@@ -5655,7 +5661,7 @@ function PricingView(props) {
             <div style={{background:"#fff",borderRadius:14,padding:20,border:"1px solid #eee",marginTop:8}}>
               <div style={{fontSize:14,fontWeight:700,marginBottom:12}}>Contexto: Sevilla, fast-casual mexicano</div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(240px, 1fr))",gap:12,fontSize:13,color:"#555",lineHeight:1.7}}>
-                <div><div style={{fontSize:11,fontWeight:700,color:"#B45309",marginBottom:4}}>RANGOS MERCADO SEVILLA</div>Burritos: 9.50-12.50. Bowls: 9.50-12.00. Tacos x3: 8.90-11.90. Quesadillas: 7.90-9.90. Nachos: 8.50-12.00. Entrantes: 5.90-8.50.</div>
+                <div><div style={{fontSize:11,fontWeight:700,color:"#7B1D3A",marginBottom:4}}>RANGOS MERCADO SEVILLA</div>Burritos: 9.50-12.50. Bowls: 9.50-12.00. Tacos x3: 8.90-11.90. Quesadillas: 7.90-9.90. Nachos: 8.50-12.00. Entrantes: 5.90-8.50.</div>
                 <div><div style={{fontSize:11,fontWeight:700,color:"#1E40AF",marginBottom:4}}>PRECIOS PSICOLOGICOS</div>.90 y .95 se perciben como el euro anterior. 9.90 parece 9, 10.00 parece 10. Siempre usa .90, .95 o .50. Nunca euros redondos.</div>
                 <div><div style={{fontSize:11,fontWeight:700,color:"#7C3AED",marginBottom:4}}>MARKUP DELIVERY</div>El cliente acepta 10-15% mas en delivery. Con 24% comision Uber (23% Glovo), markup minimo 10%, ideal 15%. Sin markup pierdes dinero en cada pedido.</div>
                 <div><div style={{fontSize:11,fontWeight:700,color:"#047857",marginBottom:4}}>COHERENCIA DE CARTA</div>Misma categoria, mismo precio: simplifica la decision. Si diferencias, maximo +1.50 sobre el basico y que el ingrediente premium sea obvio.</div>
@@ -5759,7 +5765,7 @@ function MatrixView(props) {
           </div>
           <div style={{ marginLeft: "auto", fontSize: 22, fontWeight: 800, color: color }}>{items.length}</div>
         </div>
-        <div style={{ fontSize: 12, color: "#888", padding: "8px 0 12px", borderBottom: "1px solid #f0f0f0", marginBottom: 8, lineHeight: 1.5 }}>{advice}</div>
+        <div style={{ fontSize: 12, color: "#888", padding: "8px 0 12px", borderBottom: "1px solid #eee", marginBottom: 8, lineHeight: 1.5 }}>{advice}</div>
         {items.map(function(p, idx) {
           return (
             <div key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 6px", borderBottom: "1px solid #f8f8f8" }}>
@@ -5875,8 +5881,8 @@ function FichasView(props) {
               <div onClick={function() { openCat[1](isCatOpen && !ss[0] ? null : cat); }} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "#fff", borderRadius: 12, border: "1px solid #eee", cursor: "pointer", marginBottom: isCatOpen ? 8 : 0 }}>
                 <span style={{ fontSize: 22 }}>{catEmojis[cat] || "📋"}</span>
                 <div style={{ flex: 1, fontSize: 16, fontWeight: 700 }}>{cat}</div>
-                <Pill t={catItems.length + " fichas"} c="#B45309" />
-                <div style={{ fontSize: 12, color: isCatOpen ? "#B45309" : "#ccc", transform: isCatOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                <Pill t={catItems.length + " fichas"} c="#7B1D3A" />
+                <div style={{ fontSize: 12, color: isCatOpen ? "#7B1D3A" : "#ccc", transform: isCatOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
               </div>
 
               {/* Fichas in category */}
@@ -5895,35 +5901,35 @@ function FichasView(props) {
                     var isEditingSteps = editingSteps[0] === r.id;
 
                     return (
-                      <div key={r.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#B4530940" : "#eee"), overflow: "hidden" }}>
+                      <div key={r.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#7B1D3A40" : "#eee"), overflow: "hidden" }}>
                         <div onClick={function() { expanded[1](isOpen ? null : r.id); }} style={{ display: "flex", alignItems: "center", padding: "14px 18px", cursor: "pointer", gap: 12 }}>
-                          <div style={{ width: 20, height: 20, borderRadius: 5, background: isOpen ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: isOpen ? "#B45309" : "#ccc", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                          <div style={{ width: 20, height: 20, borderRadius: 5, background: isOpen ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: isOpen ? "#7B1D3A" : "#ccc", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
                           <div style={{ flex: 1 }}>
                             <div style={{ fontSize: 14, fontWeight: 700 }}>{r.name.replace("Esc ", "")}</div>
                             <div style={{ fontSize: 11, color: "#aaa" }}>{(r.items || []).length} ingr. | {steps.length} pasos | {r.notes}</div>
                           </div>
                           <div style={{ textAlign: "right" }}>
-                            <div style={{ fontSize: 15, fontWeight: 800, color: "#B45309" }}>{fmt(productCost)}</div>
+                            <div style={{ fontSize: 15, fontWeight: 800, color: "#7B1D3A" }}>{fmt(productCost)}</div>
                             {sala > 0 && <div style={{ fontSize: 11, color: fc > 35 ? "#DC2626" : "#047857" }}>FC {fPct(fc)}</div>}
                           </div>
                         </div>
 
                         {isOpen && (
-                          <div style={{ borderTop: "1px solid #f0f0f0" }}>
+                          <div style={{ borderTop: "1px solid #eee" }}>
                             {linkedProduct && (
                               <div style={{ display: "flex", gap: 14, padding: "12px 18px", background: "#fafaf8", flexWrap: "wrap", fontSize: 12, color: "#888" }}>
-                                <span>Producto: <strong style={{ color: "#333" }}>{linkedProduct.name}</strong></span>
+                                <span>Producto: <strong style={{ color: "#5D4037" }}>{linkedProduct.name}</strong></span>
                                 <span>PVP Sala: <strong>{fmt(sala)}</strong></span>
                                 <span>PVP Delivery: <strong>{fmt(linkedProduct.prices ? linkedProduct.prices["Uber Eats"] || 0 : 0)}</strong></span>
-                                <span>Coste: <strong style={{ color: "#B45309" }}>{fmt(productCost)}</strong>{packQty > 1 ? " (x" + packQty + ")" : ""}</span>
+                                <span>Coste: <strong style={{ color: "#7B1D3A" }}>{fmt(productCost)}</strong>{packQty > 1 ? " (x" + packQty + ")" : ""}</span>
                                 <span>FC: <strong style={{ color: fc > 35 ? "#DC2626" : "#047857" }}>{fPct(fc)}</strong></span>
                               </div>
                             )}
 
                             <div style={{ display: "grid", gridTemplateColumns: steps.length > 0 || isEditingSteps ? "1fr 1fr" : "1fr", gap: 0 }}>
                               {/* Ingredients */}
-                              <div style={{ padding: "14px 18px", borderRight: "1px solid #f0f0f0" }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#B45309" }}>INGREDIENTES</div>
+                              <div style={{ padding: "14px 18px", borderRight: "1px solid #eee" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8, color: "#7B1D3A" }}>INGREDIENTES</div>
                                 {(function() {
                                   var lines = [];
                                   for (var li = 0; li < (r.items || []).length; li++) {
@@ -5941,7 +5947,7 @@ function FichasView(props) {
                                         <div style={{ flex: 1 }}><span style={{ fontWeight: idx < 2 ? 600 : 400 }}>{l.name}</span><br /><span style={{ fontSize: 10, color: "#bbb" }}>{l.sup}</span></div>
                                         <span style={{ color: "#666", minWidth: 40, textAlign: "right" }}>{l.qty}</span>
                                         <span style={{ fontWeight: 600, minWidth: 45, textAlign: "right" }}>{fmt(l.lc)}</span>
-                                        <div style={{ width: 28, height: 4, borderRadius: 2, background: "#f0f0f0", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 2, background: l.pct > 30 ? "#DC2626" : l.pct > 15 ? "#B45309" : "#047857", width: Math.min(l.pct, 100) + "%" }} /></div>
+                                        <div style={{ width: 28, height: 4, borderRadius: 2, background: "#eee", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: 2, background: l.pct > 30 ? "#DC2626" : l.pct > 15 ? "#7B1D3A" : "#047857", width: Math.min(l.pct, 100) + "%" }} /></div>
                                       </div>
                                     );
                                   });
@@ -5952,7 +5958,7 @@ function FichasView(props) {
                               <div style={{ padding: "14px 18px" }}>
                                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
                                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF" }}>PREPARACION</div>
-                                  <button onClick={function() { editingSteps[1](isEditingSteps ? null : r.id); newStep[1](""); }} style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid " + (isEditingSteps ? "#DC2626" : "#1E40AF"), background: isEditingSteps ? "#FEF2F2" : "#EFF6FF", color: isEditingSteps ? "#DC2626" : "#1E40AF", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{isEditingSteps ? "Cerrar" : "Editar"}</button>
+                                  <button onClick={function() { editingSteps[1](isEditingSteps ? null : r.id); newStep[1](""); }} style={{ padding: "3px 10px", borderRadius: 6, border: "1px solid " + (isEditingSteps ? "#DC2626" : "#1E40AF"), background: isEditingSteps ? "#FEF2F2" : "#FFF8E1", color: isEditingSteps ? "#DC2626" : "#1E40AF", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{isEditingSteps ? "Cerrar" : "Editar"}</button>
                                 </div>
                                 {steps.map(function(step, idx) {
                                   return (
@@ -6058,16 +6064,16 @@ function FichasEmpView(props) {
           if (!last || (Date.now() - new Date(last.cleanedAt).getTime()) > 5 * 86400000) alertZones++;
         }
         return (
-          <div onClick={function() { props.setPage("pizarra"); }} style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", border: "1px solid #eee", borderLeft: "4px solid #B45309", marginBottom: 16, cursor: "pointer" }}>
+          <div onClick={function() { props.setPage("pizarra"); }} style={{ background: "#fff", borderRadius: 14, padding: "14px 18px", border: "1px solid #eee", borderLeft: "4px solid #7B1D3A", marginBottom: 16, cursor: "pointer" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
               <span style={{ fontSize: 18 }}>📋</span>
               <div style={{ flex: 1, fontSize: 14, fontWeight: 700 }}>Pizarra — {miLocal}</div>
-              <span style={{ fontSize: 11, color: "#B45309" }}>Abrir →</span>
+              <span style={{ fontSize: 11, color: "#7B1D3A" }}>Abrir →</span>
             </div>
             {pending.length > 0 ? (
               <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                 {prepPend.length > 0 && <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#FEF3C7", color: "#D97706" }}>🍳 {prepPend.length} preparaciones</span>}
-                {pending.length - prepPend.length > 0 && <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#EFF6FF", color: "#1E40AF" }}>+{pending.length - prepPend.length} mas</span>}
+                {pending.length - prepPend.length > 0 && <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#FFF8E1", color: "#1E40AF" }}>+{pending.length - prepPend.length} mas</span>}
                 {alertZones > 0 && <span style={{ padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 700, background: "#FEF2F2", color: "#DC2626" }}>🧹 {alertZones} limpieza</span>}
               </div>
             ) : (
@@ -6150,15 +6156,15 @@ function FichasEmpView(props) {
                           <Pill t={steps.length + " pasos"} c="#1E40AF" />
                         </div>
                         {isOpen && (
-                          <div style={{ borderTop: "1px solid #f0f0f0" }}>
+                          <div style={{ borderTop: "1px solid #eee" }}>
                             <div style={{ display: "grid", gridTemplateColumns: steps.length > 0 ? "1fr 1fr" : "1fr", gap: 0 }}>
-                              <div style={{ padding: "14px 18px", borderRight: steps.length > 0 ? "1px solid #f0f0f0" : "none" }}>
-                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, color: "#B45309" }}>INGREDIENTES Y CANTIDADES</div>
+                              <div style={{ padding: "14px 18px", borderRight: steps.length > 0 ? "1px solid #eee" : "none" }}>
+                                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, color: "#7B1D3A" }}>INGREDIENTES Y CANTIDADES</div>
                                 {ingList.map(function(item, idx) {
                                   return (
                                     <div key={idx} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 4px", borderBottom: "1px solid #f8f8f8" }}>
                                       <span style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</span>
-                                      <span style={{ fontSize: 13, fontWeight: 700, color: "#B45309", background: "#B4530908", padding: "2px 8px", borderRadius: 6 }}>{item.qty}</span>
+                                      <span style={{ fontSize: 13, fontWeight: 700, color: "#7B1D3A", background: "#7B1D3A08", padding: "2px 8px", borderRadius: 6 }}>{item.qty}</span>
                                     </div>
                                   );
                                 })}
@@ -6170,7 +6176,7 @@ function FichasEmpView(props) {
                                     return (
                                       <div key={idx} style={{ display: "flex", gap: 10, marginBottom: 8 }}>
                                         <div style={{ width: 24, height: 24, borderRadius: 12, background: "#1E40AF10", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#1E40AF", flexShrink: 0 }}>{idx + 1}</div>
-                                        <div style={{ fontSize: 13, color: "#333", lineHeight: 1.6, paddingTop: 2 }}>{step}</div>
+                                        <div style={{ fontSize: 13, color: "#5D4037", lineHeight: 1.6, paddingTop: 2 }}>{step}</div>
                                       </div>
                                     );
                                   })}
@@ -6243,7 +6249,7 @@ function StockView(props) {
           <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626", marginBottom: 10 }}>ALERTAS ACTIVAS ({activeAlerts.length})</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {activeAlerts.map(function(a) {
-              var levelInfo = { out: { emoji: "🔴", label: "AGOTADO", bg: "#FEE2E2", border: "#FECACA", color: "#991B1B" }, low: { emoji: "🟡", label: "BAJO", bg: "#FEF3C7", border: "#FDE68A", color: "#92400E" }, bad: { emoji: "🟣", label: "MALO", bg: "#F3E8FF", border: "#DDD6FE", color: "#6D28D9" }, expires: { emoji: "🩷", label: "CADUCA", bg: "#FCE7F3", border: "#FBCFE8", color: "#9D174D" } };
+              var levelInfo = { out: { emoji: "🔴", label: "AGOTADO", bg: "#FEE2E2", border: "#FECACA", color: "#991B1B" }, low: { emoji: "🟡", label: "BAJO", bg: "#FEF3C7", border: "#FDE68A", color: "#5C1530" }, bad: { emoji: "🟣", label: "MALO", bg: "#F3E8FF", border: "#DDD6FE", color: "#6D28D9" }, expires: { emoji: "🩷", label: "CADUCA", bg: "#FCE7F3", border: "#FBCFE8", color: "#9D174D" } };
               var li = levelInfo[a.level] || levelInfo.low;
               return (
                 <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 10, background: li.bg, border: "1px solid " + li.border }}>
@@ -6361,7 +6367,7 @@ function IncidenciasView(props) {
               {categories.map(function(cat) {
                 var active = formCat[0] === cat.k;
                 return (
-                  <button key={cat.k} onClick={function() { formCat[1](cat.k); }} style={{ padding: "8px 14px", borderRadius: 8, border: active ? "2px solid #B45309" : "1px solid #e5e5e5", background: active ? "#B4530908" : "#fff", color: active ? "#B45309" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                  <button key={cat.k} onClick={function() { formCat[1](cat.k); }} style={{ padding: "8px 14px", borderRadius: 8, border: active ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: active ? "#7B1D3A08" : "#fff", color: active ? "#7B1D3A" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                     {cat.emoji} {cat.l}
                   </button>
                 );
@@ -6381,7 +6387,7 @@ function IncidenciasView(props) {
             </label>
           </div>
 
-          <button onClick={addIncident} disabled={!formDesc[0].trim()} style={{ width: "100%", padding: 12, background: "#B45309", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: formDesc[0].trim() ? 1 : 0.4 }}>Enviar incidencia</button>
+          <button onClick={addIncident} disabled={!formDesc[0].trim()} style={{ width: "100%", padding: 12, background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: formDesc[0].trim() ? 1 : 0.4 }}>Enviar incidencia</button>
         </div>
 
         {/* Incidents list */}
@@ -6400,7 +6406,7 @@ function IncidenciasView(props) {
               {["Todos"].concat(LOCALS).map(function(loc) {
                 var count = loc === "Todos" ? incidents[0].length : incidents[0].filter(function(x) { return x.local === loc; }).length;
                 return (
-                  <button key={loc} onClick={function() { incLocalF[1](loc); }} style={{ padding: "5px 12px", borderRadius: 6, border: incLocalF[0] === loc ? "2px solid #B45309" : "1px solid #e5e5e5", background: incLocalF[0] === loc ? "#B4530908" : "#fff", color: incLocalF[0] === loc ? "#B45309" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                  <button key={loc} onClick={function() { incLocalF[1](loc); }} style={{ padding: "5px 12px", borderRadius: 6, border: incLocalF[0] === loc ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: incLocalF[0] === loc ? "#7B1D3A08" : "#fff", color: incLocalF[0] === loc ? "#7B1D3A" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                     {loc} ({count})
                   </button>
                 );
@@ -6473,7 +6479,7 @@ function EquipoView(props) {
   var empleados = team[0].filter(function(m) { return m.role === "empleado"; });
 
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
-  var roleColors = { socio: "#B45309", encargado: "#047857", empleado: "#1E40AF" };
+  var roleColors = { socio: "#7B1D3A", encargado: "#047857", empleado: "#1E40AF" };
 
   function MemberRow(m) {
     var rc = roleColors[m.role] || "#888";
@@ -6524,7 +6530,7 @@ function EquipoView(props) {
               </select>
             </div>
           )}
-          <button onClick={addMember} disabled={!formName[0].trim()} style={{ width: "100%", padding: 12, background: "#B45309", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: formName[0].trim() ? 1 : 0.4 }}>Agregar miembro</button>
+          <button onClick={addMember} disabled={!formName[0].trim()} style={{ width: "100%", padding: 12, background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", opacity: formName[0].trim() ? 1 : 0.4 }}>Agregar miembro</button>
         </div>
 
         {/* Team list */}
@@ -6532,13 +6538,13 @@ function EquipoView(props) {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
             <div style={{ fontSize: 14, fontWeight: 700 }}>Equipo actual</div>
             <div style={{ display: "flex", gap: 6 }}>
-              <Pill t={socios.length + " socios"} c="#B45309" />
+              <Pill t={socios.length + " socios"} c="#7B1D3A" />
               <Pill t={encargados.length + " encarg."} c="#047857" />
               <Pill t={empleados.length + " empl."} c="#1E40AF" />
             </div>
           </div>
 
-          {socios.length > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 4, marginTop: 8 }}>SOCIOS</div>}
+          {socios.length > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", marginBottom: 4, marginTop: 8 }}>SOCIOS</div>}
           {socios.map(MemberRow)}
           {encargados.length > 0 && <div style={{ fontSize: 12, fontWeight: 700, color: "#047857", marginBottom: 4, marginTop: 12 }}>ENCARGADOS</div>}
           {encargados.map(MemberRow)}
@@ -6581,11 +6587,13 @@ function GestionView(props) {
   var addMode = useState(false);
   var newForm = useState({});
   var teamMembers = useState([
-    { id: "t1", name: "Carlos", role: "encargado", local: "San Luis", phone: "654 123 456", active: true },
-    { id: "t2", name: "Maria", role: "encargado", local: "Sevilla Este", phone: "654 789 012", active: true },
-    { id: "t3", name: "Pedro", role: "empleado", local: "San Luis", phone: "654 345 678", active: true },
-    { id: "t4", name: "Ana", role: "empleado", local: "Los Remedios", phone: "654 901 234", active: true },
-    { id: "t5", name: "Luis", role: "empleado", local: "Sevilla Este", phone: "654 567 890", active: true },
+    { id: "t1", name: "Jesus", role: "encargado", local: "Los Remedios", phone: "", active: true },
+    { id: "t2", name: "Nando", role: "encargado", local: "Sevilla Este", phone: "", active: true },
+    { id: "t3", name: "Pupu", role: "empleado", local: "Los Remedios", phone: "", active: true },
+    { id: "t4", name: "Paula", role: "empleado", local: "Sevilla Este", phone: "", active: true },
+    { id: "t5", name: "Pablo", role: "empleado", local: "Sevilla Este", phone: "", active: true },
+    { id: "t6", name: "Andy", role: "empleado", local: "Los Remedios", phone: "", active: true },
+    { id: "t7", name: "Maria", role: "community", local: "", phone: "", active: true },
   ]);
   var filterIng = useState("");
   var confirmReset = useState(false);
@@ -6605,7 +6613,7 @@ function GestionView(props) {
 
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
   var inp = { width: "100%", padding: "10px 12px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, boxSizing: "border-box", fontFamily: "inherit" };
-  var btn = { padding: "8px 18px", background: "#B45309", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
+  var btn = { padding: "8px 18px", background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
 
   // ── PRODUCTOS TAB ──
   function renderProductos() {
@@ -6653,7 +6661,7 @@ function GestionView(props) {
         )}
         <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+            <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
               <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>PRODUCTO</th>
               <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>CAT.</th>
               <th style={{ padding: "10px 14px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>SALA</th>
@@ -6667,7 +6675,7 @@ function GestionView(props) {
                 if (isEditing) {
                   var ef = editForm[0];
                   return (
-                    <tr key={p.id} style={{ borderBottom: "1px solid #f0f0f0", background: "#FFFBEB" }}>
+                    <tr key={p.id} style={{ borderBottom: "1px solid #eee", background: "#FFFBEB" }}>
                       <td style={{ padding: "8px 14px", fontWeight: 600 }}>{p.name}</td>
                       <td style={{ padding: "8px 14px" }}>{p.category}</td>
                       <td style={{ padding: "8px 14px" }}><input type="number" step="0.05" value={ef.sala || ""} onChange={function(e) { editForm[1](Object.assign({}, ef, { sala: e.target.value })); }} style={{ ...inp, width: 80, textAlign: "right", padding: "6px 8px" }} /></td>
@@ -6712,7 +6720,7 @@ function GestionView(props) {
         <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>Actualiza precios de proveedor. Click para editar.</div>
         <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+            <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
               <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>INGREDIENTE</th>
               <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>CATEGORIA</th>
               <th style={{ padding: "10px 14px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>COSTE/UD</th>
@@ -6725,7 +6733,7 @@ function GestionView(props) {
                 if (isEditing) {
                   var ef = editForm[0];
                   return (
-                    <tr key={i.id} style={{ borderBottom: "1px solid #f0f0f0", background: "#FFFBEB" }}>
+                    <tr key={i.id} style={{ borderBottom: "1px solid #eee", background: "#FFFBEB" }}>
                       <td style={{ padding: "8px 14px", fontWeight: 600 }}>{i.name}</td>
                       <td style={{ padding: "8px 14px" }}>{i.category}</td>
                       <td style={{ padding: "8px 14px" }}><input type="number" step="0.01" value={ef.cost || ""} onChange={function(e) { editForm[1]({ cost: e.target.value }); }} style={{ ...inp, width: 90, textAlign: "right", padding: "6px 8px" }} /></td>
@@ -6784,10 +6792,10 @@ function GestionView(props) {
             for (var ti = 0; ti < supIngs.length; ti++) totalIngCost += supIngs[ti].costPerUnit;
 
             return (
-              <div key={s.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#B4530940" : "#eee"), overflow: "hidden" }}>
+              <div key={s.id} style={{ background: "#fff", borderRadius: 14, border: "1px solid " + (isOpen ? "#7B1D3A40" : "#eee"), overflow: "hidden" }}>
                 {/* Header row */}
                 <div onClick={function() { editId[1](isOpen ? null : s.id); editForm[1]({}); }} style={{ display: "flex", alignItems: "center", padding: "16px 20px", cursor: "pointer", gap: 12 }}>
-                  <div style={{ width: 22, height: 22, borderRadius: 6, background: isOpen ? "#B4530915" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#B45309" : "#ccc", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                  <div style={{ width: 22, height: 22, borderRadius: 6, background: isOpen ? "#7B1D3A15" : "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: isOpen ? "#7B1D3A" : "#ccc", flexShrink: 0, transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>{s.name}</div>
                     <div style={{ fontSize: 12, color: "#aaa" }}>{supIngs.length} ingredientes | {s.contact || "Sin contacto"} | {s.deliveryDays || ""}</div>
@@ -6797,7 +6805,7 @@ function GestionView(props) {
 
                 {/* Expanded detail */}
                 {isOpen && (
-                  <div style={{ borderTop: "1px solid #f0f0f0" }}>
+                  <div style={{ borderTop: "1px solid #eee" }}>
                     {/* Quick info bar */}
                     <div style={{ display: "flex", gap: 12, padding: "14px 20px", background: "#fafaf8", flexWrap: "wrap" }}>
                       <div style={{ flex: "1 1 150px", padding: "10px 14px", background: "#fff", borderRadius: 10, border: "1px solid #eee" }}>
@@ -6823,7 +6831,7 @@ function GestionView(props) {
                         <div style={{ fontSize: 10, color: "#888", fontWeight: 600, marginBottom: 4 }}>DESCUENTO</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: s.discount && s.discount !== "-" ? "#047857" : "#aaa" }}>{s.discount || "Sin descuento"}</div>
                       </div>
-                      <div style={{ padding: "12px 14px", borderRadius: 10, background: s.rappel && s.rappel !== "-" ? "#EFF6FF" : "#f9f9f9", borderLeft: "3px solid " + (s.rappel && s.rappel !== "-" ? "#1E40AF" : "#e5e5e5") }}>
+                      <div style={{ padding: "12px 14px", borderRadius: 10, background: s.rappel && s.rappel !== "-" ? "#FFF8E1" : "#f9f9f9", borderLeft: "3px solid " + (s.rappel && s.rappel !== "-" ? "#1E40AF" : "#e5e5e5") }}>
                         <div style={{ fontSize: 10, color: "#888", fontWeight: 600, marginBottom: 4 }}>RAPPEL</div>
                         <div style={{ fontSize: 13, fontWeight: 600, color: s.rappel && s.rappel !== "-" ? "#1E40AF" : "#aaa" }}>{s.rappel || "Sin rappel"}</div>
                       </div>
@@ -6834,7 +6842,7 @@ function GestionView(props) {
                       <div style={{ padding: "0 20px 14px" }}>
                         <div style={{ padding: "12px 14px", borderRadius: 10, background: "#FFFBEB", borderLeft: "3px solid #D97706" }}>
                           <div style={{ fontSize: 10, color: "#888", fontWeight: 600, marginBottom: 4 }}>NOTAS COMERCIALES</div>
-                          <div style={{ fontSize: 13, color: "#92400E", lineHeight: 1.5 }}>{s.commercialNotes}</div>
+                          <div style={{ fontSize: 13, color: "#5C1530", lineHeight: 1.5 }}>{s.commercialNotes}</div>
                         </div>
                       </div>
                     )}
@@ -6868,7 +6876,7 @@ function GestionView(props) {
 
                     {/* Edit button */}
                     <div style={{ padding: "0 20px 16px" }}>
-                      <button onClick={function(e) { e.stopPropagation(); editForm[1]({ editingSupId: s.id, contact: s.contact, phone: s.phone, email: s.email, deliveryDays: s.deliveryDays, minOrder: s.minOrder, payTerms: s.payTerms, discount: s.discount, rappel: s.rappel, commercialNotes: s.commercialNotes, notes: s.notes }); }} style={{ ...btn, background: isEditing ? "#e5e5e5" : "#B45309", color: isEditing ? "#888" : "#fff" }}>{isEditing ? "Cancelar" : "Editar proveedor"}</button>
+                      <button onClick={function(e) { e.stopPropagation(); editForm[1]({ editingSupId: s.id, contact: s.contact, phone: s.phone, email: s.email, deliveryDays: s.deliveryDays, minOrder: s.minOrder, payTerms: s.payTerms, discount: s.discount, rappel: s.rappel, commercialNotes: s.commercialNotes, notes: s.notes }); }} style={{ ...btn, background: isEditing ? "#e5e5e5" : "#7B1D3A", color: isEditing ? "#888" : "#fff" }}>{isEditing ? "Cancelar" : "Editar proveedor"}</button>
                     </div>
 
                     {/* Edit form */}
@@ -6919,7 +6927,7 @@ function GestionView(props) {
         <div style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>Actualiza las ventas semanales para que la Matrix de Menu Engineering sea precisa.</div>
         <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+            <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
               <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>PRODUCTO</th>
               <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>CAT.</th>
               <th style={{ padding: "10px 14px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>VENTAS/SEM</th>
@@ -6931,7 +6939,7 @@ function GestionView(props) {
                 if (isEditing) {
                   var ef = editForm[0];
                   return (
-                    <tr key={p.id} style={{ borderBottom: "1px solid #f0f0f0", background: "#FFFBEB" }}>
+                    <tr key={p.id} style={{ borderBottom: "1px solid #eee", background: "#FFFBEB" }}>
                       <td style={{ padding: "8px 14px", fontWeight: 600 }}>{p.name}</td>
                       <td style={{ padding: "8px 14px" }}>{p.category}</td>
                       <td style={{ padding: "8px 14px" }}><input type="number" step="1" value={ef.sales || ""} onChange={function(e) { editForm[1]({ sales: e.target.value }); }} style={{ ...inp, width: 80, textAlign: "right", padding: "6px 8px" }} /></td>
@@ -7051,13 +7059,13 @@ function GestionView(props) {
             for (var pi = 0; pi < props.products.length; pi++) { if (props.products[pi].recipeId === r.id) { prodName = props.products[pi].name; break; } }
 
             return (
-              <div key={r.id} style={{ ...crd, borderLeft: isEditing ? "4px solid #B45309" : "1px solid #eee" }}>
+              <div key={r.id} style={{ ...crd, borderLeft: isEditing ? "4px solid #7B1D3A" : "1px solid #eee" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: isEditing ? 12 : 0 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 15, fontWeight: 700 }}>{prodName || r.name.replace("Esc ", "")}</div>
                     <div style={{ fontSize: 12, color: "#aaa" }}>{steps.length} pasos</div>
                   </div>
-                  <button onClick={function() { editingPasos[1](isEditing ? null : r.id); newStepText[1](""); }} style={{ ...btn, padding: "6px 14px", fontSize: 12, background: isEditing ? "#e5e5e5" : "#B45309", color: isEditing ? "#888" : "#fff" }}>{isEditing ? "Cerrar" : "Editar pasos"}</button>
+                  <button onClick={function() { editingPasos[1](isEditing ? null : r.id); newStepText[1](""); }} style={{ ...btn, padding: "6px 14px", fontSize: 12, background: isEditing ? "#e5e5e5" : "#7B1D3A", color: isEditing ? "#888" : "#fff" }}>{isEditing ? "Cerrar" : "Editar pasos"}</button>
                 </div>
 
                 {isEditing && (
@@ -7145,7 +7153,7 @@ function GestionView(props) {
         {filtered.length > 0 && (
           <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+              <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
                 <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>FECHA</th>
                 <th style={{ padding: "10px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>INGREDIENTE</th>
                 <th style={{ padding: "10px 14px", textAlign: "right", fontWeight: 600, color: "#999", fontSize: 11 }}>ANTERIOR</th>
@@ -7260,7 +7268,7 @@ function GestionView(props) {
       <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
         {tabs.map(function(t) {
           var active = tab[0] === t.k;
-          return <button key={t.k} onClick={function() { tab[1](t.k); editId[1](null); addMode[1](false); }} style={{ padding: "8px 18px", borderRadius: 10, border: active ? "2px solid #B45309" : "1px solid #e5e5e5", background: active ? "#B4530908" : "#fff", color: active ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}</button>;
+          return <button key={t.k} onClick={function() { tab[1](t.k); editId[1](null); addMode[1](false); }} style={{ padding: "8px 18px", borderRadius: 10, border: active ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: active ? "#7B1D3A08" : "#fff", color: active ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}</button>;
         })}
       </div>
 
@@ -7307,7 +7315,7 @@ function IDView(props) {
 
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
   var inp = { width: "100%", padding: "10px 12px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, boxSizing: "border-box", fontFamily: "inherit" };
-  var btn = { padding: "8px 18px", background: "#B45309", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
+  var btn = { padding: "8px 18px", background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
 
   // ── LAB RECETAS ──
   function renderLab() {
@@ -7348,9 +7356,9 @@ function IDView(props) {
 
             {/* Manual ingredient toggle */}
             {!manualIng[0] ? (
-              <button onClick={function() { manualIng[1](true); }} style={{ ...btn, background: "#EFF6FF", color: "#1E40AF", border: "1px solid #BFDBFE", padding: "6px 14px", fontSize: 12, width: "100%", marginBottom: 12 }}>+ Ingrediente manual (no esta en sistema)</button>
+              <button onClick={function() { manualIng[1](true); }} style={{ ...btn, background: "#FFF8E1", color: "#1E40AF", border: "1px solid #BFDBFE", padding: "6px 14px", fontSize: 12, width: "100%", marginBottom: 12 }}>+ Ingrediente manual (no esta en sistema)</button>
             ) : (
-              <div style={{ padding: 12, borderRadius: 10, background: "#EFF6FF", border: "1px solid #BFDBFE", marginBottom: 12 }}>
+              <div style={{ padding: 12, borderRadius: 10, background: "#FFF8E1", border: "1px solid #BFDBFE", marginBottom: 12 }}>
                 <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
                   <input value={manualForm[0].name} onChange={function(e) { manualForm[1](Object.assign({}, manualForm[0], { name: e.target.value })); }} style={{ ...inp, flex: 2, padding: "8px 10px", fontSize: 13 }} placeholder="Nombre ingrediente" />
                   <input type="number" step="0.01" value={manualForm[0].cost} onChange={function(e) { manualForm[1](Object.assign({}, manualForm[0], { cost: e.target.value })); }} style={{ ...inp, flex: 1, padding: "8px 10px", fontSize: 13, textAlign: "right" }} placeholder="Coste" />
@@ -7409,7 +7417,7 @@ function IDView(props) {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
                   <div style={{ padding: 16, borderRadius: 10, background: "#f9f9f6", textAlign: "center" }}>
                     <div style={{ fontSize: 10, color: "#888", fontWeight: 600, marginBottom: 4 }}>COSTE MP</div>
-                    <div style={{ fontSize: 26, fontWeight: 800, color: "#B45309" }}>{fmt(totalCost)}</div>
+                    <div style={{ fontSize: 26, fontWeight: 800, color: "#7B1D3A" }}>{fmt(totalCost)}</div>
                     <div style={{ fontSize: 11, color: "#888" }}>{labItems[0].length} ingredientes</div>
                   </div>
                   {testPrice > 0 && (
@@ -7423,7 +7431,7 @@ function IDView(props) {
 
                 {testPrice > 0 && (
                   <div style={{ padding: 14, borderRadius: 10, background: testFC > 35 ? "#FEF2F2" : testFC > 30 ? "#FFFBEB" : "#F0FDF4", borderLeft: "3px solid " + (testFC > 35 ? "#DC2626" : testFC > 30 ? "#D97706" : "#047857") }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: testFC > 35 ? "#991B1B" : testFC > 30 ? "#92400E" : "#065F46" }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: testFC > 35 ? "#991B1B" : testFC > 30 ? "#5C1530" : "#065F46" }}>
                       {testFC > 40 ? "No viable - FC demasiado alto" : testFC > 35 ? "Ajustado - revisar ingredientes o subir precio" : testFC > 30 ? "Viable pero justo - margen limitado" : testFC > 25 ? "Buen producto - margen saludable" : "Excelente margen - listo para carta"}
                     </div>
                     <div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
@@ -7469,7 +7477,7 @@ function IDView(props) {
                     <div style={{ display: "flex", gap: 10, marginBottom: 8 }}>
                       <div style={{ padding: "6px 12px", borderRadius: 8, background: "#f9f9f6", flex: 1, textAlign: "center" }}>
                         <div style={{ fontSize: 10, color: "#888" }}>COSTE</div>
-                        <div style={{ fontSize: 14, fontWeight: 800, color: "#B45309" }}>{fmt(sr.cost)}</div>
+                        <div style={{ fontSize: 14, fontWeight: 800, color: "#7B1D3A" }}>{fmt(sr.cost)}</div>
                       </div>
                       {sr.price > 0 && (
                         <div style={{ padding: "6px 12px", borderRadius: 8, background: sr.fc > 35 ? "#FEF2F2" : "#F0FDF4", flex: 1, textAlign: "center" }}>
@@ -7488,7 +7496,7 @@ function IDView(props) {
                       {sr.items.map(function(it) { return it.name; }).join(", ")}
                     </div>
                     {/* Load back into lab */}
-                    <button onClick={function() { labItems[1](sr.items.slice()); labName[1](sr.name); labPrice[1](sr.price ? String(sr.price) : ""); }} style={{ ...btn, background: "#EFF6FF", color: "#1E40AF", border: "1px solid #BFDBFE", padding: "5px 12px", fontSize: 11, marginTop: 8 }}>Cargar en lab</button>
+                    <button onClick={function() { labItems[1](sr.items.slice()); labName[1](sr.name); labPrice[1](sr.price ? String(sr.price) : ""); }} style={{ ...btn, background: "#FFF8E1", color: "#1E40AF", border: "1px solid #BFDBFE", padding: "5px 12px", fontSize: 11, marginTop: 8 }}>Cargar en lab</button>
                   </div>
                 );
               })}
@@ -7607,7 +7615,7 @@ function IDView(props) {
             <textarea value={ideaForm[0].desc} onChange={function(e) { ideaForm[1](Object.assign({}, ideaForm[0], { desc: e.target.value })); }} rows="3" style={{ ...inp, marginBottom: 8, resize: "vertical" }} placeholder="Describe la idea, por que, beneficio esperado..." />
             <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
               {["nuevo producto", "optimizacion", "marketing", "operaciones", "otro"].map(function(c) {
-                return <button key={c} onClick={function() { ideaForm[1](Object.assign({}, ideaForm[0], { category: c })); }} style={{ padding: "6px 12px", borderRadius: 6, border: ideaForm[0].category === c ? "2px solid #B45309" : "1px solid #e5e5e5", background: ideaForm[0].category === c ? "#B4530908" : "#fff", color: ideaForm[0].category === c ? "#B45309" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{catEmojis[c] || "💡"} {c}</button>;
+                return <button key={c} onClick={function() { ideaForm[1](Object.assign({}, ideaForm[0], { category: c })); }} style={{ padding: "6px 12px", borderRadius: 6, border: ideaForm[0].category === c ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: ideaForm[0].category === c ? "#7B1D3A08" : "#fff", color: ideaForm[0].category === c ? "#7B1D3A" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{catEmojis[c] || "💡"} {c}</button>;
               })}
             </div>
             <button onClick={function() {
@@ -7666,9 +7674,9 @@ function IDView(props) {
                   {idea.assignedTo && <Pill t={"Asignado: " + idea.assignedTo} c="#047857" />}
                 </div>
                 {idea.feedback && (
-                  <div style={{ marginTop: 8, marginLeft: 30, padding: "8px 12px", borderRadius: 8, background: "#EFF6FF", borderLeft: "3px solid #1E40AF" }}>
+                  <div style={{ marginTop: 8, marginLeft: 30, padding: "8px 12px", borderRadius: 8, background: "#FFF8E1", borderLeft: "3px solid #1E40AF" }}>
                     <div style={{ fontSize: 10, fontWeight: 600, color: "#1E40AF" }}>FEEDBACK DEL ENCARGADO</div>
-                    <div style={{ fontSize: 12, color: "#333", marginTop: 2 }}>{idea.feedback}</div>
+                    <div style={{ fontSize: 12, color: "#5D4037", marginTop: 2 }}>{idea.feedback}</div>
                   </div>
                 )}
               </div>
@@ -7766,7 +7774,7 @@ function IDView(props) {
       <div style={{ display: "flex", gap: 6, marginBottom: 20, flexWrap: "wrap" }}>
         {tabs.map(function(t) {
           var active = tab[0] === t.k;
-          return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 18px", borderRadius: 10, border: active ? "2px solid #B45309" : "1px solid #e5e5e5", background: active ? "#B4530908" : "#fff", color: active ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}</button>;
+          return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 18px", borderRadius: 10, border: active ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: active ? "#7B1D3A08" : "#fff", color: active ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}</button>;
         })}
       </div>
       {tab[0] === "lab" && renderLab()}
@@ -7873,9 +7881,9 @@ function TareasIDView(props) {
 
               {/* Existing feedback */}
               {idea.feedback && !isEditingFeedback && (
-                <div style={{ padding: "10px 14px", borderRadius: 10, background: "#EFF6FF", borderLeft: "3px solid #1E40AF", marginBottom: 10 }}>
+                <div style={{ padding: "10px 14px", borderRadius: 10, background: "#FFF8E1", borderLeft: "3px solid #1E40AF", marginBottom: 10 }}>
                   <div style={{ fontSize: 10, fontWeight: 600, color: "#1E40AF", marginBottom: 2 }}>MI FEEDBACK</div>
-                  <div style={{ fontSize: 13, color: "#333" }}>{idea.feedback}</div>
+                  <div style={{ fontSize: 13, color: "#5D4037" }}>{idea.feedback}</div>
                 </div>
               )}
 
@@ -7892,7 +7900,7 @@ function TareasIDView(props) {
                   </div>
                 </div>
               ) : (
-                <button onClick={function() { feedbackEdit[1](idea.id); feedbackText[1](idea.feedback || ""); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #1E40AF", background: "#EFF6FF", color: "#1E40AF", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                <button onClick={function() { feedbackEdit[1](idea.id); feedbackText[1](idea.feedback || ""); }} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid #1E40AF", background: "#FFF8E1", color: "#1E40AF", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
                   {idea.feedback ? "Editar feedback" : "Anadir feedback"}
                 </button>
               )}
@@ -7909,7 +7917,7 @@ function TareasIDView(props) {
             {otherTasks.map(function(idea) {
               var sc = statusColors[idea.status] || "#888";
               return (
-                <div key={idea.id} style={{ background: "#fff", borderRadius: 12, padding: "14px 18px", border: "1px solid #f0f0f0", opacity: 0.7 }}>
+                <div key={idea.id} style={{ background: "#fff", borderRadius: 12, padding: "14px 18px", border: "1px solid #eee", opacity: 0.7 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 16 }}>{catEmojis[idea.category] || "💡"}</span>
                     <div style={{ flex: 1 }}>
@@ -8007,7 +8015,7 @@ function TurnosView(props) {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 0 }}>
             <thead>
-              <tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+              <tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
                 <th style={{ padding: "12px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11, width: 90 }}>TURNO</th>
                 {DAYS.map(function(d) {
                   return <th key={d} style={{ padding: "12px 8px", textAlign: "center", fontWeight: 600, color: "#555", fontSize: 12 }}>{d}</th>;
@@ -8017,8 +8025,8 @@ function TurnosView(props) {
             <tbody>
               {SHIFTS.map(function(shift) {
                 return (
-                  <tr key={shift.k} style={{ borderBottom: "1px solid #f0f0f0" }}>
-                    <td style={{ padding: "12px 14px", borderRight: "1px solid #f0f0f0" }}>
+                  <tr key={shift.k} style={{ borderBottom: "1px solid #eee" }}>
+                    <td style={{ padding: "12px 14px", borderRight: "1px solid #eee" }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: shift.color }}>{shift.l}</div>
                       <div style={{ fontSize: 10, color: "#aaa" }}>{shift.time}</div>
                     </td>
@@ -8080,7 +8088,7 @@ function TurnosView(props) {
               if (!taskForm[0].person || !taskForm[0].task.trim()) return;
               wt[1](wt[0].concat([{ id: Math.random().toString(36).slice(2), person: taskForm[0].person, day: taskForm[0].day, task: taskForm[0].task.trim(), done: false }]));
               taskForm[1](Object.assign({}, taskForm[0], { task: "" }));
-            }} style={{ padding: "8px 16px", background: "#B45309", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Anadir</button>
+            }} style={{ padding: "8px 16px", background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>Anadir</button>
           </div>
           {wt[0].length === 0 && <div style={{ padding: 16, textAlign: "center", color: "#ccc", fontSize: 13 }}>Sin tareas especiales esta semana</div>}
           {wt[0].map(function(t) {
@@ -8137,7 +8145,7 @@ function OpsView(props) {
 
   var crd = { background: "#fff", borderRadius: 14, padding: "20px", border: "1px solid #eee" };
   var inp = { width: "100%", padding: "10px 12px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, boxSizing: "border-box", fontFamily: "inherit" };
-  var btn = { padding: "8px 18px", background: "#B45309", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
+  var btn = { padding: "8px 18px", background: "#7B1D3A", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" };
 
   function updateOps(key, val) { var n = Object.assign({}, d); n[key] = val; ops[1](n); }
 
@@ -8158,7 +8166,7 @@ function OpsView(props) {
       <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
         {tabs.map(function(t) {
           var active = tab[0] === t.k;
-          return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: active ? "2px solid #B45309" : "1px solid #e5e5e5", background: active ? "#B4530908" : "#fff", color: active ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}{t.badge > 0 ? " (" + t.badge + ")" : ""}</button>;
+          return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: active ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: active ? "#7B1D3A08" : "#fff", color: active ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>{t.l}{t.badge > 0 ? " (" + t.badge + ")" : ""}</button>;
         })}
       </div>
 
@@ -8247,7 +8255,7 @@ function OpsView(props) {
                     <div style={{ fontSize: 12, color: "#888" }}>{p.category} | {p.date}</div>
                   </div>
                   <span style={{ padding: "3px 10px", borderRadius: 6, background: pc + "15", color: pc, fontSize: 11, fontWeight: 700, textTransform: "uppercase" }}>{p.priority}</span>
-                  <div style={{ fontSize: 12, color: isOpen ? "#B45309" : "#ccc", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
+                  <div style={{ fontSize: 12, color: isOpen ? "#7B1D3A" : "#ccc", transform: isOpen ? "rotate(90deg)" : "rotate(0deg)" }}>&#9654;</div>
                 </div>
                 {isOpen && (
                   <div style={{ marginTop: 14, padding: "14px 16px", background: "#fafaf8", borderRadius: 10, fontSize: 14, color: "#444", lineHeight: 1.8, whiteSpace: "pre-wrap" }}>
@@ -8317,7 +8325,7 @@ function OpsView(props) {
                 </div>
                 {isOpen && (
                   <div style={{ marginTop: 12 }}>
-                    <div style={{ padding: "12px 16px", background: "#FEF3C7", borderRadius: 10, fontSize: 13, color: "#92400E", marginBottom: 8 }}><strong>Problema:</strong> {a.notes}</div>
+                    <div style={{ padding: "12px 16px", background: "#FEF3C7", borderRadius: 10, fontSize: 13, color: "#5C1530", marginBottom: 8 }}><strong>Problema:</strong> {a.notes}</div>
                     <div style={{ padding: "12px 16px", background: "#F0FDF4", borderRadius: 10, fontSize: 13, color: "#065F46" }}><strong>Que hacer:</strong> {a.actions}</div>
                     {isSocio && (
                       <div style={{ marginTop: 10 }}>
@@ -8402,7 +8410,7 @@ function OpsView(props) {
         var avgColor = avgAll >= 4.5 ? "#047857" : avgAll >= 4.0 ? "#D97706" : "#DC2626";
 
         function stars(n) { var s = ""; for (var si = 1; si <= 5; si++) s += si <= Math.round(n) ? "★" : "☆"; return s; }
-        function noteColor(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#B45309" : "#DC2626"; }
+        function noteColor(n) { return n >= 4.5 ? "#047857" : n >= 4.0 ? "#D97706" : n >= 3.5 ? "#7B1D3A" : "#DC2626"; }
 
         var filteredResenas = resenas.filter(function(r) { return valLocal[0] === "Todos" || r.local === valLocal[0]; });
         filteredResenas.sort(function(a, b) { return b.fecha.localeCompare(a.fecha); });
@@ -8437,7 +8445,7 @@ function OpsView(props) {
           <div>
             {/* Global KPIs */}
             <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
-              <div style={{ background: "linear-gradient(135deg, #111 0%, #1a1a1a 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff" }}>
+              <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff" }}>
                 <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>NOTA MEDIA GLOBAL</div>
                 <div style={{ fontSize: 32, fontWeight: 800, color: avgColor }}>{avgAll > 0 ? avgAll.toFixed(1) : "—"}</div>
                 <div style={{ fontSize: 12, marginTop: 4, color: avgColor }}>{avgAll > 0 ? stars(avgAll) : ""}</div>
@@ -8455,7 +8463,7 @@ function OpsView(props) {
             <div style={{ ...crd, marginBottom: 20 }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                 <div style={{ fontSize: 14, fontWeight: 700 }}>📍 Notas por Local y Plataforma</div>
-                {isSocio && <button onClick={function() { editNotas[1](editNotas[0] ? null : "editing"); }} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #e5e5e5", background: editNotas[0] ? "#B45309" : "#fff", color: editNotas[0] ? "#fff" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{editNotas[0] ? "Cerrar edicion" : "Editar notas"}</button>}
+                {isSocio && <button onClick={function() { editNotas[1](editNotas[0] ? null : "editing"); }} style={{ padding: "6px 14px", borderRadius: 8, border: "1px solid #e5e5e5", background: editNotas[0] ? "#7B1D3A" : "#fff", color: editNotas[0] ? "#fff" : "#888", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{editNotas[0] ? "Cerrar edicion" : "Editar notas"}</button>}
               </div>
               {allLocs.map(function(loc) {
                 var lv2 = val.locales[loc] || {};
@@ -8497,11 +8505,11 @@ function OpsView(props) {
               </select>
               {filteredResenas.length > 0 && <div style={{ display: "flex", gap: 8, fontSize: 11 }}><span style={{ color: "#047857", fontWeight: 600 }}>+ {pos}</span><span style={{ color: "#888" }}>~ {neu}</span><span style={{ color: "#DC2626", fontWeight: 600 }}>- {neg}</span></div>}
               <div style={{ flex: 1 }} />
-              {isSocio && <button onClick={function() { showAddResena[1](!showAddResena[0]); }} style={{ padding: "6px 14px", borderRadius: 8, background: showAddResena[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>{showAddResena[0] ? "Cancelar" : "+ Resena"}</button>}
+              {isSocio && <button onClick={function() { showAddResena[1](!showAddResena[0]); }} style={{ padding: "6px 14px", borderRadius: 8, background: showAddResena[0] ? "#DC2626" : "#7B1D3A", color: "#fff", border: "none", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>{showAddResena[0] ? "Cancelar" : "+ Resena"}</button>}
             </div>
 
             {showAddResena[0] && (
-              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #7B1D3A" }}>
                 <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Registrar resena</div>
                 <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "1fr 1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
                   <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>LOCAL</div><select value={resenaForm[0].local} onChange={function(e) { resenaForm[1](Object.assign({}, resenaForm[0], { local: e.target.value })); }} style={Object.assign({}, inp, { background: "#fff" })}>{LOCALS.map(function(l) { return <option key={l} value={l}>{l}</option>; })}</select></div>
@@ -8529,8 +8537,8 @@ function OpsView(props) {
                     <span style={{ fontSize: 11, color: "#aaa" }}>{r.local}</span>
                     <span style={{ fontSize: 11, color: "#ccc", marginLeft: "auto" }}>{r.fecha}</span>
                   </div>
-                  <div style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{r.texto}</div>
-                  {r.producto && <div style={{ fontSize: 11, color: "#B45309", fontWeight: 600, marginTop: 4 }}>Producto: {r.producto}</div>}
+                  <div style={{ fontSize: 13, color: "#5D4037", lineHeight: 1.5 }}>{r.texto}</div>
+                  {r.producto && <div style={{ fontSize: 11, color: "#7B1D3A", fontWeight: 600, marginTop: 4 }}>Producto: {r.producto}</div>}
                   {r.respuesta && <div style={{ fontSize: 11, color: "#047857", marginTop: 4, padding: "6px 10px", background: "#F0FDF4", borderRadius: 6 }}>↩ {r.respuesta}</div>}
                 </div>
               );
@@ -8603,9 +8611,9 @@ function CartaDeliveryView(props) {
 
       {/* Summary KPIs */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 20 }}>
-        <div style={{ padding: 14, borderRadius: 12, background: "#1a1a1a", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>PRODUCTOS</div><div style={{ fontSize: 22, fontWeight: 800, color: "#FAF6F1" }}>{totalProducts}</div></div>
-        <div style={{ padding: 14, borderRadius: 12, background: "#1a1a1a", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>COMISION {platLabel.toUpperCase()}</div><div style={{ fontSize: 22, fontWeight: 800, color: "#EF4444" }}>{platComision}</div></div>
-        <div style={{ padding: 14, borderRadius: 12, background: "#1a1a1a", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>MARGEN REAL MEDIO</div><div style={{ fontSize: 22, fontWeight: 800, color: avgMargen < 3 ? "#EF4444" : "#4ADE80" }}>{fmt(avgMargen)}</div></div>
+        <div style={{ padding: 14, borderRadius: 12, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>PRODUCTOS</div><div style={{ fontSize: 22, fontWeight: 800, color: "#FDF2F4" }}>{totalProducts}</div></div>
+        <div style={{ padding: 14, borderRadius: 12, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>COMISION {platLabel.toUpperCase()}</div><div style={{ fontSize: 22, fontWeight: 800, color: "#EF4444" }}>{platComision}</div></div>
+        <div style={{ padding: 14, borderRadius: 12, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>MARGEN REAL MEDIO</div><div style={{ fontSize: 22, fontWeight: 800, color: avgMargen < 3 ? "#EF4444" : "#4ADE80" }}>{fmt(avgMargen)}</div></div>
         <div style={{ padding: 14, borderRadius: 12, background: lowMargin > 0 ? "#DC262620" : "#1a1a1a", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>MARGEN BAJO (&lt;2E)</div><div style={{ fontSize: 22, fontWeight: 800, color: lowMargin > 0 ? "#EF4444" : "#4ADE80" }}>{lowMargin}</div></div>
         <div style={{ padding: 14, borderRadius: 12, background: noMarkup > 0 ? "#D9770620" : "#1a1a1a", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888" }}>SIN MARKUP</div><div style={{ fontSize: 22, fontWeight: 800, color: noMarkup > 0 ? "#D97706" : "#4ADE80" }}>{noMarkup}</div></div>
       </div>
@@ -8617,7 +8625,7 @@ function CartaDeliveryView(props) {
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#D97706", marginBottom: 6 }}>1. ORDEN DE CATEGORIAS</div>
             <div style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
-              El cliente hace scroll de arriba a abajo. Pon primero lo que mas vendes y mejor margen te deja. Orden recomendado para Orale Padre: <strong style={{ color: "#FAF6F1" }}>Combos → Burritos → Bowls → Tacos → Quesadillas → Nachos/Entrantes → Bebidas → Postres</strong>. Los combos arriba del todo porque suben el ticket medio.
+              El cliente hace scroll de arriba a abajo. Pon primero lo que mas vendes y mejor margen te deja. Orden recomendado para Orale Padre: <strong style={{ color: "#FDF2F4" }}>Combos → Burritos → Bowls → Tacos → Quesadillas → Nachos/Entrantes → Bebidas → Postres</strong>. Los combos arriba del todo porque suben el ticket medio.
             </div>
           </div>
           <div>
@@ -8629,7 +8637,7 @@ function CartaDeliveryView(props) {
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#D97706", marginBottom: 6 }}>3. NOMBRES QUE VENDEN</div>
             <div style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
-              En delivery no ves el plato. El nombre y la foto son todo. <strong style={{ color: "#FAF6F1" }}>Nombra el ingrediente estrella</strong>: "Burrito de Pulled Pork BBQ" vende mas que "Don Juarez". En la descripcion, menciona peso ("Burrito XL 480g") y los 3 ingredientes principales. El cliente quiere saber que va a recibir.
+              En delivery no ves el plato. El nombre y la foto son todo. <strong style={{ color: "#FDF2F4" }}>Nombra el ingrediente estrella</strong>: "Burrito de Pulled Pork BBQ" vende mas que "Don Juarez". En la descripcion, menciona peso ("Burrito XL 480g") y los 3 ingredientes principales. El cliente quiere saber que va a recibir.
             </div>
           </div>
           <div>
@@ -8641,7 +8649,7 @@ function CartaDeliveryView(props) {
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: "#D97706", marginBottom: 6 }}>5. PRICING DELIVERY</div>
             <div style={{ fontSize: 13, lineHeight: 1.7, color: "#ccc" }}>
-              El markup minimo es 10%, ideal 15%. El cliente de delivery ya acepta pagar mas porque paga por comodidad. No pongas el mismo precio que en sala — con la comision del {platComision} de {platLabel} pierdes dinero. <strong style={{ color: "#FAF6F1" }}>Burritos: 10.90-11.90. Nachos: 11.50-12.50. Tacos x3: 9.90-10.90.</strong>
+              El markup minimo es 10%, ideal 15%. El cliente de delivery ya acepta pagar mas porque paga por comodidad. No pongas el mismo precio que en sala — con la comision del {platComision} de {platLabel} pierdes dinero. <strong style={{ color: "#FDF2F4" }}>Burritos: 10.90-11.90. Nachos: 11.50-12.50. Tacos x3: 9.90-10.90.</strong>
             </div>
           </div>
           <div>
@@ -8657,9 +8665,9 @@ function CartaDeliveryView(props) {
       <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>Estructura de menu recomendada para {platLabel}</div>
 
       {/* Combos section recommendation */}
-      <div style={{ ...crd, marginBottom: 12, borderLeft: "4px solid #B45309" }}>
+      <div style={{ ...crd, marginBottom: 12, borderLeft: "4px solid #7B1D3A" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: "#B45309", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, flexShrink: 0 }}>1</div>
+          <div style={{ width: 28, height: 28, borderRadius: 8, background: "#7B1D3A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, flexShrink: 0 }}>1</div>
           <div style={{ fontSize: 15, fontWeight: 700 }}>COMBOS Y OFERTAS</div>
           <div style={{ marginLeft: "auto", fontSize: 11, color: "#888" }}>Primera seccion — lo que el cliente ve al entrar</div>
         </div>
@@ -8770,7 +8778,7 @@ function CartaDeliveryView(props) {
               {top6.map(function(tp, tidx) {
                 return (
                   <div key={tp.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 14px", borderRadius: 10, background: tidx < 3 ? "#F0FDF4" : "#fafaf8", border: tidx < 3 ? "1px solid #04785720" : "1px solid #eee" }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 14, background: tidx < 3 ? "#047857" : "#B45309", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>{tidx + 1}</div>
+                    <div style={{ width: 28, height: 28, borderRadius: 14, background: tidx < 3 ? "#047857" : "#7B1D3A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 800, flexShrink: 0 }}>{tidx + 1}</div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 700 }}>{tp.name}</div>
                       <div style={{ fontSize: 11, color: "#888" }}>{tp.category} | {tp.weekSales} ventas/sem</div>
@@ -8786,7 +8794,7 @@ function CartaDeliveryView(props) {
 
             {/* Why these */}
             {top6.length >= 3 && (
-              <div style={{ padding: "12px 16px", borderRadius: 10, background: "#FFFBEB", borderLeft: "3px solid #D97706", marginBottom: 20, fontSize: 13, color: "#92400E", lineHeight: 1.6 }}>
+              <div style={{ padding: "12px 16px", borderRadius: 10, background: "#FFFBEB", borderLeft: "3px solid #D97706", marginBottom: 20, fontSize: 13, color: "#5C1530", lineHeight: 1.6 }}>
                 <strong>Por que estos y no otros:</strong> {top6[0].name} es tu mas vendido con {top6[0].weekSales} ventas/sem y te deja {fmt(top6[0].margenReal)} de margen real en {platLabel}. {top6[1].name} combina buenas ventas ({top6[1].weekSales}/sem) con margen solido. {top6[2].name} es rentable y popular. Marcarlos como "Popular" en {platLabel} aumenta sus pedidos un 15-25% adicional segun datos de plataformas.
               </div>
             )}
@@ -8794,12 +8802,12 @@ function CartaDeliveryView(props) {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 12 }}>
               {/* Hidden gems */}
               {hidden.length > 0 && (
-                <div style={{ padding: "14px 18px", borderRadius: 12, background: "#EFF6FF", border: "1px solid #1E40AF20" }}>
+                <div style={{ padding: "14px 18px", borderRadius: 12, background: "#FFF8E1", border: "1px solid #1E40AF20" }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF", marginBottom: 8 }}>💎 JOYAS OCULTAS — promociona mas</div>
                   <div style={{ fontSize: 12, color: "#555", marginBottom: 10 }}>Productos con margen excelente en delivery pero pocas ventas. Si los destacas o los metes en combos, ganas mas por pedido:</div>
                   {hidden.map(function(h) {
                     return (
-                      <div key={h.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid #f0f0f0" }}>
+                      <div key={h.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid #eee" }}>
                         <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{h.name}</div><div style={{ fontSize: 11, color: "#aaa" }}>{h.weekSales} ventas/sem — podria vender mas</div></div>
                         <div style={{ fontSize: 13, fontWeight: 700, color: "#047857" }}>mg {fmt(h.margenReal)}</div>
                       </div>
@@ -8815,7 +8823,7 @@ function CartaDeliveryView(props) {
                   <div style={{ fontSize: 12, color: "#555", marginBottom: 10 }}>Productos populares que dejan poco margen en delivery despues de comision. No los quites, pero no los pongas como "Popular" — mejor destaca otros con mejor margen:</div>
                   {traps.map(function(t) {
                     return (
-                      <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid #f0f0f0" }}>
+                      <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 0", borderBottom: "1px solid #eee" }}>
                         <div style={{ flex: 1 }}><div style={{ fontSize: 13, fontWeight: 600 }}>{t.name}</div><div style={{ fontSize: 11, color: "#aaa" }}>{t.weekSales} ventas/sem pero margen bajo</div></div>
                         <div style={{ fontSize: 13, fontWeight: 700, color: "#DC2626" }}>mg {fmt(t.margenReal)}</div>
                       </div>
@@ -8826,8 +8834,8 @@ function CartaDeliveryView(props) {
             </div>
 
             {/* Positioning tip */}
-            <div style={{ padding: "14px 18px", borderRadius: 12, background: "#1a1a1a", color: "#ccc", fontSize: 13, lineHeight: 1.7 }}>
-              <strong style={{ color: "#FAF6F1" }}>Como funciona el algoritmo de {platLabel}:</strong> Las plataformas de delivery posicionan arriba los productos que mas se piden Y que mejor valoracion tienen. Cuando marcas un producto como "Popular", el algoritmo le da mas visibilidad → mas pedidos → sube de posicion organica. Por eso es clave marcar los productos correctos: los que combinan ventas + margen. Si marcas un producto con mal margen, vendera mas pero a costa de tu rentabilidad.
+            <div style={{ padding: "14px 18px", borderRadius: 12, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#ccc", fontSize: 13, lineHeight: 1.7 }}>
+              <strong style={{ color: "#FDF2F4" }}>Como funciona el algoritmo de {platLabel}:</strong> Las plataformas de delivery posicionan arriba los productos que mas se piden Y que mejor valoracion tienen. Cuando marcas un producto como "Popular", el algoritmo le da mas visibilidad → mas pedidos → sube de posicion organica. Por eso es clave marcar los productos correctos: los que combinan ventas + margen. Si marcas un producto con mal margen, vendera mas pero a costa de tu rentabilidad.
             </div>
           </div>
         );
@@ -8996,7 +9004,7 @@ function MarketingView(props) {
         <NovedadesBlock role={isSocio ? "socio" : "community"} user={props.user} stockAlerts={props.stockAlerts} incidents={props.incidents} opsData={props.opsData} promosData={props.promosData} mktData={props.mktData} ideasState={props.ideasState} setPage={props.setPage} notifications={props.notifications} stockData={props.stockData} stockMins={props.stockMins} />
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12, marginBottom: 20 }}>
           <div style={{ padding: 16, borderRadius: 12, background: pendTasks > 0 ? "#FEF2F2" : "#F0FDF4", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>TAREAS PENDIENTES</div><div style={{ fontSize: 28, fontWeight: 800, color: pendTasks > 0 ? "#DC2626" : "#047857" }}>{pendTasks}</div></div>
-          <div style={{ padding: 16, borderRadius: 12, background: "#EFF6FF", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>EN CURSO</div><div style={{ fontSize: 28, fontWeight: 800, color: "#1E40AF" }}>{inProgTasks}</div></div>
+          <div style={{ padding: 16, borderRadius: 12, background: "#FFF8E1", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>EN CURSO</div><div style={{ fontSize: 28, fontWeight: 800, color: "#1E40AF" }}>{inProgTasks}</div></div>
           <div style={{ padding: 16, borderRadius: 12, background: "#7C3AED08", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>CONTENIDO 7 DIAS</div><div style={{ fontSize: 28, fontWeight: 800, color: "#7C3AED" }}>{thisWeekContent}</div></div>
           <div style={{ padding: 16, borderRadius: 12, background: "#FFFBEB", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>INFLUENCERS</div><div style={{ fontSize: 28, fontWeight: 800, color: "#D97706" }}>{pendInfluencers}</div></div>
           <div style={{ padding: 16, borderRadius: 12, background: "#F0FDF4", textAlign: "center" }}><div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>CATERING LEADS</div><div style={{ fontSize: 28, fontWeight: 800, color: "#047857" }}>{pendCatering}</div></div>
@@ -9229,8 +9237,8 @@ function MarketingView(props) {
           })}
         </div>
         {/* Guide */}
-        <div style={{ ...crd, marginTop: 16, background: "#1a1a1a", color: "#ccc", border: "none" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#FAF6F1", marginBottom: 10 }}>Guia influencers Orale Padre</div>
+        <div style={{ ...crd, marginTop: 16, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#ccc", border: "none" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#FDF2F4", marginBottom: 10 }}>Guia influencers Orale Padre</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 12, fontSize: 13, lineHeight: 1.7 }}>
             <div><strong style={{ color: "#D97706" }}>Target:</strong> Microinfluencers Sevilla, 5K-30K seguidores. Foodies, lifestyle, parejas jovenes. Engagement rate mayor de 3% (mejor que mega influencers).</div>
             <div><strong style={{ color: "#D97706" }}>Oferta:</strong> Invitacion para 2 personas (coste ~15-20€) a cambio de 1 reel + 3 stories con mencion. Sin pago. El producto es el gancho.</div>
@@ -9281,8 +9289,8 @@ function MarketingView(props) {
             );
           })}
         </div>
-        <div style={{ ...crd, marginTop: 16, background: "#1a1a1a", color: "#ccc", border: "none" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: "#FAF6F1", marginBottom: 10 }}>Guia outreach catering</div>
+        <div style={{ ...crd, marginTop: 16, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#ccc", border: "none" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#FDF2F4", marginBottom: 10 }}>Guia outreach catering</div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 12, fontSize: 13, lineHeight: 1.7 }}>
             <div><strong style={{ color: "#D97706" }}>Donde buscar:</strong> Instagram Sevilla: buscar #weddingplannersevilla, #eventosSevilla, #bodassevilla. Tambien Google Maps: "wedding planner Sevilla", "empresa eventos Sevilla".</div>
             <div><strong style={{ color: "#D97706" }}>DM tipo:</strong> "Hola! Somos Orale Padre, restaurante mexicano con servicio de catering en Sevilla. Ofrecemos burritos, tacos y nachos para eventos de 20 a 200 personas. Nos gustaria colaborar con vosotros. Podemos enviaros nuestra carta de catering?"</div>
@@ -9559,6 +9567,9 @@ function RRHHView(props) {
   // Fichajes admin filters
   var fichajeFilterLocal = useState("Todos");
   var fichajeFilterDate = useState(new Date().toISOString().slice(0, 10));
+  // Equipo edit state
+  var editUser = useState(null);
+  var editProfile = useState(null);
 
   return (
     <div>
@@ -9572,7 +9583,7 @@ function RRHHView(props) {
         </div>
         <div style={{ display: "flex", gap: 6 }}>
           {[{k:"equipo",l:"👥 Equipo"},{k:"dorados",l:"🌟 Alubias Doradas"},{k:"fichajes",l:"⏱️ Fichajes"},{k:"recompensas",l:"🎁 Recompensas"},{k:"config",l:"⚙️ Config"}].map(function(t) {
-            return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: tab[0] === t.k ? 700 : 500, background: tab[0] === t.k ? "#B45309" : "#f5f5f5", color: tab[0] === t.k ? "#fff" : "#888" }}>{t.l}</button>;
+            return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "7px 14px", borderRadius: 8, border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 12, fontWeight: tab[0] === t.k ? 700 : 500, background: tab[0] === t.k ? "#7B1D3A" : "#f5f5f5", color: tab[0] === t.k ? "#fff" : "#888" }}>{t.l}</button>;
           })}
         </div>
       </div>
@@ -9581,12 +9592,10 @@ function RRHHView(props) {
       {tab[0] === "equipo" && (function() {
         var teamList = props.team[0] || [];
         var profiles = props.employeeProfiles[0] || {};
-        var editUser = useState(null);
-        var editProfile = useState(null);
         var LOCS = ["San Luis", "Los Remedios", "Sevilla Este"];
         var DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"];
         var TURNOS = ["", "manana", "tarde", "completo", "libre"];
-        var roleColors = { socio: "#B45309", encargado: "#047857", empleado: "#1E40AF", community: "#E11D48" };
+        var roleColors = { socio: "#7B1D3A", encargado: "#047857", empleado: "#1E40AF", community: "#E11D48" };
         var roleLabels = { socio: "Socio", encargado: "Encargado", empleado: "Empleado", community: "Community" };
         var estadoColors = { activo: "#047857", baja: "#DC2626", vacaciones: "#D97706" };
 
@@ -9636,7 +9645,7 @@ function RRHHView(props) {
               <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
                 {/* DATOS PERSONALES */}
                 <div style={{ ...crd }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 12 }}>DATOS PERSONALES</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 12 }}>DATOS PERSONALES</div>
                   <div style={{ marginBottom: 8 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Telefono</div><input value={ep.phone} onChange={function(e) { upd("phone", e.target.value); }} style={inp} placeholder="600 000 000" /></div>
                   <div style={{ marginBottom: 8 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Email personal</div><input value={ep.emailPersonal} onChange={function(e) { upd("emailPersonal", e.target.value); }} style={inp} placeholder="email@gmail.com" /></div>
                   <div style={{ marginBottom: 8 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>DNI/NIE</div><input value={ep.dni} onChange={function(e) { upd("dni", e.target.value); }} style={inp} /></div>
@@ -9645,7 +9654,7 @@ function RRHHView(props) {
                 </div>
                 {/* CONTRATO */}
                 <div style={{ ...crd }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 12 }}>CONTRATO</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 12 }}>CONTRATO</div>
                   <div style={{ marginBottom: 8 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Fecha alta</div><input type="date" value={ep.fechaAlta} onChange={function(e) { upd("fechaAlta", e.target.value); }} style={inp} /></div>
                   <div style={{ marginBottom: 8 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Tipo contrato</div><select value={ep.tipoContrato} onChange={function(e) { upd("tipoContrato", e.target.value); }} style={Object.assign({}, inp, { background: "#fff" })}><option value="indefinido">Indefinido</option><option value="temporal">Temporal</option><option value="practicas">Practicas</option><option value="autonomo">Autonomo</option></select></div>
                   <div style={{ marginBottom: 8 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 2 }}>Horas/semana</div><input type="number" value={ep.horasSemana} onChange={function(e) { upd("horasSemana", parseInt(e.target.value) || 0); }} style={inp} /></div>
@@ -9653,14 +9662,14 @@ function RRHHView(props) {
                 </div>
                 {/* LOCALES */}
                 <div style={{ ...crd }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 12 }}>LOCALES PERMITIDOS</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 12 }}>LOCALES PERMITIDOS</div>
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     {LOCS.map(function(loc) { var sel = (ep.localesPermitidos || []).indexOf(loc) >= 0; return <button key={loc} onClick={function() { toggleLoc(loc); }} style={{ padding: "8px 16px", borderRadius: 8, border: sel ? "2px solid #047857" : "1px solid #e5e5e5", background: sel ? "#04785710" : "#fff", color: sel ? "#047857" : "#888", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{sel ? "✓ " : ""}{loc}</button>; })}
                   </div>
                 </div>
                 {/* DISPONIBILIDAD */}
                 <div style={{ ...crd }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 12 }}>DISPONIBILIDAD SEMANAL</div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 12 }}>DISPONIBILIDAD SEMANAL</div>
                   {DIAS.map(function(d) {
                     var val = (ep.disponibilidad || {})[d] || "";
                     return <div key={d} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
@@ -9674,11 +9683,11 @@ function RRHHView(props) {
               </div>
               {/* NOTAS */}
               <div style={{ ...crd, marginTop: 16 }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", letterSpacing: 1, marginBottom: 8 }}>ANOTACIONES</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", letterSpacing: 1, marginBottom: 8 }}>ANOTACIONES</div>
                 <textarea value={ep.notas} onChange={function(e) { upd("notas", e.target.value); }} rows="4" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", resize: "vertical" }} placeholder="Notas sobre este empleado..." />
               </div>
               <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-                <button onClick={saveProfile} style={{ padding: "12px 30px", borderRadius: 10, border: "none", background: "#1a1a1a", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>Guardar cambios</button>
+                <button onClick={saveProfile} style={{ padding: "12px 30px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#fff", fontWeight: 700, fontSize: 14, cursor: "pointer", fontFamily: "inherit" }}>Guardar cambios</button>
                 <button onClick={function() { editUser[1](null); }} style={{ padding: "12px 20px", borderRadius: 10, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
               </div>
             </div>
@@ -9737,7 +9746,7 @@ function RRHHView(props) {
       {tab[0] === "dorados" && (
         <div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", gap: 12, marginBottom: 24 }}>
-            <div style={{ ...crd, padding: 16, textAlign: "center", background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", color: "#fff" }}>
+            <div style={{ ...crd, padding: 16, textAlign: "center", background: "linear-gradient(135deg, #7B1D3A 0%, #5C1530 100%)", color: "#fff" }}>
               <div style={{ fontSize: 10, fontWeight: 600, opacity: 0.7 }}>TOTAL ALUBIAS</div>
               <div style={{ fontSize: 36, fontWeight: 800 }}>{totalDorados} 🌟</div>
               <div style={{ fontSize: 11, opacity: 0.7 }}>{(data.points || []).length} miembros</div>
@@ -9746,30 +9755,66 @@ function RRHHView(props) {
               var medals = ["🥇", "🥈", "🥉"];
               var medal = idx < 3 ? medals[idx] : (idx + 1) + "o";
               return (
-                <div key={p.userId} style={{ ...crd, padding: 16, textAlign: "center", borderTop: idx === 0 ? "4px solid #B45309" : idx === 1 ? "4px solid #6B7280" : idx === 2 ? "4px solid #92400E" : "4px solid #e5e5e5" }}>
+                <div key={p.userId} style={{ ...crd, padding: 16, textAlign: "center", borderTop: idx === 0 ? "4px solid #7B1D3A" : idx === 1 ? "4px solid #6B7280" : idx === 2 ? "4px solid #5C1530" : "4px solid #e5e5e5" }}>
                   <div style={{ fontSize: 28, marginBottom: 4 }}>{medal}</div>
                   <div style={{ fontSize: 14, fontWeight: 700 }}>{p.name}</div>
                   <div style={{ fontSize: 11, color: "#888" }}>{p.role}</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: "#B45309", marginTop: 6 }}>{p.dorados} 🌟</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: "#7B1D3A", marginTop: 6 }}>{p.dorados} 🌟</div>
                 </div>
               );
             })}
           </div>
           {/* How to earn */}
-          <div style={{ ...crd }}>
+          <div style={{ ...crd, marginBottom: 16 }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>Como ganar Alubias Doradas 🌟</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 8 }}>
               {Object.keys(actionLabels).map(function(key) {
                 var a = actionLabels[key];
                 return (
                   <div key={key} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "#fafaf8", borderRadius: 8 }}>
-                    <span style={{ fontSize: 16, fontWeight: 800, color: "#B45309", minWidth: 30 }}>+{a.pts}</span>
+                    <span style={{ fontSize: 16, fontWeight: 800, color: "#7B1D3A", minWidth: 30 }}>+{a.pts}</span>
                     <span style={{ fontSize: 13, color: "#555" }}>{a.label}</span>
                   </div>
                 );
               })}
             </div>
           </div>
+          {/* Give points */}
+          {!showAddPts[0] ? (
+            <button onClick={function() { showAddPts[1](true); }} style={{ padding: "10px 18px", borderRadius: 10, border: "2px dashed #7B1D3A", background: "#FDF2F4", color: "#7B1D3A", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Dar Alubias Doradas</button>
+          ) : (
+            <div style={{ ...crd, borderLeft: "4px solid #7B1D3A" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#7B1D3A", marginBottom: 12 }}>DAR ALUBIAS DORADAS 🌟</div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "end" }}>
+                <div><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Empleado</div>
+                  <select value={ptsForm[0].userId} onChange={function(e) { ptsForm[1](Object.assign({}, ptsForm[0], { userId: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit", background: "#fff" }}>
+                    <option value="">Seleccionar...</option>
+                    {(data.points || []).map(function(p) { return <option key={p.userId} value={p.userId}>{p.name} ({p.role})</option>; })}
+                  </select>
+                </div>
+                <div><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Cantidad 🌟</div>
+                  <input type="number" value={ptsForm[0].amount} onChange={function(e) { ptsForm[1](Object.assign({}, ptsForm[0], { amount: e.target.value })); }} style={{ width: 70, padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit", textAlign: "right" }} />
+                </div>
+                <div style={{ flex: 1, minWidth: 150 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Motivo</div>
+                  <input value={ptsForm[0].reason} onChange={function(e) { ptsForm[1](Object.assign({}, ptsForm[0], { reason: e.target.value })); }} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} placeholder="Ej: Buen trabajo esta semana" />
+                </div>
+                <button onClick={function() {
+                  var amt = parseInt(ptsForm[0].amount) || 0;
+                  if (!ptsForm[0].userId || amt <= 0) return;
+                  var newPts = (data.points || []).map(function(p) {
+                    if (p.userId === ptsForm[0].userId) {
+                      return Object.assign({}, p, { dorados: p.dorados + amt, actions: [{ type: "bonus_manual", date: new Date().toISOString().slice(0, 10), pts: amt, reason: ptsForm[0].reason }].concat(p.actions || []) });
+                    }
+                    return p;
+                  });
+                  updateGam(Object.assign({}, data, { points: newPts }));
+                  ptsForm[1]({ userId: "", amount: "", reason: "" });
+                  showAddPts[1](false);
+                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Dar 🌟</button>
+                <button onClick={function() { showAddPts[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -9783,7 +9828,7 @@ function RRHHView(props) {
                 <div key={rw.id} style={{ ...crd, textAlign: "center", position: "relative" }}>
                   <div style={{ fontSize: 40, marginBottom: 8 }}>{rw.icon}</div>
                   <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{rw.name}</div>
-                  <div style={{ fontSize: 20, fontWeight: 800, color: "#B45309" }}>{rw.cost} 🌟</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: "#7B1D3A" }}>{rw.cost} 🌟</div>
                   <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>{rw.claimed.length} canjeada{rw.claimed.length !== 1 ? "s" : ""}</div>
                   <button onClick={function() {
                     updateGam(Object.assign({}, data, { rewards: (data.rewards || []).filter(function(x) { return x.id !== rw.id; }) }));
@@ -9794,10 +9839,10 @@ function RRHHView(props) {
           </div>
           {/* Add reward */}
           {!showAddReward[0] ? (
-            <button onClick={function() { showAddReward[1](true); }} style={{ padding: "10px 18px", borderRadius: 10, border: "2px dashed #B45309", background: "#FFF7ED", color: "#B45309", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Anadir recompensa</button>
+            <button onClick={function() { showAddReward[1](true); }} style={{ padding: "10px 18px", borderRadius: 10, border: "2px dashed #7B1D3A", background: "#FDF2F4", color: "#7B1D3A", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Anadir recompensa</button>
           ) : (
-            <div style={{ ...crd, borderLeft: "4px solid #B45309" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#B45309", marginBottom: 12 }}>NUEVA RECOMPENSA</div>
+            <div style={{ ...crd, borderLeft: "4px solid #7B1D3A" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#7B1D3A", marginBottom: 12 }}>NUEVA RECOMPENSA</div>
               <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "end" }}>
                 <div><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Emoji</div><input value={rwForm[0].icon} onChange={function(e) { rwForm[1](Object.assign({}, rwForm[0], { icon: e.target.value })); }} style={{ width: 50, padding: "8px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 20, textAlign: "center", fontFamily: "inherit" }} /></div>
                 <div style={{ flex: 1, minWidth: 150 }}><div style={{ fontSize: 10, color: "#888", marginBottom: 4 }}>Nombre</div><input value={rwForm[0].name} onChange={function(e) { rwForm[1](Object.assign({}, rwForm[0], { name: e.target.value })); }} style={{ width: "100%", padding: "8px 12px", borderRadius: 8, border: "1.5px solid #e5e5e5", fontSize: 13, fontFamily: "inherit", boxSizing: "border-box" }} placeholder="Ej: Dia libre extra" /></div>
@@ -9807,7 +9852,7 @@ function RRHHView(props) {
                   updateGam(Object.assign({}, data, { rewards: (data.rewards || []).concat([{ id: "rw" + Date.now(), name: rwForm[0].name, cost: parseInt(rwForm[0].cost) || 0, icon: rwForm[0].icon || "🎁", claimed: [] }]) }));
                   rwForm[1]({ name: "", cost: "", icon: "🎁" });
                   showAddReward[1](false);
-                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#B45309", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Crear</button>
+                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>Crear</button>
                 <button onClick={function() { showAddReward[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "1px solid #ddd", background: "#fff", color: "#888", fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>Cancelar</button>
               </div>
             </div>
@@ -9831,13 +9876,13 @@ function RRHHView(props) {
                     var newConfig = Object.assign({}, data.config);
                     newConfig[key] = Object.assign({}, newConfig[key], { pts: newPts });
                     updateGam(Object.assign({}, data, { config: newConfig }));
-                  }} style={{ width: 50, padding: "4px 8px", borderRadius: 6, border: "1.5px solid #e5e5e5", fontSize: 14, fontWeight: 700, textAlign: "center", fontFamily: "inherit", color: "#B45309" }} />
-                  <span style={{ fontSize: 12, color: "#B45309", fontWeight: 700 }}>🌟</span>
+                  }} style={{ width: 50, padding: "4px 8px", borderRadius: 6, border: "1.5px solid #e5e5e5", fontSize: 14, fontWeight: 700, textAlign: "center", fontFamily: "inherit", color: "#7B1D3A" }} />
+                  <span style={{ fontSize: 12, color: "#7B1D3A", fontWeight: 700 }}>🌟</span>
                 </div>
               );
             })}
           </div>
-          <div style={{ marginTop: 16, padding: "12px 16px", background: "#FFF7ED", borderRadius: 10, fontSize: 12, color: "#92400E" }}>
+          <div style={{ marginTop: 16, padding: "12px 16px", background: "#FDF2F4", borderRadius: 10, fontSize: 12, color: "#5C1530" }}>
             <strong>Como funciona:</strong> Los empleados y encargados ganan Alubias Doradas automaticamente al usar la plataforma: leer comunicados, reportar stock, crear incidencias, completar tareas. Al final de mes pueden canjear sus dorados por recompensas del catalogo.
           </div>
         </div>
@@ -9996,7 +10041,7 @@ function RRHHView(props) {
             {/* Records table */}
             <div style={{ ...crd, padding: 0, overflow: "hidden" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #f0f0f0" }}>
+                <thead><tr style={{ background: "#fafaf8", borderBottom: "2px solid #eee" }}>
                   <th style={{ padding: "12px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>HORA</th>
                   <th style={{ padding: "12px 14px", textAlign: "left", fontWeight: 600, color: "#999", fontSize: 11 }}>EMPLEADO</th>
                   <th style={{ padding: "12px 14px", textAlign: "center", fontWeight: 600, color: "#999", fontSize: 11 }}>TIPO</th>
@@ -10174,7 +10219,7 @@ function SaludLocalesView(props) {
         {["Todos"].concat(LOCALS).map(function(loc) {
           var isAll = loc === "Todos";
           var a = selectedLocal[0] === loc;
-          return <button key={loc} onClick={function() { selectedLocal[1](loc); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{loc}</button>;
+          return <button key={loc} onClick={function() { selectedLocal[1](loc); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: a ? "#7B1D3A08" : "#fff", color: a ? "#7B1D3A" : "#888", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{loc}</button>;
         })}
         <div style={{ marginLeft: "auto", display: "flex", gap: 8, fontSize: 11 }}>
           {totalRecs.critica > 0 && <span style={{ padding: "3px 10px", borderRadius: 6, background: "#FEE2E2", color: "#DC2626", fontWeight: 700 }}>{totalRecs.critica} criticas</span>}
@@ -10248,7 +10293,7 @@ function SaludLocalesView(props) {
                       <div key={idx} style={{ display: "flex", gap: 8, padding: "8px 10px", marginBottom: 4, borderRadius: 8, background: rec.priority === "critica" ? "#FEF2F2" : rec.priority === "alta" ? "#FFFBEB" : rec.priority === "ok" ? "#F0FDF4" : "#f8f8f8" }}>
                         <span style={{ fontSize: 12, flexShrink: 0, marginTop: 1 }}>{priIcons[rec.priority] || "ℹ️"}</span>
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: 12, color: "#333", lineHeight: 1.5 }}>{rec.text}</div>
+                          <div style={{ fontSize: 12, color: "#5D4037", lineHeight: 1.5 }}>{rec.text}</div>
                         </div>
                         <span style={{ fontSize: 9, fontWeight: 700, color: priColors[rec.priority], flexShrink: 0, marginTop: 2 }}>{priLabels[rec.priority]}</span>
                       </div>
@@ -10274,7 +10319,7 @@ function ProjectsView(props) {
   var showNewTask = useState(false);
   var tasks = useState([]);
   var comments = useState([]);
-  var projForm = useState({ name: "", description: "", lead: "Lale", color: "#B45309" });
+  var projForm = useState({ name: "", description: "", lead: "Lale", color: "#7B1D3A" });
   var taskForm = useState({ title: "", description: "", assignedTo: [], priority: "media", deadline: "" });
   var commentText = useState("");
   var kanbanTab = useState("por_hacer");
@@ -10282,10 +10327,10 @@ function ProjectsView(props) {
   var loadingTasks = useState(false);
 
   var SOCIOS = ["Lale", "Carrick", "Rafa", "Coti"];
-  var SOCIO_COLORS = { Lale: "#B45309", Carrick: "#1E40AF", Rafa: "#7C3AED", Coti: "#DC2626" };
+  var SOCIO_COLORS = { Lale: "#7B1D3A", Carrick: "#1E40AF", Rafa: "#7C3AED", Coti: "#DC2626" };
   var COLS = [{ k: "por_hacer", l: "Por hacer", e: "📋", color: "#6B7280" }, { k: "en_proceso", l: "En proceso", e: "🔄", color: "#D97706" }, { k: "revision", l: "Revision", e: "👀", color: "#7C3AED" }, { k: "hecho", l: "Hecho", e: "✅", color: "#047857" }];
   var PRIS = { alta: { color: "#DC2626", bg: "#FEF2F2", label: "Alta" }, media: { color: "#D97706", bg: "#FFFBEB", label: "Media" }, baja: { color: "#047857", bg: "#F0FDF4", label: "Baja" } };
-  var PROJ_COLORS = ["#B45309", "#1E40AF", "#7C3AED", "#DC2626", "#047857", "#E11D48", "#0369A1"];
+  var PROJ_COLORS = ["#7B1D3A", "#1E40AF", "#7C3AED", "#DC2626", "#047857", "#E11D48", "#9B2335"];
 
   var projects = props.projectsData ? props.projectsData[0] : [];
   var userName = props.user ? props.user.name : "";
@@ -10304,7 +10349,7 @@ function ProjectsView(props) {
     var proj = { id: "proj_" + Date.now(), name: f.name, description: f.description, status: "activo", lead: f.lead, color: f.color, createdBy: userName, createdAt: new Date().toISOString() };
     props.projectsData[1]([proj].concat(projects));
     if (props.dbModule && props.dbModule.saveProject) props.dbModule.saveProject(proj);
-    projForm[1]({ name: "", description: "", lead: "Lale", color: "#B45309" });
+    projForm[1]({ name: "", description: "", lead: "Lale", color: "#7B1D3A" });
     showNewProject[1](false);
   }
 
@@ -10413,7 +10458,7 @@ function ProjectsView(props) {
                   <div style={{ width: 28, height: 28, borderRadius: 14, background: sc, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, flexShrink: 0 }}>{c.author ? c.author[0] : "?"}</div>
                   <div style={{ flex: 1, background: "#f8f8f8", padding: "8px 12px", borderRadius: "2px 10px 10px 10px" }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: sc }}>{c.author} <span style={{ fontWeight: 400, color: "#bbb" }}>{c.createdAt ? new Date(c.createdAt).toLocaleDateString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}</span></div>
-                    <div style={{ fontSize: 13, color: "#333", marginTop: 2, lineHeight: 1.4 }}>{c.text}</div>
+                    <div style={{ fontSize: 13, color: "#5D4037", marginTop: 2, lineHeight: 1.4 }}>{c.text}</div>
                   </div>
                 </div>
               );
@@ -10422,7 +10467,7 @@ function ProjectsView(props) {
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             <input value={commentText[0]} onChange={function(e) { commentText[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") postComment(); }} placeholder="Escribe un comentario..." style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none" }} />
-            <button onClick={postComment} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "#1a1a1a", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Enviar</button>
+            <button onClick={postComment} style={{ padding: "10px 16px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Enviar</button>
           </div>
         </div>
       </div>
@@ -10439,7 +10484,7 @@ function ProjectsView(props) {
       <div>
         <button onClick={function() { view[1]("list"); activeProject[1](null); }} style={{ background: "none", border: "none", fontSize: 14, color: "#888", cursor: "pointer", fontFamily: "inherit", marginBottom: 8 }}>← Proyectos</button>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: proj.color || "#B45309", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, fontWeight: 800 }}>{proj.name[0]}</div>
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: proj.color || "#7B1D3A", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18, fontWeight: 800 }}>{proj.name[0]}</div>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 20, fontWeight: 800 }}>{proj.name}</div>
             <div style={{ fontSize: 12, color: "#888" }}>{proj.description || "Sin descripcion"} — {projTasks.length} tareas</div>
@@ -10450,15 +10495,15 @@ function ProjectsView(props) {
         <div style={{ display: "flex", gap: 6, marginBottom: 14, flexWrap: "wrap", alignItems: "center" }}>
           {["Todos"].concat(SOCIOS).map(function(p) {
             var a = filterPerson[0] === p;
-            return <button key={p} onClick={function() { filterPerson[1](p); }} style={{ padding: "5px 12px", borderRadius: 20, border: "none", background: a ? "#1a1a1a" : "#f0f0f0", color: a ? "#fff" : "#888", fontWeight: 600, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>{p === "Todos" ? "👥 Todos" : p}</button>;
+            return <button key={p} onClick={function() { filterPerson[1](p); }} style={{ padding: "5px 12px", borderRadius: 20, border: "none", background: a ? "#1a1a1a" : "#eee", color: a ? "#fff" : "#888", fontWeight: 600, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>{p === "Todos" ? "👥 Todos" : p}</button>;
           })}
           <div style={{ flex: 1 }} />
-          <button onClick={function() { showNewTask[1](!showNewTask[0]); }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: proj.color || "#B45309", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showNewTask[0] ? "Cancelar" : "+ Tarea"}</button>
+          <button onClick={function() { showNewTask[1](!showNewTask[0]); }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: proj.color || "#7B1D3A", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showNewTask[0] ? "Cancelar" : "+ Tarea"}</button>
         </div>
 
         {/* New task form */}
         {showNewTask[0] && (
-          <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid #eee", marginBottom: 16, borderLeft: "4px solid " + (proj.color || "#B45309") }}>
+          <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid #eee", marginBottom: 16, borderLeft: "4px solid " + (proj.color || "#7B1D3A") }}>
             <input value={taskForm[0].title} onChange={function(e) { taskForm[1](Object.assign({}, taskForm[0], { title: e.target.value })); }} placeholder="Titulo de la tarea" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 8 }} />
             <textarea value={taskForm[0].description} onChange={function(e) { taskForm[1](Object.assign({}, taskForm[0], { description: e.target.value })); }} placeholder="Descripcion (opcional)" rows="2" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", resize: "vertical", marginBottom: 8 }} />
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
@@ -10470,7 +10515,7 @@ function ProjectsView(props) {
               </div></div>
               <div><div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>FECHA LIMITE</div><input type="date" value={taskForm[0].deadline} onChange={function(e) { taskForm[1](Object.assign({}, taskForm[0], { deadline: e.target.value })); }} style={{ padding: "5px 10px", border: "1px solid #e5e5e5", borderRadius: 6, fontSize: 12, fontFamily: "inherit" }} /></div>
             </div>
-            <button onClick={saveTask} style={{ padding: "10px 24px", borderRadius: 10, background: "#1a1a1a", color: "#fff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Crear tarea</button>
+            <button onClick={saveTask} style={{ padding: "10px 24px", borderRadius: 10, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#fff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Crear tarea</button>
           </div>
         )}
 
@@ -10503,7 +10548,7 @@ function ProjectsView(props) {
                       var tpri = PRIS[task.priority] || PRIS.media;
                       return (
                         <div key={task.id} onClick={function() { openTask(task); }} style={{ background: "#fff", borderRadius: 10, padding: "12px", marginBottom: 8, boxShadow: "0 1px 4px rgba(0,0,0,0.06)", cursor: "pointer", borderLeft: "3px solid " + tpri.color, transition: "transform 0.1s" }} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-2px)";}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";}}>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "#333", marginBottom: 6 }}>{task.title}</div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#5D4037", marginBottom: 6 }}>{task.title}</div>
                           <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 6 }}>
                             {(task.assignedTo || []).map(function(p) {
                               return <span key={p} style={{ width: 22, height: 22, borderRadius: 11, background: SOCIO_COLORS[p] || "#888", color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800 }}>{p[0]}</span>;
@@ -10538,11 +10583,11 @@ function ProjectsView(props) {
           <div style={{ fontSize: 20, fontWeight: 700 }}>Proyectos</div>
           <div style={{ fontSize: 13, color: "#888" }}>{projects.length} proyecto{projects.length !== 1 ? "s" : ""} — {SOCIOS.join(", ")}</div>
         </div>
-        <button onClick={function() { showNewProject[1](!showNewProject[0]); }} style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: "#1a1a1a", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showNewProject[0] ? "Cancelar" : "+ Proyecto"}</button>
+        <button onClick={function() { showNewProject[1](!showNewProject[0]); }} style={{ padding: "8px 16px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#fff", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showNewProject[0] ? "Cancelar" : "+ Proyecto"}</button>
       </div>
 
       {showNewProject[0] && (
-        <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid #eee", marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+        <div style={{ background: "#fff", borderRadius: 14, padding: 16, border: "1px solid #eee", marginBottom: 16, borderLeft: "4px solid #7B1D3A" }}>
           <input value={projForm[0].name} onChange={function(e) { projForm[1](Object.assign({}, projForm[0], { name: e.target.value })); }} placeholder="Nombre del proyecto" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 14, fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 8 }} />
           <textarea value={projForm[0].description} onChange={function(e) { projForm[1](Object.assign({}, projForm[0], { description: e.target.value })); }} placeholder="Descripcion" rows="2" style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e5e5", borderRadius: 10, fontSize: 13, fontFamily: "inherit", outline: "none", boxSizing: "border-box", resize: "vertical", marginBottom: 8 }} />
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 10 }}>
@@ -10553,7 +10598,7 @@ function ProjectsView(props) {
               {PROJ_COLORS.map(function(c) { return <button key={c} onClick={function() { projForm[1](Object.assign({}, projForm[0], { color: c })); }} style={{ width: 24, height: 24, borderRadius: 12, background: c, border: projForm[0].color === c ? "3px solid #333" : "2px solid #eee", cursor: "pointer" }} />; })}
             </div></div>
           </div>
-          <button onClick={saveProj} style={{ padding: "10px 24px", borderRadius: 10, background: "#1a1a1a", color: "#fff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Crear proyecto</button>
+          <button onClick={saveProj} style={{ padding: "10px 24px", borderRadius: 10, background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", color: "#fff", border: "none", fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Crear proyecto</button>
         </div>
       )}
 
@@ -10562,10 +10607,10 @@ function ProjectsView(props) {
         {activeProjs.map(function(proj) {
           var taskCount = 0; var doneCount = 0;
           return (
-            <div key={proj.id} style={{ background: "#fff", borderRadius: 14, padding: "18px", border: "1px solid #eee", cursor: "pointer", borderTop: "4px solid " + (proj.color || "#B45309"), transition: "transform 0.1s, box-shadow 0.1s" }} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 4px 16px rgba(0,0,0,0.08)";}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
+            <div key={proj.id} style={{ background: "#fff", borderRadius: 14, padding: "18px", border: "1px solid #eee", cursor: "pointer", borderTop: "4px solid " + (proj.color || "#7B1D3A"), transition: "transform 0.1s, box-shadow 0.1s" }} onMouseEnter={function(e){e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(12,27,42,0.12)";}} onMouseLeave={function(e){e.currentTarget.style.transform="translateY(0)";e.currentTarget.style.boxShadow="none";}}>
               <div onClick={function() { openProject(proj); }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 8, background: proj.color || "#B45309", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800 }}>{proj.name[0]}</div>
+                  <div style={{ width: 36, height: 36, borderRadius: 8, background: proj.color || "#7B1D3A", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 800 }}>{proj.name[0]}</div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 16, fontWeight: 800 }}>{proj.name}</div>
                     <div style={{ fontSize: 11, color: "#888" }}>{proj.description || "Sin descripcion"}</div>
@@ -10578,7 +10623,7 @@ function ProjectsView(props) {
                   <span style={{ fontSize: 11, color: "#888" }}>{proj.createdAt ? new Date(proj.createdAt).toLocaleDateString("es-ES", { day: "2-digit", month: "short" }) : ""}</span>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 6, marginTop: 10, borderTop: "1px solid #f0f0f0", paddingTop: 8 }}>
+              <div style={{ display: "flex", gap: 6, marginTop: 10, borderTop: "1px solid #eee", paddingTop: 8 }}>
                 <button onClick={function(e) { e.stopPropagation(); toggleProjStatus(proj.id); }} style={{ padding: "3px 10px", borderRadius: 6, border: "none", background: "#FFFBEB", color: "#D97706", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>⏸ Pausar</button>
                 <button onClick={function(e) { e.stopPropagation(); deleteProj(proj.id); }} style={{ padding: "3px 10px", borderRadius: 6, border: "none", background: "#FEF2F2", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>🗑</button>
               </div>
@@ -10689,10 +10734,12 @@ function PizarraView(props) {
 
   function getUserRole(name) {
     var USERS = [
-      { name: "Ale", role: "socio" }, { name: "Jesus", role: "encargado" },
-      { name: "Pedro", role: "empleado" }, { name: "Maria", role: "empleado" },
-      { name: "Carlos", role: "empleado" }, { name: "Ana", role: "empleado" },
-      { name: "Luis", role: "empleado" }
+      { name: "Carrick", role: "socio" }, { name: "Coti", role: "socio" },
+      { name: "Rafa", role: "socio" }, { name: "Lale", role: "socio" },
+      { name: "Jesus", role: "encargado" }, { name: "Nando", role: "encargado" },
+      { name: "Pupu", role: "empleado" }, { name: "Paula", role: "empleado" },
+      { name: "Pablo", role: "empleado" }, { name: "Andy", role: "empleado" },
+      { name: "Maria", role: "community" }
     ];
     for (var ui = 0; ui < USERS.length; ui++) { if (USERS[ui].name === name) return USERS[ui].role; }
     return "empleado";
@@ -10700,7 +10747,7 @@ function PizarraView(props) {
 
   function roleTag(name) {
     var r = getUserRole(name);
-    var rc = r === "socio" ? "#B45309" : r === "encargado" ? "#047857" : "#1E40AF";
+    var rc = r === "socio" ? "#7B1D3A" : r === "encargado" ? "#047857" : "#1E40AF";
     var rl = r === "socio" ? "Admin" : r === "encargado" ? "Enc." : "Emp.";
     return { color: rc, label: rl };
   }
@@ -10708,13 +10755,13 @@ function PizarraView(props) {
   var pendingCount = allItems.filter(function(b) { return b.local === loc && b.status === "pendiente"; }).length;
   var completedCount = allItems.filter(function(b) { return b.local === loc && (b.status === "hecho" || b.status === "recibido"); }).length;
   var activeSection = SECTIONS.filter(function(s) { return s.k === tab[0]; })[0] || SECTIONS[0];
-  var postItColors = { preparaciones: { bg: "#FFF8E1", border: "#FFE082", pin: "#F57F17" }, compras: { bg: "#E3F2FD", border: "#90CAF9", pin: "#1565C0" }, super: { bg: "#F3E5F5", border: "#CE93D8", pin: "#7B1FA2" }, anotaciones: { bg: "#E8F5E9", border: "#A5D6A7", pin: "#2E7D32" }, limpieza: { bg: "#FFEBEE", border: "#EF9A9A", pin: "#C62828" } };
+  var postItColors = { preparaciones: { bg: "#FFF8E1", border: "#FFE082", pin: "#9B2335" }, compras: { bg: "#E3F2FD", border: "#90CAF9", pin: "#7B1D3A" }, super: { bg: "#F3E5F5", border: "#CE93D8", pin: "#7C3AED" }, anotaciones: { bg: "#E8F5E9", border: "#A5D6A7", pin: "#047857" }, limpieza: { bg: "#FFEBEE", border: "#EF9A9A", pin: "#C62828" } };
   var pc = postItColors[tab[0]] || postItColors.preparaciones;
 
   return (
     <div style={{ background: "#5D4037", borderRadius: 16, padding: "4px", minHeight: "70vh" }}>
       {/* Wood frame effect */}
-      <div style={{ background: "linear-gradient(135deg, #F5F0E8 0%, #EDE7D9 50%, #E8E0D0 100%)", borderRadius: 12, padding: "16px", minHeight: "calc(70vh - 8px)", position: "relative" }}>
+      <div style={{ background: "linear-gradient(135deg, #f5f5f5 0%, #eee 50%, #eee 100%)", borderRadius: 12, padding: "16px", minHeight: "calc(70vh - 8px)", position: "relative" }}>
         {/* Cork texture dots */}
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, borderRadius: 12, opacity: 0.15, background: "radial-gradient(circle, #8D6E63 1px, transparent 1px)", backgroundSize: "20px 20px", pointerEvents: "none" }} />
 
@@ -10764,7 +10811,7 @@ function PizarraView(props) {
           <div style={{ position: "relative" }}>
             {/* Add input — looks like writing on the board */}
             <div style={{ display: "flex", gap: 8, marginBottom: 14, background: pc.bg, padding: "10px 14px", borderRadius: 4, boxShadow: "2px 3px 8px rgba(0,0,0,0.08)", borderLeft: "4px solid " + pc.pin }}>
-              <input value={newItem[0]} onChange={function(e) { newItem[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") addItem(); }} placeholder={tab[0] === "anotaciones" ? "Escribe una nota..." : tab[0] === "compras" ? "Producto a pedir..." : tab[0] === "super" ? "Que hay que comprar..." : "Preparacion a hacer..."} style={{ flex: 1, padding: "8px 10px", border: "none", borderBottom: "2px dashed " + pc.border, background: "transparent", fontSize: 14, fontFamily: "'Outfit', system-ui", outline: "none", color: "#333" }} />
+              <input value={newItem[0]} onChange={function(e) { newItem[1](e.target.value); }} onKeyDown={function(e) { if (e.key === "Enter") addItem(); }} placeholder={tab[0] === "anotaciones" ? "Escribe una nota..." : tab[0] === "compras" ? "Producto a pedir..." : tab[0] === "super" ? "Que hay que comprar..." : "Preparacion a hacer..."} style={{ flex: 1, padding: "8px 10px", border: "none", borderBottom: "2px dashed " + pc.border, background: "transparent", fontSize: 14, fontFamily: "'Outfit', system-ui", outline: "none", color: "#5D4037" }} />
               <button onClick={addItem} style={{ padding: "8px 16px", borderRadius: 4, border: "none", background: pc.pin, color: "#fff", fontWeight: 800, fontSize: 16, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 2px 4px rgba(0,0,0,0.15)" }}>+</button>
             </div>
 
@@ -10780,12 +10827,12 @@ function PizarraView(props) {
                     {/* Pin on notes */}
                     {isNote && <div style={{ position: "absolute", top: -4, right: 16, width: 10, height: 10, borderRadius: 5, background: "#F44336", boxShadow: "0 1px 3px rgba(0,0,0,0.3)" }} />}
                     {tab[0] !== "anotaciones" && tab[0] !== "compras" && (
-                      <button onClick={function() { toggleItem(item.id); }} style={{ width: 26, height: 26, borderRadius: 4, border: isDone ? "2px solid #4CAF50" : "2px solid #BCAAA4", background: isDone ? "#4CAF50" : "transparent", color: "#fff", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isDone ? "✓" : ""}</button>
+                      <button onClick={function() { toggleItem(item.id); }} style={{ width: 26, height: 26, borderRadius: 4, border: isDone ? "2px solid #4CAF50" : "2px solid #A1887F", background: isDone ? "#4CAF50" : "transparent", color: "#fff", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{isDone ? "✓" : ""}</button>
                     )}
                     {tab[0] === "compras" && (
                       <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                        <button onClick={function() { markCompra(item.id, item.status === "pedido" ? "pendiente" : "pedido"); }} style={{ padding: "4px 8px", borderRadius: 4, border: "none", background: item.status === "pedido" ? "#1565C0" : "#E3F2FD", color: item.status === "pedido" ? "#fff" : "#1565C0", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📞 Pedido</button>
-                        <button onClick={function() { markCompra(item.id, item.status === "recibido" ? "pendiente" : "recibido"); }} style={{ padding: "4px 8px", borderRadius: 4, border: "none", background: item.status === "recibido" ? "#2E7D32" : "#E8F5E9", color: item.status === "recibido" ? "#fff" : "#2E7D32", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✓ Recibido</button>
+                        <button onClick={function() { markCompra(item.id, item.status === "pedido" ? "pendiente" : "pedido"); }} style={{ padding: "4px 8px", borderRadius: 4, border: "none", background: item.status === "pedido" ? "#7B1D3A" : "#E3F2FD", color: item.status === "pedido" ? "#fff" : "#7B1D3A", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📞 Pedido</button>
+                        <button onClick={function() { markCompra(item.id, item.status === "recibido" ? "pendiente" : "recibido"); }} style={{ padding: "4px 8px", borderRadius: 4, border: "none", background: item.status === "recibido" ? "#047857" : "#E8F5E9", color: item.status === "recibido" ? "#fff" : "#047857", fontSize: 9, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✓ Recibido</button>
                       </div>
                     )}
                     <div style={{ flex: 1 }}>
@@ -10799,7 +10846,7 @@ function PizarraView(props) {
                         {item.createdAt && <span> — {new Date(item.createdAt).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}</span>}
                       </div>
                     </div>
-                    {isSocioOrEnc && <button onClick={function() { removeItem(item.id); }} style={{ background: "none", border: "none", fontSize: 11, color: "#BCAAA4", cursor: "pointer", flexShrink: 0 }}>✕</button>}
+                    {isSocioOrEnc && <button onClick={function() { removeItem(item.id); }} style={{ background: "none", border: "none", fontSize: 11, color: "#A1887F", cursor: "pointer", flexShrink: 0 }}>✕</button>}
                   </div>
                 );
               })}
@@ -10821,7 +10868,7 @@ function PizarraView(props) {
                   <div style={{ position: "absolute", top: -3, left: 12, width: 8, height: 8, borderRadius: 4, background: color, boxShadow: "0 1px 2px rgba(0,0,0,0.3)" }} />
                   <span style={{ fontSize: 22 }}>{CLEAN_ICONS[zone] || "🧹"}</span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: "#333" }}>{zone}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: "#5D4037" }}>{zone}</div>
                     <div style={{ fontSize: 10, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {last ? new Date(last.cleanedAt).toLocaleDateString("es-ES", { day: "2-digit", month: "short" }) + " — " + last.cleanedBy : "Sin registro"}
                     </div>
@@ -10866,7 +10913,7 @@ function CateringView(props) {
 
   // Pipeline stages
   var STAGES = ["Nuevo", "Contactado", "Presupuestado", "Negociacion", "Cerrado", "Perdido"];
-  var STAGE_COLORS = { Nuevo: "#1E40AF", Contactado: "#7C3AED", Presupuestado: "#D97706", Negociacion: "#B45309", Cerrado: "#047857", Perdido: "#DC2626" };
+  var STAGE_COLORS = { Nuevo: "#1E40AF", Contactado: "#7C3AED", Presupuestado: "#D97706", Negociacion: "#7B1D3A", Cerrado: "#047857", Perdido: "#DC2626" };
   var CANALES = ["Instagram", "Bodas.net", "Google", "Recomendacion", "Email", "Telefono", "Calle"];
   var TIPOS_EVENTO = ["Corporativo", "Boda", "Cumpleanos", "Comunion", "Feria", "Festival", "Privado", "Otro"];
   var MODALIDADES = ["En Accion", "Grill & Go", "Experience", "Pack Grupos"];
@@ -10993,12 +11040,12 @@ function CateringView(props) {
     } else if (isPack) { hasABC = f.producto === "A+B+C"; hasAB = f.producto === "A+B"; hasA = f.producto === "Solo A"; }
 
     return "<div style='font-family:Helvetica,Arial,sans-serif;color:#333;padding:20px;font-size:13px;line-height:1.5;max-width:700px;margin:0 auto'>" +
-    "<div style='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;border-bottom:3px solid #B45309;padding-bottom:16px;flex-wrap:wrap;gap:12px'>" +
-      "<div><div style='font-size:24px;font-weight:800;color:#B45309;letter-spacing:1px'>ORALE PADRE</div><div style='font-size:11px;color:#888;margin-top:4px'>Catering &amp; Eventos</div></div>" +
+    "<div style='display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;border-bottom:3px solid #7B1D3A;padding-bottom:16px;flex-wrap:wrap;gap:12px'>" +
+      "<div><div style='font-size:24px;font-weight:800;color:#7B1D3A;letter-spacing:1px'>ORALE PADRE</div><div style='font-size:11px;color:#888;margin-top:4px'>Catering &amp; Eventos</div></div>" +
       "<div style='text-align:right;font-size:10px;color:#888;line-height:1.6'>La baba hasta el suelo, S.L.<br>NIF: B56488323<br>Av. del Olivo, 59<br>41927 Mairena del Aljarafe, Sevilla</div>" +
     "</div>" +
     "<div style='display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap'>" +
-      "<div style='background:#f8f8f8;border-radius:8px;padding:14px;flex:1;min-width:180px'><div style='font-size:9px;color:#888;font-weight:600;letter-spacing:1px;margin-bottom:6px'>PRESUPUESTO PARA</div><div style='font-size:15px;font-weight:700'>" + clientName + "</div>" + (clientEmail ? "<div style='font-size:11px;color:#666'>" + clientEmail + "</div>" : "") + (clientTel ? "<div style='font-size:11px;color:#666'>" + clientTel + "</div>" : "") + (f.eventoDesc ? "<div style='font-size:11px;color:#B45309;margin-top:4px'>" + f.eventoDesc + "</div>" : "") + "</div>" +
+      "<div style='background:#f8f8f8;border-radius:8px;padding:14px;flex:1;min-width:180px'><div style='font-size:9px;color:#888;font-weight:600;letter-spacing:1px;margin-bottom:6px'>PRESUPUESTO PARA</div><div style='font-size:15px;font-weight:700'>" + clientName + "</div>" + (clientEmail ? "<div style='font-size:11px;color:#666'>" + clientEmail + "</div>" : "") + (clientTel ? "<div style='font-size:11px;color:#666'>" + clientTel + "</div>" : "") + (f.eventoDesc ? "<div style='font-size:11px;color:#7B1D3A;margin-top:4px'>" + f.eventoDesc + "</div>" : "") + "</div>" +
       "<div style='background:#f8f8f8;border-radius:8px;padding:14px;min-width:160px'><div style='font-size:9px;color:#888;font-weight:600;letter-spacing:1px;margin-bottom:6px'>DETALLES</div><div style='font-size:11px;margin-bottom:3px'><strong>N.:</strong> " + presuNum + "</div><div style='font-size:11px;margin-bottom:3px'><strong>Fecha:</strong> " + today + "</div>" + (f.eventoFecha ? "<div style='font-size:11px;margin-bottom:3px'><strong>Evento:</strong> " + f.eventoFecha + "</div>" : "") + "<div style='font-size:11px'><strong>Validez:</strong> " + (f.validez || "15 dias") + "</div></div>" +
     "</div>" +
     "<table style='width:100%;border-collapse:collapse;margin-bottom:16px;font-size:12px'>" +
@@ -11012,13 +11059,13 @@ function CateringView(props) {
       "<div style='display:inline-block;min-width:200px'>" +
         "<div style='display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;font-size:12px'><span>Subtotal</span><span>" + calc.subtotal.toFixed(2) + " EUR</span></div>" +
         "<div style='display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;font-size:12px'><span>IVA (10%)</span><span>" + calc.iva.toFixed(2) + " EUR</span></div>" +
-        "<div style='display:flex;justify-content:space-between;padding:8px 0;font-size:16px;font-weight:800;color:#B45309'><span>TOTAL</span><span>" + calc.total.toFixed(2) + " EUR</span></div>" +
+        "<div style='display:flex;justify-content:space-between;padding:8px 0;font-size:16px;font-weight:800;color:#7B1D3A'><span>TOTAL</span><span>" + calc.total.toFixed(2) + " EUR</span></div>" +
       "</div>" +
     "</div>" +
-    (isPack ? "<div style='background:#FFF7ED;border-radius:8px;padding:12px;margin-bottom:16px;border-left:3px solid #B45309'><div style='font-size:11px;font-weight:700;color:#B45309;margin-bottom:6px'>OPCIONES DISPONIBLES</div><div style='font-size:10px;color:#666;line-height:1.8'>" + (hasABC || hasAB || hasA ? "<strong>A:</strong> Lady Cochinita, Dona Dolores, Black Chancho, Pollo Pastor, Don Hampi, Don Juarez, Pollo Padre | Desnudos: Juarez, Cochinita, Black Chancho, Dolores<br>" : "") + (hasABC || hasAB ? "<strong>B:</strong> Taco Pollo Pastor, Taco Lady Cochinita, Tacos Chancho<br>" : "") + (hasABC ? "<strong>C:</strong> Filipinos Blancos, Dulce de Leche, Kinder Bueno, Galleta Lotus" : "") + "</div></div>" : "") +
+    (isPack ? "<div style='background:#FDF2F4;border-radius:8px;padding:12px;margin-bottom:16px;border-left:3px solid #7B1D3A'><div style='font-size:11px;font-weight:700;color:#7B1D3A;margin-bottom:6px'>OPCIONES DISPONIBLES</div><div style='font-size:10px;color:#666;line-height:1.8'>" + (hasABC || hasAB || hasA ? "<strong>A:</strong> Lady Cochinita, Dona Dolores, Black Chancho, Pollo Pastor, Don Hampi, Don Juarez, Pollo Padre | Desnudos: Juarez, Cochinita, Black Chancho, Dolores<br>" : "") + (hasABC || hasAB ? "<strong>B:</strong> Taco Pollo Pastor, Taco Lady Cochinita, Tacos Chancho<br>" : "") + (hasABC ? "<strong>C:</strong> Filipinos Blancos, Dulce de Leche, Kinder Bueno, Galleta Lotus" : "") + "</div></div>" : "") +
     (f.notas ? "<div style='background:#f8f8f8;border-radius:8px;padding:12px;margin-bottom:16px'><div style='font-size:10px;font-weight:700;color:#888;margin-bottom:3px'>NOTAS</div><div style='font-size:11px;color:#555'>" + f.notas + "</div></div>" : "") +
     "<div style='background:#f8f8f8;border-radius:8px;padding:12px;margin-bottom:16px'><div style='font-size:10px;font-weight:700;color:#888;margin-bottom:4px'>CONDICIONES</div><div style='font-size:10px;color:#666;line-height:1.8'>- Entrega incluida en Sevilla y alrededores<br>" + (f.tipo === "Pack Grupos" ? "- Minimo 25 packs<br>" : "") + "- Propuestas sin gluten y veganas disponibles<br>- Ingredientes modificables bajo peticion<br>- Pago: 50% al confirmar, 50% el dia del evento<br>- Cancelacion: Hasta 48h antes sin coste</div></div>" +
-    "<div style='text-align:center;padding-top:12px;border-top:2px solid #B45309;font-size:10px;color:#888'>ORALE PADRE — www.oralepadre.com — hola@oralepadre.com — Sevilla</div>" +
+    "<div style='text-align:center;padding-top:12px;border-top:2px solid #7B1D3A;font-size:10px;color:#888'>ORALE PADRE — www.oralepadre.com — hola@oralepadre.com — Sevilla</div>" +
     "</div>";
   }
 
@@ -11074,7 +11121,7 @@ function CateringView(props) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
-        {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
+        {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: a ? "#7B1D3A08" : "#fff", color: a ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
       </div>
 
       {/* === DASHBOARD === */}
@@ -11121,7 +11168,7 @@ function CateringView(props) {
             </div>
 
             {isSocio && facturacionMes > 0 && (
-              <div style={{ background: "linear-gradient(135deg, #111 0%, #1a2a1a 100%)", borderRadius: 14, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
+              <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 14, padding: "20px", color: "#fff", marginBottom: 20, textAlign: "center" }}>
                 <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 4 }}>FACTURACION CATERING MES</div>
                 <div style={{ fontSize: 32, fontWeight: 800, color: "#4ADE80" }}>{facturacionMes.toFixed(0)}€</div>
               </div>
@@ -11135,7 +11182,7 @@ function CateringView(props) {
                 {accionesHoy.map(function(l) {
                   return (
                     <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 16, background: "#FFF7ED", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{l.proximaAccion === "Llamar" ? "📞" : l.proximaAccion === "Enviar presupuesto" ? "📄" : "💬"}</div>
+                      <div style={{ width: 32, height: 32, borderRadius: 16, background: "#FDF2F4", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, flexShrink: 0 }}>{l.proximaAccion === "Llamar" ? "📞" : l.proximaAccion === "Enviar presupuesto" ? "📄" : "💬"}</div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: 13, fontWeight: 600 }}>{l.nombre}</div>
                         <div style={{ fontSize: 11, color: "#888" }}>{l.proximaAccion} — {l.tipoEvento} ({l.personas || "?"} pers.)</div>
@@ -11152,7 +11199,7 @@ function CateringView(props) {
                   return (
                     <div key={l.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 8px", borderBottom: "1px solid #f5f5f5" }}>
                       <div style={{ textAlign: "center", flexShrink: 0, width: 44 }}>
-                        <div style={{ fontSize: 16, fontWeight: 800, color: "#B45309" }}>{l.fechaEvento ? new Date(l.fechaEvento).getDate() : "?"}</div>
+                        <div style={{ fontSize: 16, fontWeight: 800, color: "#7B1D3A" }}>{l.fechaEvento ? new Date(l.fechaEvento).getDate() : "?"}</div>
                         <div style={{ fontSize: 9, color: "#888" }}>{l.fechaEvento ? ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"][new Date(l.fechaEvento).getMonth()] : ""}</div>
                       </div>
                       <div style={{ flex: 1 }}>
@@ -11188,7 +11235,7 @@ function CateringView(props) {
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>📍 Zona Comercial</div>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8, marginBottom: 12 }}>
                 <div style={{ textAlign: "center", padding: 8, borderRadius: 8, background: "#FEF3C7" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#D97706" }}>{zonesData[0].filter(function(z) { return z.estado === "pendiente"; }).length}</div><div style={{ fontSize: 9, color: "#888" }}>Pendientes</div></div>
-                <div style={{ textAlign: "center", padding: 8, borderRadius: 8, background: "#EFF6FF" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#1E40AF" }}>{zonesData[0].filter(function(z) { return z.estado === "visitado"; }).length}</div><div style={{ fontSize: 9, color: "#888" }}>Visitados</div></div>
+                <div style={{ textAlign: "center", padding: 8, borderRadius: 8, background: "#FFF8E1" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#1E40AF" }}>{zonesData[0].filter(function(z) { return z.estado === "visitado"; }).length}</div><div style={{ fontSize: 9, color: "#888" }}>Visitados</div></div>
                 <div style={{ textAlign: "center", padding: 8, borderRadius: 8, background: "#F5F3FF" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#7C3AED" }}>{zonesData[0].filter(function(z) { return z.estado === "en_seguimiento"; }).length}</div><div style={{ fontSize: 9, color: "#888" }}>Seguimiento</div></div>
                 <div style={{ textAlign: "center", padding: 8, borderRadius: 8, background: "#F0FDF4" }}><div style={{ fontSize: 18, fontWeight: 800, color: "#047857" }}>{zonesData[0].filter(function(z) { return z.estado === "cerrado"; }).length}</div><div style={{ fontSize: 9, color: "#888" }}>Cerrados</div></div>
               </div>
@@ -11223,7 +11270,7 @@ function CateringView(props) {
       {tab[0] === "servicios" && (
         <div>
           {/* EN ACCION */}
-          <div style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 16, padding: "24px", color: "#fff", marginBottom: 20 }}>
+          <div style={{ background: "linear-gradient(135deg, #7B1D3A 0%, #5C1530 100%)", borderRadius: 16, padding: "24px", color: "#fff", marginBottom: 20 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
               <span style={{ fontSize: 28 }}>🔥</span>
               <div>
@@ -11296,14 +11343,14 @@ function CateringView(props) {
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, minWidth: 400 }}>
               <thead><tr style={{ borderBottom: "2px solid #eee" }}>
                 <th style={{ padding: "10px 8px", textAlign: "left", color: "#888", fontWeight: 600 }}></th>
-                <th style={{ padding: "10px 8px", textAlign: "center", color: "#B45309", fontWeight: 700 }}>🔥 En Accion</th>
+                <th style={{ padding: "10px 8px", textAlign: "center", color: "#7B1D3A", fontWeight: 700 }}>🔥 En Accion</th>
                 <th style={{ padding: "10px 8px", textAlign: "center", color: "#1E40AF", fontWeight: 700 }}>🚀 Grill & Go</th>
                 <th style={{ padding: "10px 8px", textAlign: "center", color: "#047857", fontWeight: 700 }}>🌯 Pack Grupos</th>
               </tr></thead>
               <tbody>
                 <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Formato</td><td style={{ padding: "8px", textAlign: "center" }}>Show cooking</td><td style={{ padding: "8px", textAlign: "center" }}>Entrega</td><td style={{ padding: "8px", textAlign: "center" }}>Packs individuales</td></tr>
                 <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Minimo</td><td style={{ padding: "8px", textAlign: "center" }}>60 pers.</td><td style={{ padding: "8px", textAlign: "center" }}>Sin minimo</td><td style={{ padding: "8px", textAlign: "center" }}>25 packs</td></tr>
-                <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Precio/pers</td><td style={{ padding: "8px", textAlign: "center", fontWeight: 700, color: "#B45309" }}>5,15-10,50€</td><td style={{ padding: "8px", textAlign: "center", fontWeight: 700, color: "#1E40AF" }}>9,50€</td><td style={{ padding: "8px", textAlign: "center", fontWeight: 700, color: "#047857" }}>9,90-17,90€</td></tr>
+                <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Precio/pers</td><td style={{ padding: "8px", textAlign: "center", fontWeight: 700, color: "#7B1D3A" }}>5,15-10,50€</td><td style={{ padding: "8px", textAlign: "center", fontWeight: 700, color: "#1E40AF" }}>9,50€</td><td style={{ padding: "8px", textAlign: "center", fontWeight: 700, color: "#047857" }}>9,90-17,90€</td></tr>
                 <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Stand/Personal</td><td style={{ padding: "8px", textAlign: "center" }}>✅ Incluido</td><td style={{ padding: "8px", textAlign: "center" }}>✅ Incluido</td><td style={{ padding: "8px", textAlign: "center" }}>❌</td></tr>
                 <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Cocina en vivo</td><td style={{ padding: "8px", textAlign: "center" }}>✅ Si</td><td style={{ padding: "8px", textAlign: "center" }}>❌ No</td><td style={{ padding: "8px", textAlign: "center" }}>❌ No</td></tr>
                 <tr style={{ borderBottom: "1px solid #f5f5f5" }}><td style={{ padding: "8px", fontWeight: 600 }}>Transporte</td><td style={{ padding: "8px", textAlign: "center" }}>Incluido 25km</td><td style={{ padding: "8px", textAlign: "center" }}>Incluido 25km</td><td style={{ padding: "8px", textAlign: "center" }}>Incluido</td></tr>
@@ -11314,11 +11361,11 @@ function CateringView(props) {
           </div>
 
           {/* CONDICIONES */}
-          <div style={{ ...crd, borderLeft: "4px solid #B45309" }}>
+          <div style={{ ...crd, borderLeft: "4px solid #7B1D3A" }}>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>📌 Condiciones Generales</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FEF3C7" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#92400E", marginBottom: 2 }}>1. CONFIRMACION DE RESERVA</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#5C1530", marginBottom: 2 }}>1. CONFIRMACION DE RESERVA</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Abonar 50% del total presupuestado. La anulacion posterior implica la no devolucion de dicho importe.</div>
               </div>
               <div style={{ padding: "10px 14px", borderRadius: 8, background: "#f8f8f8" }}>
@@ -11342,7 +11389,7 @@ function CateringView(props) {
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Informacion sobre alergenos disponible. Menus especiales no incluidos, van aparte.</div>
               </div>
               <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FEF3C7" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#92400E", marginBottom: 2 }}>7. PRECIOS</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#5C1530", marginBottom: 2 }}>7. PRECIOS</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Los precios de En Accion y Grill & Go NO incluyen IVA. Los Packs Grupos SI incluyen IVA.</div>
               </div>
             </div>
@@ -11360,7 +11407,7 @@ function CateringView(props) {
               <div style={{ fontSize: 32, fontWeight: 800 }}>17,90€</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>Burrito/Desnudo + Tacos + Postre</div>
             </div>
-            <div style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 14, padding: "20px", color: "#fff", textAlign: "center" }}>
+            <div style={{ background: "linear-gradient(135deg, #7B1D3A 0%, #5C1530 100%)", borderRadius: 14, padding: "20px", color: "#fff", textAlign: "center" }}>
               <div style={{ fontSize: 11, fontWeight: 600, opacity: 0.7, letterSpacing: 1, marginBottom: 6 }}>PACK A+B</div>
               <div style={{ fontSize: 32, fontWeight: 800 }}>15,90€</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>Burrito/Desnudo + Tacos</div>
@@ -11374,11 +11421,11 @@ function CateringView(props) {
 
           <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
             {/* OPCION A - Burritos */}
-            <div style={{ ...crd, borderTop: "4px solid #B45309" }}>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#B45309", marginBottom: 12 }}>🌯 OPCION A — BURRITOS</div>
+            <div style={{ ...crd, borderTop: "4px solid #7B1D3A" }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#7B1D3A", marginBottom: 12 }}>🌯 OPCION A — BURRITOS</div>
               {["Lady Cochinita", "Dona Dolores", "Black Chancho", "Pollo Pastor", "Don Hampi", "Don Juarez", "Pollo Padre", "Tacos Chancho"].map(function(b) {
                 return <div key={b} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 4px", borderBottom: "1px solid #f8f8f8" }}>
-                  <span style={{ color: "#B45309", fontSize: 12 }}>▸</span>
+                  <span style={{ color: "#7B1D3A", fontSize: 12 }}>▸</span>
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{b}</span>
                 </div>;
               })}
@@ -11393,10 +11440,10 @@ function CateringView(props) {
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{d}</span>
                 </div>;
               })}
-              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#FFF7ED" }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginBottom: 6 }}>DETALLE DESNUDO POLLO PASTOR</div>
+              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#FDF2F4" }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#7B1D3A", marginBottom: 6 }}>DETALLE DESNUDO POLLO PASTOR</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Pollo pastor, arroz con cilantro y lima, salsa verde, guacamole casero, pico de gallo casero, frijoles</div>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginTop: 8, marginBottom: 6 }}>DETALLE DESNUDO COCHINITA</div>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#7B1D3A", marginTop: 8, marginBottom: 6 }}>DETALLE DESNUDO COCHINITA</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>Cochinita pibil, arroz, salsa chipotle, lechuga fresca, cebolla encurtida, pico de gallo casero, nata agria</div>
               </div>
             </div>
@@ -11412,7 +11459,7 @@ function CateringView(props) {
                   <span style={{ fontSize: 13, fontWeight: 600 }}>{t}</span>
                 </div>;
               })}
-              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#EFF6FF" }}>
+              <div style={{ marginTop: 12, padding: "12px", borderRadius: 8, background: "#FFF8E1" }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: "#1E40AF", marginBottom: 6 }}>DETALLE TACOS</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6 }}>2 Tacos Pulled Pork BBQ / 2 Tacos Cochinita con guacamole, pico de gallo, 4 quesos (opcional)</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.6, marginTop: 4 }}>2 Tacos Carrillada iberica al estilo Orale con cebolla morada, cilantro, 4 quesos, salsa mayo-lima</div>
@@ -11440,25 +11487,25 @@ function CateringView(props) {
           <div style={{ ...crd, marginBottom: 20 }}>
             <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>📋 Detalle Burritos Experience</div>
             <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr", gap: 16 }}>
-              <div style={{ padding: "12px", borderRadius: 8, background: "#FFF7ED" }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>BURRITO POLLO PASTOR</div>
+              <div style={{ padding: "12px", borderRadius: 8, background: "#FDF2F4" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", marginBottom: 8 }}>BURRITO POLLO PASTOR</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.8 }}>Pollo pastor, arroz con cilantro y lima, salsa verde, guacamole casero, pico de gallo casero, frijoles, nata agria, 4 quesos (opcional), tortilla de harina de trigo</div>
               </div>
-              <div style={{ padding: "12px", borderRadius: 8, background: "#FFF7ED" }}>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>BURRITO COCHINITA</div>
+              <div style={{ padding: "12px", borderRadius: 8, background: "#FDF2F4" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", marginBottom: 8 }}>BURRITO COCHINITA</div>
                 <div style={{ fontSize: 11, color: "#666", lineHeight: 1.8 }}>Cochinita pibil, arroz, salsa chipotle, lechuga fresca, cebolla encurtida, pico de gallo casero, nata agria, tortilla de harina de trigo</div>
               </div>
             </div>
           </div>
 
           {/* Notes */}
-          <div style={{ ...crd, borderLeft: "4px solid #B45309" }}>
+          <div style={{ ...crd, borderLeft: "4px solid #7B1D3A" }}>
             <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 10 }}>📌 Condiciones</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Precio incluye entrega</div>
-              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Minimo 25 packs</div>
-              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Se pueden elaborar propuestas sin gluten y veganas</div>
-              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#B45309", fontWeight: 700 }}>•</span> Se pueden modificar ingredientes bajo peticion</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#7B1D3A", fontWeight: 700 }}>•</span> Precio incluye entrega</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#7B1D3A", fontWeight: 700 }}>•</span> Minimo 25 packs</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#7B1D3A", fontWeight: 700 }}>•</span> Se pueden elaborar propuestas sin gluten y veganas</div>
+              <div style={{ fontSize: 12, color: "#555", display: "flex", gap: 8 }}><span style={{ color: "#7B1D3A", fontWeight: 700 }}>•</span> Se pueden modificar ingredientes bajo peticion</div>
             </div>
           </div>
         </div>
@@ -11589,12 +11636,12 @@ function CateringView(props) {
       {tab[0] === "leads" && (
         <div>
           <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-            <button onClick={function() { showAddLead[1](!showAddLead[0]); editLeadId[1](null); leadForm[1]({ nombre: "", telefono: "", email: "", empresa: "", canal: "Instagram", tipoEvento: "Corporativo", fechaEvento: "", personas: "", modalidad: "En Accion", proximaAccion: "Llamar", fechaAccion: new Date().toISOString().slice(0, 10), notas: "" }); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddLead[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddLead[0] ? "Cancelar" : "+ Nuevo Lead"}</button>
+            <button onClick={function() { showAddLead[1](!showAddLead[0]); editLeadId[1](null); leadForm[1]({ nombre: "", telefono: "", email: "", empresa: "", canal: "Instagram", tipoEvento: "Corporativo", fechaEvento: "", personas: "", modalidad: "En Accion", proximaAccion: "Llamar", fechaAccion: new Date().toISOString().slice(0, 10), notas: "" }); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddLead[0] ? "#DC2626" : "#7B1D3A", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddLead[0] ? "Cancelar" : "+ Nuevo Lead"}</button>
           </div>
 
           {/* Add/Edit lead form */}
           {showAddLead[0] && (
-            <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+            <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #7B1D3A" }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12 }}>{editLeadId[0] ? "Editar Lead" : "Nuevo Lead"}</div>
               <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 10 }}>
                 <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOMBRE *</div><input value={leadForm[0].nombre} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { nombre: e.target.value })); }} placeholder="Nombre del contacto / empresa" style={inp} /></div>
@@ -11613,7 +11660,7 @@ function CateringView(props) {
                 <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>FECHA ACCION</div><input type="date" value={leadForm[0].fechaAccion} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { fechaAccion: e.target.value })); }} style={inp} /></div>
               </div>
               <div style={{ marginBottom: 10 }}><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOTAS</div><input value={leadForm[0].notas} onChange={function(e) { leadForm[1](Object.assign({}, leadForm[0], { notas: e.target.value })); }} placeholder="Notas sobre el lead..." style={inp} /></div>
-              <button onClick={saveLead} style={{ padding: "10px 24px", borderRadius: 10, background: "#B45309", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{editLeadId[0] ? "Guardar cambios" : "Crear Lead"}</button>
+              <button onClick={saveLead} style={{ padding: "10px 24px", borderRadius: 10, background: "#7B1D3A", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>{editLeadId[0] ? "Guardar cambios" : "Crear Lead"}</button>
             </div>
           )}
 
@@ -11634,10 +11681,10 @@ function CateringView(props) {
                         <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4 }}>{lead.nombre}</div>
                         <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>{lead.modalidad} — {lead.personas || "?"} pers.</div>
                         <div style={{ fontSize: 10, color: "#aaa" }}>{lead.tipoEvento}{lead.fechaEvento ? " — " + lead.fechaEvento : ""}</div>
-                        {lead.proximaAccion && <div style={{ fontSize: 10, color: "#B45309", fontWeight: 600, marginTop: 4 }}>→ {lead.proximaAccion}{lead.fechaAccion ? " (" + lead.fechaAccion + ")" : ""}</div>}
+                        {lead.proximaAccion && <div style={{ fontSize: 10, color: "#7B1D3A", fontWeight: 600, marginTop: 4 }}>→ {lead.proximaAccion}{lead.fechaAccion ? " (" + lead.fechaAccion + ")" : ""}</div>}
 
                         {selectedLead[0] === lead.id && (
-                          <div style={{ marginTop: 10, borderTop: "1px solid #f0f0f0", paddingTop: 10 }}>
+                          <div style={{ marginTop: 10, borderTop: "1px solid #eee", paddingTop: 10 }}>
                             {lead.telefono && <div style={{ fontSize: 11, marginBottom: 4 }}>📞 {lead.telefono}</div>}
                             {lead.email && <div style={{ fontSize: 11, marginBottom: 4 }}>📧 {lead.email}</div>}
                             {lead.notas && <div style={{ fontSize: 11, color: "#888", marginBottom: 6 }}>{lead.notas}</div>}
@@ -11648,7 +11695,7 @@ function CateringView(props) {
                               })}
                             </div>
                             <div style={{ display: "flex", gap: 6 }}>
-                              <button onClick={function(e) { e.stopPropagation(); presuForm[1](Object.assign({}, presuForm[0], { leadId: lead.id, personas: parseInt(lead.personas) || 50, tipo: lead.modalidad || "En Accion" })); showPresu[1](true); tab[1]("presupuestos"); }} style={{ padding: "4px 10px", borderRadius: 6, background: "#B45309", color: "#fff", border: "none", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Presupuesto</button>
+                              <button onClick={function(e) { e.stopPropagation(); presuForm[1](Object.assign({}, presuForm[0], { leadId: lead.id, personas: parseInt(lead.personas) || 50, tipo: lead.modalidad || "En Accion" })); showPresu[1](true); tab[1]("presupuestos"); }} style={{ padding: "4px 10px", borderRadius: 6, background: "#7B1D3A", color: "#fff", border: "none", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Presupuesto</button>
                               <button onClick={function(e) { e.stopPropagation(); editLeadId[1](lead.id); leadForm[1]({ nombre: lead.nombre, telefono: lead.telefono || "", email: lead.email || "", empresa: lead.empresa || "", canal: lead.canal || "Instagram", tipoEvento: lead.tipoEvento || "Corporativo", fechaEvento: lead.fechaEvento || "", personas: lead.personas || "", modalidad: lead.modalidad || "En Accion", proximaAccion: lead.proximaAccion || "Llamar", fechaAccion: lead.fechaAccion || "", notas: lead.notas || "" }); showAddLead[1](true); }} style={{ padding: "4px 10px", borderRadius: 6, background: "#f5f5f5", color: "#888", border: "none", fontSize: 10, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✏️ Editar</button>
                             </div>
                             {/* Timeline */}
@@ -11676,7 +11723,7 @@ function CateringView(props) {
       {/* === PRESUPUESTOS === */}
       {tab[0] === "presupuestos" && (
         <div>
-          <button onClick={function() { showPresu[1](!showPresu[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showPresu[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>{showPresu[0] ? "Cancelar" : "+ Nuevo Presupuesto"}</button>
+          <button onClick={function() { showPresu[1](!showPresu[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showPresu[0] ? "#DC2626" : "#7B1D3A", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit", marginBottom: 16 }}>{showPresu[0] ? "Cancelar" : "+ Nuevo Presupuesto"}</button>
 
           {showPresu[0] && (function() {
             var isPack = presuForm[0].tipo === "Pack Grupos";
@@ -11690,11 +11737,11 @@ function CateringView(props) {
             }
             var calc = calcPresupuesto();
             return (
-              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #B45309" }}>
+              <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #7B1D3A" }}>
                 <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Generador de Presupuesto</div>
 
                 {/* Client info */}
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>DATOS DEL CLIENTE</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", marginBottom: 8 }}>DATOS DEL CLIENTE</div>
                 <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
                   <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>NOMBRE / EMPRESA</div><input value={presuForm[0].clienteNombre} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { clienteNombre: e.target.value })); }} placeholder="Empresa o persona" style={inp} /></div>
                   <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>EMAIL</div><input value={presuForm[0].clienteEmail} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { clienteEmail: e.target.value })); }} placeholder="email@empresa.com" style={inp} /></div>
@@ -11707,7 +11754,7 @@ function CateringView(props) {
                 </div>
 
                 {/* Service config */}
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#B45309", marginBottom: 8 }}>SERVICIO</div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7B1D3A", marginBottom: 8 }}>SERVICIO</div>
                 <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr" : isPack ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 12 }}>
                   <div><div style={{ fontSize: 11, fontWeight: 600, color: "#888", marginBottom: 4 }}>TIPO CATERING</div><select value={presuForm[0].tipo} onChange={function(e) { presuForm[1](Object.assign({}, presuForm[0], { tipo: e.target.value })); }} style={sel}>{MODALIDADES.map(function(m) { return <option key={m} value={m}>{m}</option>; })}</select></div>
                   {!isPack && (
@@ -11720,19 +11767,19 @@ function CateringView(props) {
 
                 {/* Pack Grupos: multi-line selector */}
                 {isPack && (
-                  <div style={{ background: "#FFF7ED", borderRadius: 10, padding: "14px 16px", marginBottom: 12 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", marginBottom: 10 }}>CONFIGURA LOS PACKS</div>
+                  <div style={{ background: "#FDF2F4", borderRadius: 10, padding: "14px 16px", marginBottom: 12 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#7B1D3A", marginBottom: 10 }}>CONFIGURA LOS PACKS</div>
                     {(presuForm[0].packLines || []).map(function(line, lidx) {
                       var packPrice = PRECIOS["Pack Grupos"][line.pack] || 0;
                       var packDesc2 = line.pack === "A+B+C" ? "Burrito/Desnudo + Tacos + Postre" : line.pack === "A+B" ? "Burrito/Desnudo + Tacos" : "Burrito o Desnudo";
                       var lineTotal = (parseInt(line.qty) || 0) * packPrice;
                       return (
-                        <div key={lidx} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, padding: "10px 12px", background: "#fff", borderRadius: 8, border: "1px solid #f0ede8" }}>
+                        <div key={lidx} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8, padding: "10px 12px", background: "#fff", borderRadius: 8, border: "1px solid #eee" }}>
                           <div style={{ flex: 1, minWidth: 120 }}>
-                            <div style={{ fontSize: 13, fontWeight: 700, color: "#333" }}>Pack {line.pack}</div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "#5D4037" }}>Pack {line.pack}</div>
                             <div style={{ fontSize: 10, color: "#888" }}>{packDesc2}</div>
                           </div>
-                          <div style={{ fontSize: 13, fontWeight: 700, color: "#B45309", minWidth: 60, textAlign: "right" }}>{packPrice.toFixed(2)}€</div>
+                          <div style={{ fontSize: 13, fontWeight: 700, color: "#7B1D3A", minWidth: 60, textAlign: "right" }}>{packPrice.toFixed(2)}€</div>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <input type="number" min="0" value={line.qty} onChange={function(e) { var newLines = presuForm[0].packLines.slice(); newLines[lidx] = Object.assign({}, newLines[lidx], { qty: parseInt(e.target.value) || 0 }); presuForm[1](Object.assign({}, presuForm[0], { packLines: newLines })); }} style={{ width: 70, padding: "8px 10px", border: "1.5px solid #e5e5e5", borderRadius: 8, fontSize: 14, textAlign: "center", fontFamily: "inherit", fontWeight: 700 }} placeholder="0" />
                             <span style={{ fontSize: 11, color: "#888" }}>pers.</span>
@@ -11757,7 +11804,7 @@ function CateringView(props) {
                           var idx = ext.indexOf(ex.id);
                           if (idx >= 0) ext.splice(idx, 1); else ext.push(ex.id);
                           presuForm[1](Object.assign({}, presuForm[0], { extras: ext }));
-                        }} style={{ padding: "6px 14px", borderRadius: 8, border: isOn ? "2px solid #B45309" : "1px solid #e5e5e5", background: isOn ? "#B4530908" : "#fff", color: isOn ? "#B45309" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{ex.name} (+{ex.price}EUR/pers)</button>;
+                        }} style={{ padding: "6px 14px", borderRadius: 8, border: isOn ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: isOn ? "#7B1D3A08" : "#fff", color: isOn ? "#7B1D3A" : "#888", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{ex.name} (+{ex.price}EUR/pers)</button>;
                       })}
                     </div>
                   </div>
@@ -11785,7 +11832,7 @@ function CateringView(props) {
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <button onClick={function() { savePresupuesto(); }} style={{ padding: "10px 20px", borderRadius: 10, background: "#047857", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>💾 Guardar</button>
-                  <button onClick={generatePresupuestoPDF} style={{ padding: "10px 20px", borderRadius: 10, background: "#B45309", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Generar PDF</button>
+                  <button onClick={generatePresupuestoPDF} style={{ padding: "10px 20px", borderRadius: 10, background: "#7B1D3A", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Generar PDF</button>
                   <button onClick={function() { var calc2 = calcPresupuesto(); var txt = "Presupuesto Orale Padre Catering\n" + presuForm[0].tipo + " — " + presuForm[0].producto + "\n" + presuForm[0].personas + " personas\nTotal: " + calc2.total.toFixed(2) + "EUR (IVA incl.)\n\nContacto: hola@oralepadre.com"; window.open("https://wa.me/?text=" + encodeURIComponent(txt)); }} style={{ padding: "10px 20px", borderRadius: 10, background: "#25D366", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>💬 WhatsApp</button>
                   <button onClick={function() { var calc2 = calcPresupuesto(); var subj = "Presupuesto Orale Padre — " + presuForm[0].tipo; var body = "Hola " + (presuForm[0].clienteNombre || "") + ",\n\nAdjunto presupuesto para " + presuForm[0].personas + " personas.\n\nTipo: " + presuForm[0].tipo + " — " + presuForm[0].producto + "\nTotal: " + calc2.total.toFixed(2) + "EUR (IVA incl.)\n\nQuedamos a tu disposicion.\n\nOrale Padre\nhola@oralepadre.com"; window.open("mailto:" + (presuForm[0].clienteEmail || "") + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body)); }} style={{ padding: "10px 20px", borderRadius: 10, background: "#1E40AF", color: "#fff", border: "none", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📧 Email</button>
                 </div>
@@ -11806,11 +11853,11 @@ function CateringView(props) {
                     <div style={{ flex: 1, minWidth: 150 }}>
                       <div style={{ fontSize: 13, fontWeight: 700 }}>{p.tipo} — {p.producto}</div>
                       <div style={{ fontSize: 11, color: "#888" }}>{p.createdAt ? p.createdAt.slice(0, 10) : ""} | {p.personas} pers. | {leadName || "Sin lead"}</div>
-                      {p.clienteNombre && <div style={{ fontSize: 11, color: "#B45309" }}>{p.clienteNombre}</div>}
+                      {p.clienteNombre && <div style={{ fontSize: 11, color: "#7B1D3A" }}>{p.clienteNombre}</div>}
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 800, color: "#047857" }}>{(p.total || 0).toFixed(0)}€</div>
                     <div style={{ display: "flex", gap: 4 }}>
-                      <button onClick={function() { viewPresupuestoPDF(p); }} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e5e5e5", background: "#fff", color: "#B45309", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Ver</button>
+                      <button onClick={function() { viewPresupuestoPDF(p); }} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e5e5e5", background: "#fff", color: "#7B1D3A", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📄 Ver</button>
                       <button onClick={function() { deletePresupuesto(p.id); }} style={{ padding: "4px 10px", borderRadius: 6, border: "1px solid #e5e5e5", background: "#fff", color: "#DC2626", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>🗑</button>
                     </div>
                   </div>
@@ -11824,9 +11871,9 @@ function CateringView(props) {
       {/* PDF PREVIEW OVERLAY */}
       {pdfPreview[0] && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.7)", zIndex: 200, display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", gap: 8, padding: "12px 16px", background: "#1a1a1a", alignItems: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 8, padding: "12px 16px", background: "linear-gradient(135deg, #1a1a1a 0%, #333 100%)", alignItems: "center", flexWrap: "wrap" }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: "#fff", flex: 1 }}>Presupuesto</div>
-            <button onClick={function() { var printW = window.open("", "_blank"); if (printW) { printW.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Presupuesto</title><style>@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}body{margin:0;padding:10px}*{box-sizing:border-box}</style></head><body>" + pdfPreview[0] + "</body></html>"); printW.document.close(); setTimeout(function() { printW.print(); }, 400); } }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: "#B45309", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>🖨 Imprimir / PDF</button>
+            <button onClick={function() { var printW = window.open("", "_blank"); if (printW) { printW.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Presupuesto</title><style>@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}body{margin:0;padding:10px}*{box-sizing:border-box}</style></head><body>" + pdfPreview[0] + "</body></html>"); printW.document.close(); setTimeout(function() { printW.print(); }, 400); } }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>🖨 Imprimir / PDF</button>
             <button onClick={function() { if (navigator.share) { navigator.share({ title: "Presupuesto Orale Padre", text: "Presupuesto de catering" }).catch(function() {}); } else { var printW = window.open("", "_blank"); if (printW) { printW.document.write("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Presupuesto</title></head><body>" + pdfPreview[0] + "</body></html>"); printW.document.close(); } } }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: "#047857", color: "#fff", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>📤 Compartir</button>
             <button onClick={function() { pdfPreview[1](null); }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: "#333", color: "#aaa", fontSize: 11, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>✕ Cerrar</button>
           </div>
@@ -11890,7 +11937,7 @@ function VentasView(props) {
         <ChefConsultant section="ventas" data={{ cierresCount: cierres[0].length, fraudeRatio: cierres[0].length > 0 ? (fraude[0].length / Math.max(1, cierres[0].length)) * 100 : 0 }} />
       </div>
       <div style={{ display: "flex", gap: 6, marginBottom: 16, overflowX: "auto" }}>
-        {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530908" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
+        {tabs.map(function(t) { var a = tab[0] === t.k; return <button key={t.k} onClick={function() { tab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: a ? "#7B1D3A08" : "#fff", color: a ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap", flexShrink: 0 }}>{t.e} {t.l}</button>; })}
       </div>
 
       {/* === CIERRE DE CAJA === */}
@@ -12007,7 +12054,7 @@ function VentasView(props) {
             <input type="date" value={fraudeFilter[0].desde} onChange={function(e) { fraudeFilter[1](Object.assign({}, fraudeFilter[0], { desde: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit" }} />
             <input type="date" value={fraudeFilter[0].hasta} onChange={function(e) { fraudeFilter[1](Object.assign({}, fraudeFilter[0], { hasta: e.target.value })); }} style={{ padding: "8px 12px", borderRadius: 10, border: "1px solid #e5e5e5", fontSize: 12, fontFamily: "inherit" }} />
             <div style={{ flex: 1 }} />
-            <button onClick={function() { showAddFraude[1](!showAddFraude[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddFraude[0] ? "#DC2626" : "#B45309", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddFraude[0] ? "Cancelar" : "+ Registrar"}</button>
+            <button onClick={function() { showAddFraude[1](!showAddFraude[0]); }} style={{ padding: "8px 18px", borderRadius: 10, background: showAddFraude[0] ? "#DC2626" : "#7B1D3A", color: "#fff", border: "none", fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "inherit" }}>{showAddFraude[0] ? "Cancelar" : "+ Registrar"}</button>
           </div>
 
           {showAddFraude[0] && (
@@ -12206,7 +12253,7 @@ function VentasView(props) {
               <div>
                 {/* Top KPIs */}
                 <div style={{ display: "grid", gridTemplateColumns: props.isMobile ? "1fr 1fr" : "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
-                  <div style={{ background: "linear-gradient(135deg, #111 0%, #1a2a1a 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff" }}>
+                  <div style={{ background: "linear-gradient(135deg, #1a1a1a 0%, #1a1a1a 100%)", borderRadius: 14, padding: "18px 16px", textAlign: "center", color: "#fff" }}>
                     <div style={{ fontSize: 10, fontWeight: 600, color: "#888", letterSpacing: 1, marginBottom: 6 }}>TOTAL MES</div>
                     <div style={{ fontSize: 28, fontWeight: 800, color: "#4ADE80" }}>{totalMes.toFixed(0)}€</div>
                     <div style={{ fontSize: 10, color: "#666", marginTop: 4 }}>{mesCierres.length} cierres</div>
@@ -12264,7 +12311,7 @@ function VentasView(props) {
                             <span style={{ fontSize: 14, fontWeight: 800, color: "#047857" }}>{ld.total.toFixed(0)}€</span>
                           </div>
                           <div style={{ background: "#f5f5f5", borderRadius: 4, height: 12, overflow: "hidden", marginBottom: 4 }}>
-                            <div style={{ width: barW + "%", height: "100%", background: "#B45309", borderRadius: 4 }} />
+                            <div style={{ width: barW + "%", height: "100%", background: "#7B1D3A", borderRadius: 4 }} />
                           </div>
                           <div style={{ display: "flex", gap: 10, fontSize: 10, color: "#888" }}>
                             <span>Efect: {ld.efectivo.toFixed(0)}€</span>
@@ -12290,8 +12337,8 @@ function VentasView(props) {
                       return (
                         <div key={d.date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
                           {d.total > 0 && <div style={{ fontSize: 8, color: "#888", fontWeight: 600 }}>{d.total.toFixed(0)}</div>}
-                          <div style={{ width: "100%", height: barH + "%", minHeight: 4, background: d.total > 0 ? (isToday ? "#B45309" : "#047857") : "#f0f0f0", borderRadius: 3 }} />
-                          <div style={{ fontSize: 8, color: isToday ? "#B45309" : "#aaa", fontWeight: isToday ? 700 : 400 }}>{d.label}</div>
+                          <div style={{ width: "100%", height: barH + "%", minHeight: 4, background: d.total > 0 ? (isToday ? "#7B1D3A" : "#047857") : "#eee", borderRadius: 3 }} />
+                          <div style={{ fontSize: 8, color: isToday ? "#7B1D3A" : "#aaa", fontWeight: isToday ? 700 : 400 }}>{d.label}</div>
                         </div>
                       );
                     })}
@@ -12351,7 +12398,7 @@ function MiPerfilView(props) {
   return (
     <div>
       {/* Hero banner */}
-      <div style={{ background: "linear-gradient(135deg, #B45309 0%, #92400E 100%)", borderRadius: 14, padding: "24px", color: "#fff", marginBottom: 24, display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+      <div style={{ background: "linear-gradient(135deg, #7B1D3A 0%, #5C1530 100%)", borderRadius: 14, padding: "24px", color: "#fff", marginBottom: 24, display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
         <div style={{ width: 60, height: 60, borderRadius: 30, background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, fontWeight: 800 }}>{(myData.name || "?")[0]}</div>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 22, fontWeight: 800 }}>{myData.name}</div>
@@ -12379,7 +12426,7 @@ function MiPerfilView(props) {
                 <span style={{ fontSize: 28, flexShrink: 0 }}>{rw.icon}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{rw.name}</div>
-                  <div style={{ fontSize: 12, color: "#B45309", fontWeight: 700 }}>{rw.cost} 🌟</div>
+                  <div style={{ fontSize: 12, color: "#7B1D3A", fontWeight: 700 }}>{rw.cost} 🌟</div>
                 </div>
                 <button onClick={function() {
                   if (!canClaim) return;
@@ -12394,7 +12441,7 @@ function MiPerfilView(props) {
                     return r;
                   });
                   gam[1](Object.assign({}, data, { points: newPts, rewards: newRewards }));
-                }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: canClaim ? "#B45309" : "#e5e5e5", color: canClaim ? "#fff" : "#aaa", fontSize: 12, fontWeight: 700, cursor: canClaim ? "pointer" : "default", fontFamily: "inherit", opacity: canClaim ? 1 : 0.5 }}>
+                }} style={{ padding: "6px 14px", borderRadius: 8, border: "none", background: canClaim ? "#7B1D3A" : "#e5e5e5", color: canClaim ? "#fff" : "#aaa", fontSize: 12, fontWeight: 700, cursor: canClaim ? "pointer" : "default", fontFamily: "inherit", opacity: canClaim ? 1 : 0.5 }}>
                   {canClaim ? "Canjear" : "Faltan " + (rw.cost - myData.dorados)}
                 </button>
               </div>
@@ -12426,8 +12473,8 @@ function MiPerfilView(props) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 6 }}>
           {Object.keys(actionLabels).map(function(key) {
             var a = actionLabels[key];
-            return <div key={key} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#FFF7ED", borderRadius: 8, fontSize: 12 }}>
-              <span style={{ fontWeight: 800, color: "#B45309" }}>+{a.pts}</span>
+            return <div key={key} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#FDF2F4", borderRadius: 8, fontSize: 12 }}>
+              <span style={{ fontWeight: 800, color: "#7B1D3A" }}>+{a.pts}</span>
               <span style={{ color: "#666" }}>{a.label}</span>
             </div>;
           })}
@@ -12583,7 +12630,7 @@ function FichajeView(props) {
               <div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>SALIDAS</div>
               <div style={{ fontSize: 24, fontWeight: 800, color: "#DC2626" }}>{weekRecords.filter(function(r) { return r.type === "salida"; }).length}</div>
             </div>
-            <div style={{ padding: "12px 16px", background: "#EFF6FF", borderRadius: 10, textAlign: "center", flex: 1 }}>
+            <div style={{ padding: "12px 16px", background: "#FFF8E1", borderRadius: 10, textAlign: "center", flex: 1 }}>
               <div style={{ fontSize: 10, color: "#888", fontWeight: 600 }}>FICHAJES</div>
               <div style={{ fontSize: 24, fontWeight: 800, color: "#1E40AF" }}>{weekRecords.length}</div>
             </div>
@@ -13058,9 +13105,9 @@ function AlbaranesView(props) {
       <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
         {tabs.map(function(t) {
           var a = mainTab[0] === t.k;
-          return <button key={t.k} onClick={function() { mainTab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #B45309" : "1px solid #e5e5e5", background: a ? "#B4530910" : "#fff", color: a ? "#B45309" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 4 }}>
+          return <button key={t.k} onClick={function() { mainTab[1](t.k); }} style={{ padding: "8px 16px", borderRadius: 10, border: a ? "2px solid #7B1D3A" : "1px solid #e5e5e5", background: a ? "#7B1D3A10" : "#fff", color: a ? "#7B1D3A" : "#888", fontWeight: 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 4 }}>
             {t.e} {t.l}
-            {t.badge > 0 && <span style={{ background: "#B45309", color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px" }}>{t.badge}</span>}
+            {t.badge > 0 && <span style={{ background: "#7B1D3A", color: "#fff", fontSize: 9, fontWeight: 700, borderRadius: 10, padding: "1px 6px" }}>{t.badge}</span>}
           </button>;
         })}
       </div>
@@ -13068,12 +13115,12 @@ function AlbaranesView(props) {
       {/* ============ TAB: ESCANEAR ============ */}
       {mainTab[0] === "escanear" && view[0] === "list" && (
         <div>
-          <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "24px 20px", borderRadius: 14, border: "2px dashed #B45309", background: "#FFF7ED", cursor: "pointer", marginBottom: 20 }}>
+          <label style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: "24px 20px", borderRadius: 14, border: "2px dashed #7B1D3A", background: "#FDF2F4", cursor: "pointer", marginBottom: 20 }}>
             <input type="file" accept="image/*,application/pdf" onChange={handleFile} style={{ display: "none" }} />
             <span style={{ fontSize: 28 }}>📸</span>
             <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#B45309" }}>Subir albaran</div>
-              <div style={{ fontSize: 12, color: "#92400E" }}>Haz foto al albaran o selecciona PDF</div>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "#7B1D3A" }}>Subir albaran</div>
+              <div style={{ fontSize: 12, color: "#5C1530" }}>Haz foto al albaran o selecciona PDF</div>
             </div>
           </label>
           <div style={{ ...crd, padding: 16, textAlign: "center", color: "#aaa" }}>
@@ -13101,9 +13148,9 @@ function AlbaranesView(props) {
             </div>
           </div>
           {error[0] && <div style={{ padding: "10px 14px", borderRadius: 8, background: "#FEF2F2", color: "#DC2626", fontSize: 12, marginBottom: 12 }}>⚠️ {error[0]}</div>}
-          {debugMsg[0] && loading[0] && <div style={{ padding: "8px 14px", borderRadius: 8, background: "#EFF6FF", color: "#1E40AF", fontSize: 12, marginBottom: 12 }}>🔍 {debugMsg[0]}</div>}
+          {debugMsg[0] && loading[0] && <div style={{ padding: "8px 14px", borderRadius: 8, background: "#FFF8E1", color: "#1E40AF", fontSize: 12, marginBottom: 12 }}>🔍 {debugMsg[0]}</div>}
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button onClick={analyzeAlbaran} disabled={loading[0]} style={{ flex: 1, padding: "12px 20px", borderRadius: 10, border: "none", background: loading[0] ? "#888" : "#B45309", color: "#fff", fontSize: 14, fontWeight: 700, cursor: loading[0] ? "wait" : "pointer", fontFamily: "inherit", minWidth: 180 }}>
+            <button onClick={analyzeAlbaran} disabled={loading[0]} style={{ flex: 1, padding: "12px 20px", borderRadius: 10, border: "none", background: loading[0] ? "#888" : "#7B1D3A", color: "#fff", fontSize: 14, fontWeight: 700, cursor: loading[0] ? "wait" : "pointer", fontFamily: "inherit", minWidth: 180 }}>
               {loading[0] ? "🔄 Analizando con IA..." : "🤖 Analizar con IA"}
             </button>
             <button onClick={goManualEntry} style={{ padding: "12px 20px", borderRadius: 10, border: "2px solid #047857", background: "#F0FDF4", color: "#047857", fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✍️ Manual</button>
@@ -13139,7 +13186,7 @@ function AlbaranesView(props) {
           {/* Status + descuadre explanation */}
           <div style={{ display: "flex", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
             <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#F0FDF4", color: "#047857", fontWeight: 600 }}>🔗 {linkedCount}/{aiLines[0].length} vinculados</span>
-            {dudasCount > 0 && <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#FEF3C7", color: "#92400E", fontWeight: 600 }}>⚠️ {dudasCount} dudas IA</span>}
+            {dudasCount > 0 && <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#FEF3C7", color: "#5C1530", fontWeight: 600 }}>⚠️ {dudasCount} dudas IA</span>}
             {lineErrors > 0 && <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#FEF2F2", color: "#DC2626", fontWeight: 600 }}>🔢 {lineErrors} lineas con calculo raro</span>}
             {totalDetected[0] > 0 && Math.abs(descuadre) <= 0.10 && <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 6, background: "#F0FDF4", color: "#047857", fontWeight: 600 }}>✅ Total cuadra</span>}
           </div>
@@ -13227,7 +13274,7 @@ function AlbaranesView(props) {
                         {/* Unit mismatch warning + conversion */}
                         {unitMismatch && (
                           <div style={{ marginTop: 4, padding: "6px 8px", borderRadius: 6, background: "#FEF3C7", border: "1px solid #FDE68A" }}>
-                            <div style={{ fontSize: 10, color: "#92400E", fontWeight: 600, marginBottom: 4 }}>⚠️ Albaran en "{line.unidad}" pero ingrediente en "{linkedIng.unit}"</div>
+                            <div style={{ fontSize: 10, color: "#5C1530", fontWeight: 600, marginBottom: 4 }}>⚠️ Albaran en "{line.unidad}" pero ingrediente en "{linkedIng.unit}"</div>
                             <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11 }}>
                               <span style={{ color: "#888" }}>1 {line.unidad} =</span>
                               <input type="number" step="0.1" value={line.contenidoPorUnidad || ""} onChange={function(e) { updateLine(line.id, "contenidoPorUnidad", parseFloat(e.target.value) || 0); }} placeholder="?" style={{ width: 50, padding: "3px 4px", border: "1px solid #ddd", borderRadius: 4, fontSize: 12, textAlign: "center", fontFamily: "inherit" }} />
@@ -13252,7 +13299,7 @@ function AlbaranesView(props) {
                               var newIng = props.ingredients.map(function(x) { return x.id === line.ingredienteId ? Object.assign({}, x, { costPerUnit: priceAlert.newPrice, lastAlbaranPrice: priceAlert.old, lastAlbaranDate: fechaDetected[0] }) : x; });
                               props.setIng(newIng);
                               if (props.saveIngProd) props.saveIngProd(newIng, props.products);
-                            }} style={{ marginTop: 4, padding: "3px 10px", borderRadius: 4, border: "none", background: "#B45309", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                            }} style={{ marginTop: 4, padding: "3px 10px", borderRadius: 4, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 10, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
                               Actualizar precio a {priceAlert.newPrice.toFixed(2)}€/{linkedIng ? linkedIng.unit : ""}
                             </button>
                           </div>
@@ -13266,7 +13313,7 @@ function AlbaranesView(props) {
                 })}
               </tbody>
             </table>
-            <button onClick={addEmptyLine} style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, border: "2px dashed #B45309", background: "#FFF7ED", color: "#B45309", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Añadir linea</button>
+            <button onClick={addEmptyLine} style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: 8, border: "2px dashed #7B1D3A", background: "#FDF2F4", color: "#7B1D3A", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>+ Añadir linea</button>
           </div>
 
           {/* Image preview */}
@@ -13307,7 +13354,7 @@ function AlbaranesView(props) {
           {/* KPIs */}
           {filteredAlb.length > 0 && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 10, marginBottom: 16 }}>
-              <div style={{ ...crd, padding: 12, textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 800, color: "#B45309" }}>{filteredAlb.length}</div><div style={{ fontSize: 11, color: "#888" }}>Albaranes</div></div>
+              <div style={{ ...crd, padding: 12, textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 800, color: "#7B1D3A" }}>{filteredAlb.length}</div><div style={{ fontSize: 11, color: "#888" }}>Albaranes</div></div>
               <div style={{ ...crd, padding: 12, textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 800, color: "#047857" }}>{fmt(filteredAlb.reduce(function(s, a) { return s + a.total; }, 0))}</div><div style={{ fontSize: 11, color: "#888" }}>Total compras</div></div>
               <div style={{ ...crd, padding: 12, textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 800, color: "#1E40AF" }}>{proveedores.length}</div><div style={{ fontSize: 11, color: "#888" }}>Proveedores</div></div>
               <div style={{ ...crd, padding: 12, textAlign: "center" }}><div style={{ fontSize: 20, fontWeight: 800, color: "#7C3AED" }}>{filteredAlb.reduce(function(s, a) { return s + a.totalLineas; }, 0)}</div><div style={{ fontSize: 11, color: "#888" }}>Lineas</div></div>
@@ -13339,7 +13386,7 @@ function AlbaranesView(props) {
                 <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: isOpen ? 10 : 0 }}>
                   <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "#F3F4F6", color: "#555" }}>📍 {a.local}</span>
                   <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "#F3F4F6", color: "#555" }}>{a.totalLineas} lineas</span>
-                  <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "#ECFDF5", color: "#047857" }}>🔗 {a.linkedCount} vinculados</span>
+                  <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "#E8F5E9", color: "#047857" }}>🔗 {a.linkedCount} vinculados</span>
                   <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 6, background: "#F3F4F6", color: "#888" }}>✅ {a.confirmedBy}</span>
                 </div>
                 {/* Expanded detail */}
@@ -13391,7 +13438,7 @@ function AlbaranesView(props) {
               </button>;
             })}
             <div style={{ flex: 1 }} />
-            <button onClick={function() { showManualStock[1](!showManualStock[0]); showTransfer[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "2px solid #B45309", background: showManualStock[0] ? "#B45309" : "#FFF7ED", color: showManualStock[0] ? "#fff" : "#B45309", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+            <button onClick={function() { showManualStock[1](!showManualStock[0]); showTransfer[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "2px solid #7B1D3A", background: showManualStock[0] ? "#7B1D3A" : "#FDF2F4", color: showManualStock[0] ? "#fff" : "#7B1D3A", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
               ✍️ Entrada manual
             </button>
             <button onClick={function() { showTransfer[1](!showTransfer[0]); showManualStock[1](false); }} style={{ padding: "8px 14px", borderRadius: 8, border: "2px solid #7C3AED", background: showTransfer[0] ? "#7C3AED" : "#F5F3FF", color: showTransfer[0] ? "#fff" : "#7C3AED", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
@@ -13401,8 +13448,8 @@ function AlbaranesView(props) {
 
           {/* Manual stock entry form */}
           {showManualStock[0] && (
-            <div style={{ ...crd, marginBottom: 14, borderLeft: "4px solid #B45309" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#B45309", marginBottom: 10 }}>Entrada/Salida manual de stock — {stockViewLocal[0]}</div>
+            <div style={{ ...crd, marginBottom: 14, borderLeft: "4px solid #7B1D3A" }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#7B1D3A", marginBottom: 10 }}>Entrada/Salida manual de stock — {stockViewLocal[0]}</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 100px 80px 100px", gap: 8, marginBottom: 10 }}>
                 <div>
                   <div style={{ fontSize: 10, color: "#888", marginBottom: 3 }}>Ingrediente</div>
@@ -13453,7 +13500,7 @@ function AlbaranesView(props) {
                   newStock[loc] = ls;
                   setStock(newStock);
                   manualStockForm[1]({ ingredienteId: "", cantidad: 0, unidad: "kg", tipo: "entrada", notas: "" });
-                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#B45309", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Aplicar</button>
+                }} style={{ padding: "8px 18px", borderRadius: 8, border: "none", background: "#7B1D3A", color: "#fff", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>Aplicar</button>
               </div>
             </div>
           )}
@@ -13605,7 +13652,7 @@ function AlbaranesView(props) {
                           <td style={{ padding: "8px 6px", textAlign: "center" }}>
                             {isOut ? <span style={{ fontSize: 10, fontWeight: 700, color: "#DC2626", padding: "2px 6px", borderRadius: 6, background: "#FEE2E2" }}>AGOTADO</span> :
                              isBelow ? <span style={{ fontSize: 10, fontWeight: 700, color: "#D97706", padding: "2px 6px", borderRadius: 6, background: "#FEF3C7" }}>BAJO</span> :
-                             minQty > 0 ? <span style={{ fontSize: 10, fontWeight: 700, color: "#047857", padding: "2px 6px", borderRadius: 6, background: "#ECFDF5" }}>OK</span> :
+                             minQty > 0 ? <span style={{ fontSize: 10, fontWeight: 700, color: "#047857", padding: "2px 6px", borderRadius: 6, background: "#E8F5E9" }}>OK</span> :
                              <span style={{ fontSize: 10, color: "#ccc" }}>—</span>}
                           </td>
                           <td style={{ padding: "8px 6px", textAlign: "right", fontSize: 11, color: "#888" }}>{it.lastUpdate}</td>
@@ -13635,7 +13682,7 @@ function AlbaranesView(props) {
                 <div key={loc} style={{ ...crd, padding: 16 }}>
                   <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 8 }}>📍 {loc}</div>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                    <div><div style={{ fontSize: 18, fontWeight: 800, color: "#B45309" }}>{locAlb.length}</div><div style={{ fontSize: 10, color: "#888" }}>Albaranes</div></div>
+                    <div><div style={{ fontSize: 18, fontWeight: 800, color: "#7B1D3A" }}>{locAlb.length}</div><div style={{ fontSize: 10, color: "#888" }}>Albaranes</div></div>
                     <div><div style={{ fontSize: 18, fontWeight: 800, color: "#047857" }}>{fmt(locTotal)}</div><div style={{ fontSize: 10, color: "#888" }}>Total compras</div></div>
                     <div><div style={{ fontSize: 18, fontWeight: 800, color: "#1E40AF" }}>{stockCount}</div><div style={{ fontSize: 10, color: "#888" }}>Items stock</div></div>
                     <div><div style={{ fontSize: 12, fontWeight: 600, color: "#555" }}>{lastAlb ? lastAlb.fecha : "—"}</div><div style={{ fontSize: 10, color: "#888" }}>Ultimo albaran</div></div>
