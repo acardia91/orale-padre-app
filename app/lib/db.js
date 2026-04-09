@@ -695,3 +695,32 @@ export async function getUserProfile(userId) {
     return { name: data.name, username: data.username, role: data.role, local: data.local_name || null, catering: data.catering || false };
   } catch (err) { console.error("Get profile error:", err); return null; }
 }
+
+// === TEAM / EMPLOYEE PROFILES ===
+export async function loadTeam() {
+  try {
+    var { data } = await supabase.from('app_users').select('*').order('role');
+    return (data || []).map(function(u) {
+      return { id: u.id, name: u.name, username: u.username, role: u.role, local: u.local_name || "", catering: u.catering || false };
+    });
+  } catch (err) { console.error("Load team error:", err); return []; }
+}
+
+export async function loadEmployeeProfiles() {
+  try {
+    var { data } = await supabase.from('employee_profiles').select('*');
+    var map = {};
+    (data || []).forEach(function(p) {
+      map[p.user_id] = { phone: p.phone || "", emailPersonal: p.email_personal || "", dni: p.dni || "", fechaNacimiento: p.fecha_nacimiento || "", fechaAlta: p.fecha_alta || "", tipoContrato: p.tipo_contrato || "indefinido", horasSemana: p.horas_semana || 40, salarioBruto: p.salario_bruto || 0, localesPermitidos: p.locales_permitidos || [], disponibilidad: p.disponibilidad || {}, notas: p.notas || "", estado: p.estado || "activo" };
+    });
+    return map;
+  } catch (err) { console.error("Load profiles error:", err); return {}; }
+}
+
+export async function saveEmployeeProfile(userId, profile) {
+  try {
+    await supabase.from('employee_profiles').upsert({
+      user_id: userId, phone: profile.phone || "", email_personal: profile.emailPersonal || "", dni: profile.dni || "", fecha_nacimiento: profile.fechaNacimiento || "", fecha_alta: profile.fechaAlta || "", tipo_contrato: profile.tipoContrato || "indefinido", horas_semana: profile.horasSemana || 40, salario_bruto: profile.salarioBruto || 0, locales_permitidos: profile.localesPermitidos || [], disponibilidad: profile.disponibilidad || {}, notas: profile.notas || "", estado: profile.estado || "activo"
+    });
+  } catch (err) { console.error("Save profile error:", err); }
+}
