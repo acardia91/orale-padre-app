@@ -667,3 +667,31 @@ export async function loadAllProjectTasks() {
     });
   } catch (err) { console.error("Load all tasks error:", err); return []; }
 }
+
+// === AUTH ===
+export async function signIn(email, password) {
+  try {
+    var { data, error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+    if (error) return { error: error.message };
+    return { user: data.user };
+  } catch (err) { return { error: err.message }; }
+}
+
+export async function signOut() {
+  try { await supabase.auth.signOut(); } catch (err) { console.error("Sign out error:", err); }
+}
+
+export async function getSession() {
+  try {
+    var { data } = await supabase.auth.getSession();
+    return data.session;
+  } catch (err) { return null; }
+}
+
+export async function getUserProfile(userId) {
+  try {
+    var { data } = await supabase.from('app_users').select('*').eq('id', userId).single();
+    if (!data) return null;
+    return { name: data.name, username: data.username, role: data.role, local: data.local_name || null, catering: data.catering || false };
+  } catch (err) { console.error("Get profile error:", err); return null; }
+}
