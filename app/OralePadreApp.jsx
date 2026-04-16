@@ -9205,7 +9205,29 @@ function MarketingView(props) {
     showForm[1](false);
   }
   function updateCalItem(id, field, val) {
+    var prev = (data.calendar || []).find(function(c) { return c.id === id; });
     updateData("calendar", (data.calendar || []).map(function(c) { if (c.id !== id) return c; var n = Object.assign({}, c); n[field] = val; return n; }));
+    // Auto-create KPI entry when marking as "publicado"
+    if (field === "status" && val === "publicado" && prev && prev.status !== "publicado") {
+      var existing = (props.mktKpis[0] || []).find(function(k) { return k.cal_item_id === id; });
+      if (!existing) {
+        var kpiRecord = {
+          semana: prev.date || new Date().toISOString().slice(0,10),
+          plataforma: prev.platform || "instagram",
+          campana: prev.title || "Post sin titulo",
+          alcance: 0, impresiones: 0, interacciones: 0, seguidores_nuevos: 0, clicks: 0,
+          inversion: 0, ventas_atribuidas: 0,
+          notas: "Auto-creado desde calendario. Rellena los datos de Instagram/TikTok Insights.",
+          cal_item_id: id
+        };
+        if (props.dbModule && props.dbModule.saveMktKpi) {
+          props.dbModule.saveMktKpi(kpiRecord).then(function(saved) {
+            if (saved) props.mktKpis[1]([saved].concat(props.mktKpis[0] || []));
+          });
+        }
+        if (props.createNotif) props.createNotif("info", "Rellenar KPIs de: " + (prev.title || "post"), "Marca los datos de Instagram Insights esta semana para analisis automatico", "mkt-kpis", "", ["community", "socio"], "", 7);
+      }
+    }
   }
   function deleteCalItem(id) { updateData("calendar", (data.calendar || []).filter(function(c) { return c.id !== id; })); }
 
@@ -10131,10 +10153,37 @@ function MarketingView(props) {
           </div>
         )}
 
+        {/* Pending KPIs (auto-created from calendar) */}
+        {(function() {
+          var pendingKpis = kpis.filter(function(k) { return k.cal_item_id && (k.alcance || 0) === 0 && (k.interacciones || 0) === 0; });
+          if (pendingKpis.length === 0) return null;
+          return (
+            <div style={{ ...crd, marginBottom: 16, borderLeft: "4px solid #D97706", background: "#FFFBEB" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#D97706" }}>PENDIENTES DE RELLENAR ({pendingKpis.length})</span>
+                <span style={{ fontSize: 11, color: "#888" }}>Posts publicados esperando datos de Instagram</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {pendingKpis.map(function(k) {
+                  return (
+                    <div key={k.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 8, background: "#fff", border: "1px solid #FDE68A" }}>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontSize: 13, fontWeight: 600 }}>{k.campana}</div>
+                        <div style={{ fontSize: 10, color: "#888" }}>{new Date(k.semana).toLocaleDateString("es-ES")} · {k.plataforma}</div>
+                      </div>
+                      <button onClick={function() { editKpi(k); }} style={{ padding: "6px 14px", borderRadius: 6, border: "none", background: "#D97706", color: "#fff", fontWeight: 700, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Rellenar datos →</button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Campaigns list with analysis */}
         {kpis.length === 0 && <EmptyState icon="📊" title="Sin campañas registradas" desc="Registra los KPIs de tus campañas para que la plataforma las analice y te diga cuáles repetir." />}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {kpis.map(function(k) {
+          {kpis.filter(function(k) { return !(k.cal_item_id && (k.alcance || 0) === 0 && (k.interacciones || 0) === 0); }).map(function(k) {
             var a = analyzeCampaign(k);
             var vc = verdictColors[a.verdict];
             return (
