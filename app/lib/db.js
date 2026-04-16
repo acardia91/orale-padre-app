@@ -724,3 +724,71 @@ export async function saveEmployeeProfile(userId, profile) {
     });
   } catch (err) { console.error("Save profile error:", err); }
 }
+
+// === SUPPLIER PRODUCTS & ORDERS ===
+export async function loadSupplierProducts() {
+  try {
+    var { data } = await supabase.from('supplier_products').select('*').eq('activo', true).order('supplier_id');
+    return data || [];
+  } catch (err) { console.error("Load supplier products error:", err); return []; }
+}
+
+export async function saveSupplierProduct(item) {
+  try {
+    await supabase.from('supplier_products').upsert(item);
+  } catch (err) { console.error("Save supplier product error:", err); }
+}
+
+export async function deleteSupplierProduct(id) {
+  try {
+    await supabase.from('supplier_products').delete().eq('id', id);
+  } catch (err) { console.error("Delete supplier product error:", err); }
+}
+
+export async function loadSupplierOrders() {
+  try {
+    var { data } = await supabase.from('supplier_orders').select('*').order('created_at', { ascending: false });
+    return data || [];
+  } catch (err) { console.error("Load supplier orders error:", err); return []; }
+}
+
+export async function saveSupplierOrder(order) {
+  try {
+    var { data } = await supabase.from('supplier_orders').upsert(order).select();
+    return data ? data[0] : null;
+  } catch (err) { console.error("Save supplier order error:", err); return null; }
+}
+
+// === MKT KPIS ===
+export async function loadMktKpis() {
+  try {
+    var { data } = await supabase.from('mkt_kpis').select('*').order('semana', { ascending: false });
+    return data || [];
+  } catch (err) { console.error("Load mkt_kpis error:", err); return []; }
+}
+export async function saveMktKpi(kpi) {
+  try {
+    var { data } = await supabase.from('mkt_kpis').upsert(kpi).select();
+    return data ? data[0] : null;
+  } catch (err) { console.error("Save mkt_kpi error:", err); return null; }
+}
+export async function deleteMktKpi(id) {
+  try { await supabase.from('mkt_kpis').delete().eq('id', id); } catch (err) { console.error("Delete mkt_kpi error:", err); }
+}
+
+// === MKT COMPETITORS ===
+export async function loadMktCompetitors() {
+  try {
+    var { data } = await supabase.from('mkt_competitors').select('*').order('created_at', { ascending: false });
+    return data || [];
+  } catch (err) { console.error("Load competitors error:", err); return []; }
+}
+export async function saveMktCompetitor(comp) {
+  try {
+    var { data } = await supabase.from('mkt_competitors').upsert(comp).select();
+    return data ? data[0] : null;
+  } catch (err) { console.error("Save competitor error:", err); return null; }
+}
+export async function deleteMktCompetitor(id) {
+  try { await supabase.from('mkt_competitors').delete().eq('id', id); } catch (err) { console.error("Delete competitor error:", err); }
+}
