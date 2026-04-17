@@ -9138,6 +9138,9 @@ function MarketingView(props) {
     var next = Object.assign({}, data);
     next[key] = val;
     setData(next);
+    if (props.dbModule && props.dbModule.saveMktData) {
+      props.dbModule.saveMktData(next).catch(function(e) { console.error("saveMktData error:", e); });
+    }
   }
 
   // Task form
